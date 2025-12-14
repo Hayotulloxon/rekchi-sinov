@@ -35,14 +35,8 @@
         }
         
         @keyframes slideUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         @keyframes celebrate {
@@ -51,364 +45,113 @@
             75% { transform: scale(1.15) rotate(3deg); }
         }
         
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .pulse-glow {
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-        
-        .slide-up {
-            animation: slideUp 0.4s ease-out;
-        }
+        .float-animation { animation: float 3s ease-in-out infinite; }
+        .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .slide-up { animation: slideUp 0.4s ease-out; }
         
         .app-card {
-            background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(30, 30, 30, 0.95));
+            background: linear-gradient(135deg, rgba(20,20,20,0.95), rgba(30,30,30,0.95));
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
-        }
-        
-        .diamond-icon {
-            filter: drop-shadow(0 0 8px rgba(0, 150, 255, 0.6));
-            color: #0096ff;
-        }
-        
+        .gradient-bg { background: linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%); }
+        .diamond-icon { filter: drop-shadow(0 0 8px rgba(0,150,255,0.6)); color:#0096ff; }
+
         .btn-primary {
-            background: linear-gradient(135deg, #0096ff 0%, #0066cc 100%);
-            box-shadow: 0 6px 20px rgba(0, 150, 255, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg,#0096ff 0%,#0066cc 100%);
+            box-shadow: 0 6px 20px rgba(0,150,255,0.3);
+            transition: all .3s cubic-bezier(.4,0,.2,1);
+            position: relative; overflow: hidden;
         }
-        
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(0, 150, 255, 0.4);
-        }
-        
-        .btn-primary:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
-        }
-        
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn-primary:hover::after {
-            left: 100%;
-        }
-        
-        .withdraw-btn {
-            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-            box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .withdraw-btn:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(52, 211, 153, 0.4);
-        }
-        
-        .withdraw-success {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(21, 128, 61, 0.1));
-            border-color: rgba(34, 197, 94, 0.2);
-        }
-        
-        .withdraw-error {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(185, 28, 28, 0.1));
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-        
-        .user-avatar {
-            background: linear-gradient(135deg, #0096ff 0%, #0066cc 100%);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .user-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 150, 255, 0.4);
-        }
-        
-        /* Perfect circular avatar container (used both for user profile and admin list) */
+        .btn-primary:hover:not(:disabled){ transform: translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,0.4); }
+        .btn-primary:active:not(:disabled){ transform: translateY(0) scale(.98); }
+        .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
+        .btn-primary:hover::after{ left:100%; }
+
+        .user-avatar { background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); border:2px solid rgba(255,255,255,.15); box-shadow:0 4px 15px rgba(0,150,255,.3); transition:all .3s ease; overflow:hidden; }
+        .user-avatar:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(0,150,255,.4); }
+
+        /* Avatar container used everywhere (user profile and admin list) */
         .avatar-container {
             width: 64px;
             height: 64px;
             border-radius: 50%;
             overflow: hidden;
             position: relative;
-            background: linear-gradient(135deg, #0096ff, #0066cc);
+            background: linear-gradient(135deg,#0096ff,#0066cc);
             flex: 0 0 auto;
         }
-        
-        /* Avatar image that fills the circle */
         .avatar-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: cover;
-            display: block;
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+            min-width:100%; min-height:100%; width:auto; height:auto; object-fit:cover; display:block;
         }
-        
-        /* Gradient avatar when no image */
-        .gradient-avatar {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #0096ff, #0066cc);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .input-field {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .input-field:focus {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: #0096ff;
-            box-shadow: 0 0 0 2px rgba(0, 150, 255, 0.1);
-        }
-        
-        .top-bar {
-            background: rgba(15, 15, 15, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        
-        .status-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        
-        .reward-badge {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-        
-        .diamond-count {
-            background: rgba(0, 150, 255, 0.1);
-            border: 1px solid rgba(0, 150, 255, 0.2);
-        }
-        
-        .withdraw-section {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(21, 128, 61, 0.05));
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-        
-        .admin-card {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(255, 152, 0, 0.05));
-            border: 1px solid rgba(255, 193, 7, 0.1);
-        }
-        
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #0096ff;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0066cc;
-        }
-        
-        /* Selection color */
-        ::selection {
-            background: rgba(0, 150, 255, 0.3);
-            color: white;
-        }
-        
-        /* Loading animation for avatar */
-        .avatar-loading {
-            background: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 50%;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Menu Navigation */
-        .menu-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        
-        .menu-nav {
-            display: flex;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 12px 16px;
-            gap: 8px;
-        }
-        
-        .menu-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 8px;
-            border-radius: 16px;
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .menu-item.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .menu-item:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .menu-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        
-        .menu-label {
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .menu-indicator {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #0096ff;
-            display: none;
-        }
-        
-        .menu-item.active .menu-indicator {
-            display: block;
-        }
-        
-        .content-container {
-            padding-bottom: 100px; /* Menu uchun joy */
-        }
-        
-        /* Content sections */
-        .content-section {
-            display: none;
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        .content-section.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .gradient-avatar { width:100%; height:100%; background: linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+        .status-card { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+        .reward-badge { background: rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); }
+        .diamond-count { background: rgba(0,150,255,0.1); border:1px solid rgba(0,150,255,0.2); }
+
+        /* Layout & menu */
+        .menu-container { position: fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
+        .menu-nav { display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
+        .menu-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s ease; cursor:pointer; position:relative; }
+        .menu-item.active { background:rgba(255,255,255,.1); color:white; }
+        .menu-icon { font-size:24px; margin-bottom:4px; }
+        .content-container { padding-bottom:100px; }
+
+        /* other fine styles */
+        ::-webkit-scrollbar{ width:6px; } ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px; } ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px; } ::-webkit-scrollbar-thumb:hover{ background:#0066cc; }
+        ::selection{ background:rgba(0,150,255,.3); color:white; }
+        @keyframes loading { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+        .avatar-loading { background: linear-gradient(90deg,#2d2d2d 25%,#3d3d3d 50%,#2d2d2d 75%); background-size:200% 100%; animation:loading 1.5s infinite; border-radius:50%; }
+
+        .content-section { display:none; animation: fadeIn .3s ease-out; }
+        .content-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
     <div id="app" class="min-h-full w-full">
-        <!-- Loading State -->
+        <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
             <div class="text-center slide-up">
-                <div class="text-7xl mb-6 float-animation diamond-icon">
-                    💎
-                </div>
+                <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
                 <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
                 <p class="text-xl font-semibold text-white/90">RekchiAi olmoslari</p>
                 <p class="text-white/60 mt-2">Yuklanmoqda...</p>
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main -->
         <div id="content" class="hidden">
-            <!-- Top Bar -->
+            <!-- Top bar (only single/main balance shown) -->
             <div class="sticky top-0 z-50 top-bar border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="text-3xl diamond-icon">
-                                💎
-                            </div>
+                            <div class="text-3xl diamond-icon">💎</div>
                             <div>
                                 <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Reklama ko'ring, olmos yig'ing</p>
+                                <p class="text-xs text-white/60">Reklama ko'ring, olmos yeg'ing</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
-                                <span id="diamond-count" class="text-2xl font-bold text-blue-400">0</span>
-                                <span class="text-xl diamond-icon">💎</span>
-                            </div>
-                            <div class="px-3 py-2 rounded-full bg-white/5 text-sm">
-                                Bot balansi:
-                                <span id="bot-balance-top" class="font-bold text-yellow-400 ml-2">0 💎</span>
-                            </div>
+                        <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
+                            <span id="diamond-count" class="text-2xl font-bold text-yellow-400">0</span>
+                            <span class="text-xl diamond-icon">💎</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Main Container -->
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
-                <!-- Earn Diamonds Section (Menu 1) -->
+                <!-- Earn / Main -->
                 <div id="earn-section" class="content-section active">
-                    <!-- User Profile Card -->
                     <div class="app-card p-5 slide-up">
                         <div class="flex items-center space-x-4">
                             <div id="user-avatar" class="avatar-container user-avatar">
-                                <!-- Avatar image will be loaded from Telegram -->
+                                <!-- avatar -->
                             </div>
                             <div class="flex-1">
                                 <h3 id="user-name" class="font-bold text-lg text-white/90">Foydalanuvchi</h3>
@@ -418,17 +161,13 @@
                         </div>
                     </div>
 
-                    <!-- Ad Watch Section -->
-                    <div class="app-card p-6 slide-up" style="animation-delay: 0.1s;">
-                        <!-- Header -->
+                    <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
-                                <div class="text-3xl">
-                                    🎬
-                                </div>
+                                <div class="text-3xl">🎬</div>
                                 <div>
                                     <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
-                                    <p class="text-white/60 text-sm">Olmos yig'ing</p>
+                                    <p class="text-white/60 text-sm">Olmos bot balansiga avtomatik qo'shiladi</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
@@ -436,122 +175,60 @@
                             </div>
                         </div>
 
-                        <!-- Status Display -->
                         <div id="ad-status" class="status-card rounded-2xl p-6 mb-5 text-center min-h-[100px] flex items-center justify-center">
                             <p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>
                         </div>
 
-                        <!-- Watch Button -->
                         <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">▶️</span>
                             <span>Reklamani boshlash</span>
                         </button>
                     </div>
 
-                    <!-- Stats Info -->
-                    <div class="app-card p-6 slide-up" style="animation-delay: 0.2s;">
+                    <div class="app-card p-6 slide-up" style="animation-delay:0.2s;">
                         <div class="flex items-center space-x-2 mb-5">
-                            <div class="text-2xl">
-                                📊
-                            </div>
+                            <div class="text-2xl">📊</div>
                             <h3 class="text-xl font-bold text-white/90">Statistika</h3>
                         </div>
-                        
+
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
                                 <div class="flex items-center space-x-3">
-                                    <div class="text-2xl">
-                                        💎
-                                    </div>
+                                    <div class="text-2xl">💎</div>
                                     <div>
-                                        <p class="text-white/60 text-sm">Umumiy olmoslar</p>
-                                        <p class="text-2xl font-bold text-blue-400" id="total-earned-diamonds">0</p>
+                                        <p class="text-white/60 text-sm">Umumiy olmoslar (bot)</p>
+                                        <p class="text-2xl font-bold text-yellow-400" id="total-earned-diamonds">0</p>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
                                 <div class="flex items-center space-x-3">
-                                    <div class="text-2xl">
-                                        🎬
-                                    </div>
+                                    <div class="text-2xl">🎬</div>
                                     <div>
                                         <p class="text-white/60 text-sm">Ko'rilgan reklamalar</p>
                                         <p class="text-2xl font-bold text-green-400" id="ads-watched">0</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-xs text-white/60">Bot balansi</p>
-                                    <p id="bot-balance-card" class="text-2xl font-bold text-yellow-400">0 💎</p>
+                                    <p class="text-xs text-white/60">Foydalanuvchi ID</p>
+                                    <p class="text-sm text-white/50" id="user-id-right">—</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bot Balance Section (replaces withdraw) -->
-                <div id="withdraw-section" class="content-section">
-                    <div class="app-card p-6 slide-up" style="animation-delay: 0.1s;">
-                        <div class="flex items-center space-x-2 mb-6">
-                            <div class="text-3xl text-yellow-400">
-                                🤖
-                            </div>
-                            <div>
-                                <h2 class="text-xl font-bold text-white/90">Bot balansi</h2>
-                                <p class="text-white/60 text-sm">Botdagi olmoslar shu yerda ko'rsatiladi</p>
-                            </div>
-                        </div>
-
-                        <!-- Bot Balance Display -->
-                        <div class="mb-6 p-5 bg-gradient-to-r from-yellow-400/10 to-amber-500/10 rounded-2xl border border-yellow-400/20">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-white/60 text-sm mb-1">Bot balans</p>
-                                    <p id="bot-balance" class="text-3xl font-bold text-yellow-400">0 💎</p>
-                                </div>
-                                <div class="text-5xl">
-                                    💎
-                                </div>
-                            </div>
-                            <div class="h-px bg-white/10 my-3"></div>
-                            <div class="text-xs text-white/50">Bot balansini serverdan avtomatik yangilab turadi</div>
-                        </div>
-                    </div>
-
-                    <!-- Local withdraw history (kept for reference) -->
-                    <div class="app-card p-6 slide-up" style="animation-delay: 0.2s;">
-                        <div class="flex items-center space-x-2 mb-5">
-                            <div class="text-2xl">
-                                📝
-                            </div>
-                            <h3 class="text-xl font-bold text-white/90">Yechish tarixi (local)</h3>
-                        </div>
-                        
-                        <div id="withdraw-history" class="space-y-3">
-                            <div class="text-center py-8">
-                                <div class="text-4xl mb-3">📭</div>
-                                <p class="text-white/60">Hali olmos yechilmagan</p>
-                                <p class="text-white/40 text-xs mt-1">Birinchi yechishni amalga oshiring</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Admin Panel -->
-                <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay: 0.3s;">
+                <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay:0.3s;">
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="text-3xl">
-                            👑
-                        </div>
+                        <div class="text-3xl">👑</div>
                         <h2 class="text-xl font-bold text-white/90">Admin Panel</h2>
                     </div>
 
-                    <!-- Admin Stats -->
                     <div class="admin-card rounded-2xl p-5 mb-6">
                         <div class="flex items-center space-x-2 mb-4">
-                            <div class="text-xl">
-                                📈
-                            </div>
+                            <div class="text-xl">📈</div>
                             <h3 class="font-bold text-white/90">Umumiy statistika</h3>
                         </div>
                         <div class="grid grid-cols-3 gap-4 text-center">
@@ -570,31 +247,22 @@
                         </div>
                     </div>
 
-                    <!-- Users List -->
                     <div class="flex items-center space-x-2 mb-4">
-                        <div class="text-xl">
-                            👥
-                        </div>
+                        <div class="text-xl">👥</div>
                         <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
                     </div>
                     <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                        <!-- Users will be loaded here -->
+                        <!-- users -->
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Menu Navigation -->
+            <!-- Single Menu (only main) -->
             <div class="menu-container">
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section">
                         <span class="menu-icon">💎</span>
                         <span class="menu-label">Olmos ishlash</span>
-                        <span class="menu-indicator"></span>
-                    </button>
-                    <button class="menu-item" data-section="withdraw-section">
-                        <span class="menu-icon">🤖</span>
-                        <span class="menu-label">Bot balansi</span>
-                        <span class="menu-indicator"></span>
                     </button>
                 </nav>
             </div>
@@ -602,11 +270,10 @@
     </div>
 
     <script type="module">
-        // Firebase imports - REALTIME DATABASE
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-        // Firebase Configuration
+        // Firebase config (unchanged)
         const firebaseConfig = {
             apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
             authDomain: "rekchi-2dc2f.firebaseapp.com",
@@ -617,8 +284,6 @@
             appId: "1:352655860270:web:e071c82f4b911c21c0b5bf",
             measurementId: "G-4WVC8S5V3R"
         };
-
-        // Initialize Firebase
         const firebaseApp = initializeApp(firebaseConfig);
         const db = getDatabase(firebaseApp);
 
@@ -626,105 +291,49 @@
         const AD_BLOCK_ID = '19084';
         const REWARD_AMOUNT = 1;
 
-        // BOT API (server) - set to your server URL where add_balance.php and get_balance.php are hosted
-        const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php'; // POST (adds amount)
-        const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php'; // GET (returns current balance)
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // NOTE: exposing API key in client is insecure
+        // Server API endpoints (your server must host add_balance.php and get_balance.php)
+        const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
+        const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
+        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // keep on server ideally
 
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let AdController = null;
-        let currentBalance = 0;
-        let currentSection = 'earn-section';
         let botBalance = 0;
 
-        // Telegramdan foydalanuvchi profil rasmini olish funksiyasi
         async function getTelegramProfilePhoto(userId, username, firstName) {
             try {
                 const tg = window.Telegram?.WebApp;
-                
-                // 1. Telegram Mini App dan to'g'ridan-to'g'ri photo_url ni olish
-                if (tg?.initDataUnsafe?.user?.photo_url) {
-                    const photoUrl = tg.initDataUnsafe.user.photo_url;
-                    console.log('📸 Telegram Mini App profile photo found:', photoUrl);
-                    return photoUrl;
-                }
-                
-                // 2. Agar username bo'lsa, Telegram profil rasmini URL orqali olish
-                if (username) {
-                    // Telegram userni profil rasmini olish (to'liq o'lchamda)
-                    const telegramPhotoUrl = `https://t.me/i/userpic/320/${username}.jpg`;
-                    
-                    console.log('📸 Trying Telegram profile photo via username:', telegramPhotoUrl);
-                    return telegramPhotoUrl;
-                }
-                
-                // 3. Agar yuqoridagi usullar ishlamasa, to'liq gradient avatar yaratish
-                console.log('🎨 Creating full gradient avatar');
+                if (tg?.initDataUnsafe?.user?.photo_url) return tg.initDataUnsafe.user.photo_url;
+                if (username) return `https://t.me/i/userpic/320/${username}.jpg`;
                 return createFullGradientAvatar(userId);
-                
-            } catch (error) {
-                console.error('❌ Error getting Telegram profile photo:', error);
+            } catch (e) {
                 return createFullGradientAvatar(userId);
             }
         }
 
-        // To'liq gradient avatar yaratish funksiyasi (harfsiz)
         function createFullGradientAvatar(userId) {
-            // Telegram-ga o'xshash gradient ranglar
             const gradients = [
-                ['#FF6B6B', '#FF8E53'], // Qizil-to'q sariq
-                ['#4ECDC4', '#44A08D'], // Ko'k-yashil
-                ['#FFD93D', '#FF6B6B'], // Sariq-qizil
-                ['#6BC5D2', '#4A9CC2'], // Moviy-ko'k
-                ['#9D50BB', '#6E48AA'], // Binafsha
-                ['#00C9FF', '#92FE9D'], // Ko'k-yashil
-                ['#FF9A9E', '#FAD0C4'], // Pushti
-                ['#A18CD1', '#FBC2EB'], // Moviy-pushti
-                ['#667eea', '#764ba2'], // Ko'k-binafsha
-                ['#f093fb', '#f5576c'], // Pushti-qizil
+                ['#FF6B6B','#FF8E53'], ['#4ECDC4','#44A08D'], ['#FFD93D','#FF6B6B'],
+                ['#6BC5D2','#4A9CC2'], ['#9D50BB','#6E48AA'], ['#00C9FF','#92FE9D'],
+                ['#FF9A9E','#FAD0C4'], ['#A18CD1','#FBC2EB'], ['#667eea','#764ba2'],
+                ['#f093fb','#f5576c']
             ];
-            
-            // User ID ga qarab gradient tanlash
-            const colorIndex = (userId || '').split('').reduce((sum, char) => {
-                return sum + char.charCodeAt(0);
-            }, 0) % gradients.length;
-            
-            const [color1, color2] = gradients[colorIndex];
-            
-            // To'liq dumaloq gradient avatar yaratish (harfsiz)
-            const svg = `
-                <svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad${userId}" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="${color1}"/>
-                            <stop offset="100%" stop-color="${color2}"/>
-                        </linearGradient>
-                        <radialGradient id="shine${userId}" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stop-color="white" stop-opacity="0.15"/>
-                            <stop offset="100%" stop-color="white" stop-opacity="0"/>
-                        </radialGradient>
-                    </defs>
-                    <circle cx="128" cy="128" r="128" fill="url(#grad${userId})"/>
-                    <circle cx="128" cy="128" r="128" fill="url(#shine${userId})"/>
-                </svg>
-            `;
-            
+            const colorIndex = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
+            const [c1,c2] = gradients[colorIndex];
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
-        // Initialize Telegram Web App
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
                 window.Telegram.WebApp.expand();
                 window.Telegram.WebApp.setBackgroundColor('#0f0f0f');
                 window.Telegram.WebApp.setHeaderColor('#0f0f0f');
-                
                 const tg = window.Telegram.WebApp;
                 const user = tg.initDataUnsafe?.user;
-                
                 if (user) {
                     currentUser = {
                         user_id: user.id.toString(),
@@ -734,65 +343,30 @@
                         photo_url: user.photo_url || null,
                         language_code: user.language_code || 'uz'
                     };
-                    
                     isAdmin = ADMIN_IDS.includes(currentUser.user_id);
-                    console.log('✅ Telegram user loaded:', currentUser);
                 } else {
-                    console.log('⚠️ No Telegram user data');
-                    currentUser = {
-                        user_id: 'web_' + Date.now(),
-                        username: 'foydalanuvchi',
-                        first_name: 'Foydalanuvchi',
-                        last_name: '',
-                        photo_url: null,
-                        language_code: 'uz'
-                    };
+                    currentUser = { user_id: 'web_' + Date.now(), username:'foydalanuvchi', first_name:'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
                 }
             } else {
-                console.log('⚠️ Telegram Web App not available');
-                currentUser = {
-                    user_id: 'web_' + Date.now(),
-                    username: 'foydalanuvchi',
-                    first_name: 'Foydalanuvchi',
-                    last_name: '',
-                    photo_url: null,
-                    language_code: 'uz'
-                };
+                currentUser = { user_id: 'web_' + Date.now(), username:'foydalanuvchi', first_name:'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
             }
         }
 
-        // Initialize Adsgram
         function initAdsgram() {
             if (window.Adsgram) {
                 AdController = window.Adsgram.init({ blockId: AD_BLOCK_ID });
-                console.log('✅ Adsgram initialized');
             } else {
                 setTimeout(initAdsgram, 500);
             }
         }
 
-        // Firebase Realtime Database Functions
         async function loadOrCreateUser() {
-            if (!currentUser) {
-                console.error('❌ No current user');
-                return null;
-            }
-
+            if (!currentUser) return null;
             try {
-                console.log('📡 Loading user from Firebase:', currentUser.user_id);
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
-
                 if (!snapshot.exists()) {
-                    console.log('➕ Creating new user');
-                    
-                    // Profil rasmini olish
-                    const profilePhoto = await getTelegramProfilePhoto(
-                        currentUser.user_id,
-                        currentUser.username,
-                        currentUser.first_name
-                    );
-                    
+                    const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username, currentUser.first_name);
                     const newUser = {
                         user_id: currentUser.user_id,
                         username: currentUser.username || '',
@@ -807,272 +381,143 @@
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString()
                     };
-                    
                     await set(userRef, newUser);
-                    console.log('✅ New user created with profile photo');
                     return newUser;
                 } else {
-                    console.log('✅ User loaded from Firebase');
                     let userData = snapshot.val();
-                    
-                    // Agar user ma'lumotlarida photo_url bo'lmasa yoki yangilash kerak bo'lsa
                     if (!userData.photo_url) {
-                        const profilePhoto = await getTelegramProfilePhoto(
-                            currentUser.user_id,
-                            currentUser.username,
-                            currentUser.first_name
-                        );
-                        
-                        const updates = {
-                            photo_url: profilePhoto,
-                            username: currentUser.username || userData.username,
-                            first_name: currentUser.first_name || userData.first_name,
-                            updated_at: new Date().toISOString()
-                        };
-                        
+                        const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username, currentUser.first_name);
+                        const updates = { photo_url: profilePhoto, username: currentUser.username || userData.username, first_name: currentUser.first_name || userData.first_name, updated_at: new Date().toISOString() };
                         await update(userRef, updates);
                         userData = { ...userData, ...updates };
-                        console.log('✅ User profile updated with new photo');
                     }
-                    
                     return userData;
                 }
-            } catch (error) {
-                console.error('❌ Error loading user:', error);
-                showError('Ma\'lumotlar yuklanmadi: ' + (error.message || error));
+            } catch (err) {
+                console.error('Error loadOrCreateUser', err);
                 return null;
             }
         }
 
         async function updateUserData(updates) {
             if (!currentUser) return false;
-
             try {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
-                await update(userRef, {
-                    ...updates,
-                    updated_at: new Date().toISOString()
-                });
-                console.log('✅ User updated:', updates);
+                await update(userRef, { ...updates, updated_at: new Date().toISOString() });
                 return true;
-            } catch (error) {
-                console.error('❌ Error updating user:', error);
+            } catch (err) {
+                console.error('Error updateUserData', err);
                 return false;
             }
         }
 
         function subscribeToUsers() {
             if (!isAdmin) return;
-
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
                 allUsers = [];
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    Object.keys(data).forEach(key => {
-                        allUsers.push(data[key]);
-                    });
-                    console.log('👑 Admin: loaded', allUsers.length, 'users');
+                    Object.keys(data).forEach(k => allUsers.push(data[k]));
                     updateAdminPanel();
                 }
-            }, (error) => {
-                console.error('❌ Error subscribing to users:', error);
-            });
+            }, (err) => console.error('subscribeToUsers', err));
         }
 
-        // Initialize App
         async function initializeAppMain() {
-            console.log('🚀 Initializing app...');
-            
             initTelegram();
             initAdsgram();
 
             const user = await loadOrCreateUser();
-            
             if (user) {
                 updateUI(user);
-                
-                // Subscribe to user changes
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 onValue(userRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log('🔄 User data updated');
-                        updateUI(snapshot.val());
-                    }
-                }, (error) => {
-                    console.error('❌ Error subscribing to user:', error);
+                    if (snapshot.exists()) updateUI(snapshot.val());
                 });
-
                 if (isAdmin) {
-                    console.log('👑 Admin mode activated');
                     document.getElementById('admin-panel').classList.remove('hidden');
                     subscribeToUsers();
                 }
             }
 
-            // fetch bot balance on load
+            // initial bot balance fetch and periodic refresh
             if (currentUser) {
-                fetchBotBalance();
-                // periodic refresh
+                await fetchBotBalance();
                 setInterval(fetchBotBalance, 30000);
             }
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
-            console.log('✅ App initialized');
         }
 
         function updateUI(user) {
             if (!user) return;
-
-            // Update avatar - butun aylanaga to'liq tushishi
+            // avatar (use same markup as admin list to ensure identical appearance)
             const avatarDiv = document.getElementById('user-avatar');
-            
             if (user.photo_url) {
-                // Rasmini butun aylanaga to'liq tushishi uchun
-                avatarDiv.innerHTML = `
-                    <img src="${user.photo_url}" 
-                         alt="${user.first_name || 'Foydalanuvchi'}" 
-                         class="avatar-image"
-                         onload="this.style.opacity='1'"
-                         onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"gradient-avatar\"></div>'"
-                         style="opacity:0; transition: opacity 0.3s ease;">
-                `;
+                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${user.first_name||'Foydalanuvchi'}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;gradient-avatar&quot;></div>'">`;
             } else {
-                // Gradient avatar yaratish
                 avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
             }
-            
-            // Update user info
+
             document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            
-            // Update diamond count (we only keep bot balance visible; user's own diamond count mirrors bot via Firebase if you want)
-            const diamonds = user.diamonds || 0;
-            currentBalance = diamonds;
-            
-            document.getElementById('diamond-count').textContent = diamonds;
-            document.getElementById('total-earned-diamonds').textContent = diamonds;
-            
-            // Bot balance UI
-            document.getElementById('bot-balance-card').textContent = `${botBalance} 💎`;
-            document.getElementById('bot-balance-top').textContent = `${botBalance} 💎`;
-            document.getElementById('bot-balance').textContent = `${botBalance} 💎`;
-            
-            // Update stats
-            const adsWatched = user.ads_watched || 0;
-            document.getElementById('ads-watched').textContent = adsWatched;
-            
-            // Update withdraw history
-            updateWithdrawHistory(user.withdraw_history || []);
-        }
+            document.getElementById('user-id-right').textContent = user.user_id || '—';
 
-        function updateWithdrawHistory(history) {
-            const historyDiv = document.getElementById('withdraw-history');
-            
-            if (!history || history.length === 0) {
-                historyDiv.innerHTML = `
-                    <div class="text-center py-8">
-                        <div class="text-4xl mb-3">📭</div>
-                        <p class="text-white/60">Hali olmos yechilmagan</p>
-                        <p class="text-white/40 text-xs mt-1">Birinchi yechishni amalga oshiring</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Show only last 5 withdrawals
-            const recentHistory = history.slice(-5).reverse();
-            
-            historyDiv.innerHTML = recentHistory.map((withdrawal, index) => {
-                const date = new Date(withdrawal.timestamp);
-                const formattedDate = date.toLocaleDateString('uz-UZ', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
-                const formattedTime = date.toLocaleTimeString('uz-UZ', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                return `
-                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-green-500/20">
-                                <span class="text-lg">💰</span>
-                            </div>
-                            <div>
-                                <p class="font-bold text-white/90">${withdrawal.amount} 💎</p>
-                                <p class="text-xs text-white/50">${formattedDate} ${formattedTime}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs text-green-400 font-bold">Muvaffaqiyatli</p>
-                            <p class="text-xs text-white/50">ID: ${withdrawal.id?.slice(-4) || ''}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            // Display main balance from BOT (botBalance)
+            document.getElementById('diamond-count').textContent = `${botBalance}`;
+            document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
+            document.getElementById('ads-watched').textContent = user.ads_watched || 0;
         }
 
         function updateAdminPanel() {
             const totalUsers = allUsers.length;
-            const totalAds = allUsers.reduce((sum, u) => sum + (u.ads_watched || 0), 0);
-            const totalDiamonds = allUsers.reduce((sum, u) => sum + (u.diamonds || 0), 0);
+            const totalAds = allUsers.reduce((s,u)=>s+(u.ads_watched||0),0);
+            const totalDiamonds = allUsers.reduce((s,u)=>s+(u.diamonds||0),0);
 
             document.getElementById('admin-total-users').textContent = totalUsers;
             document.getElementById('admin-total-ads').textContent = totalAds;
             document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
 
             const usersList = document.getElementById('users-list');
-
-            // IMPORTANT: Render avatar exactly the same way as the user's profile,
-            // using .avatar-container and .avatar-image (or .gradient-avatar fallback).
-            // This ensures admin sees the same avatar appearance & cropping as the user.
             usersList.innerHTML = allUsers
-                .sort((a, b) => (b.diamonds || 0) - (a.diamonds || 0))
-                .slice(0, 20)
-                .map((user) => `
+                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
+                .slice(0,20)
+                .map(u => `
                     <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="avatar-container">
-                                    ${user.photo_url ? 
-                                        `<img src="${user.photo_url}" alt="${(user.first_name || 'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` :
-                                        `<div class="gradient-avatar"></div>`
-                                    }
+                                    ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
                                 </div>
                                 <div>
-                                    <p class="font-bold text-sm text-white/90">${user.first_name || 'Foydalanuvchi'}</p>
-                                    <p class="text-xs text-white/50">${user.username ? '@' + user.username : '@nousername'}</p>
+                                    <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
+                                    <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-lg font-bold text-yellow-400">${user.diamonds || 0} 💎</p>
-                                <p class="text-xs text-white/50">${user.ads_watched || 0} reklama</p>
+                                <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
+                                <p class="text-xs text-white/50">${u.ads_watched || 0} reklama</p>
                             </div>
                         </div>
                     </div>
                 `).join('');
         }
 
+        // Watch ad: update Firebase user (ads_watched) and add to BOT via server, then refresh botBalance (main)
         async function watchAd() {
             if (!currentUser) return;
-
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
-            
+
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
 
             let attempts = 0;
-            while (!AdController && attempts < 20) {
-                await new Promise(resolve => setTimeout(resolve, 250));
-                attempts++;
-            }
+            while (!AdController && attempts < 20) { await new Promise(r=>setTimeout(r,250)); attempts++; }
 
             if (!AdController) {
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama tizimi yuklanmagan. Sahifani yangilang.</p>';
@@ -1083,101 +528,65 @@
 
             try {
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">🎬 Reklama ko\'rsatilmoqda...</p>';
-                
                 await AdController.show();
-                
+
+                // Update Firebase: increase ads_watched (but we don't rely on user's local diamonds)
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
-                const userData = snapshot.val();
-
-                const success = await updateUserData({
-                    diamonds: (userData.diamonds || 0) + REWARD_AMOUNT,
+                const userData = snapshot.val() || {};
+                const updated = await updateUserData({
                     ads_watched: (userData.ads_watched || 0) + 1,
                     last_ad_time: new Date().toISOString()
                 });
+                if (!updated) throw new Error('Firebase yangilashida xatolik');
 
-                if (!success) {
-                    throw new Error('Mukofot berishda xatolik (Firebase)');
-                }
-
-                // Also add to BOT balance via server API
+                // Add to BOT balance via server
+                let botResult = null;
                 try {
-                    const botResult = await addToBotBalance(REWARD_AMOUNT);
-                    if (botResult?.success) {
-                        const newBal = ('new_balance' in botResult) ? botResult.new_balance : (botResult.balance ?? botResult.new_balance);
-                        botBalance = parseInt(newBal || botBalance) || botBalance;
-                        document.getElementById('bot-balance').textContent = `${botBalance} 💎`;
-                        document.getElementById('bot-balance-card').textContent = `${botBalance} 💎`;
-                        document.getElementById('bot-balance-top').textContent = `${botBalance} 💎`;
-                    } else {
-                        console.warn('Bot API returned error', botResult);
-                    }
+                    botResult = await addToBotBalance(REWARD_AMOUNT);
                 } catch (err) {
-                    console.warn('Bot API error', err);
+                    console.warn('addToBotBalance failed', err);
                 }
 
+                // Refresh bot balance from server (always try to sync)
+                await fetchBotBalance();
+
+                // Show success (even if bot API failed, user Firebase updated)
                 statusDiv.innerHTML = `
                     <div class="text-center slide-up">
-                        <div class="text-6xl mb-3" style="animation: celebrate 0.6s ease-out;">🎉</div>
+                        <div class="text-6xl mb-3" style="animation: celebrate .6s ease-out;">🎉</div>
                         <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
-                        <p class="text-2xl font-bold text-blue-400 mb-2">+${REWARD_AMOUNT} 💎</p>
-                        <p class="text-sm text-white/60">Reklama to'liq ko'rildi</p>
+                        <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
+                        <p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p>
                     </div>
                 `;
-            } catch (error) {
-                console.error('❌ Ad error:', error);
-                
-                if (error && error.error) {
-                    statusDiv.innerHTML = `<p class="text-red-400">Xatolik: ${error.description || 'Reklama yuklanmadi'}</p>`;
-                } else if (error && error.done === false) {
-                    statusDiv.innerHTML = '<p class="text-orange-400">Reklama to\'liq ko\'rilmadi. Mukofot berilmadi.</p>';
-                } else {
-                    statusDiv.innerHTML = '<p class="text-orange-400">Reklama yopildi yoki xatolik yuz berdi.</p>';
-                }
+            } catch (err) {
+                console.error('Ad error', err);
+                statusDiv.innerHTML = '<p class="text-orange-400">Reklama yopildi yoki xatolik yuz berdi.</p>';
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                
-                setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
-                }, 3000);
+                setTimeout(()=>{ statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; }, 3000);
             }
         }
 
-        // Add amount to BOT via server-side add_balance.php
+        // POST to server to add to BOT balance
         async function addToBotBalance(amount) {
             if (!currentUser) throw new Error('No user');
-            try {
-                const body = new URLSearchParams({
-                    key: BOT_API_KEY,
-                    user_id: currentUser.user_id,
-                    amount: amount
-                });
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-                const resp = await fetch(BOT_API_ADD_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: body.toString(),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                if (!resp.ok) {
-                    const text = await resp.text();
-                    console.warn('Bot add API non-OK:', resp.status, text);
-                    return { success: false, message: 'HTTP ' + resp.status };
-                }
-                const json = await resp.json();
-                return json;
-            } catch (err) {
-                console.error('addToBotBalance error', err);
-                throw err;
+            const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(()=>controller.abort(), 10000);
+            const resp = await fetch(BOT_API_ADD_URL, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: body.toString(), signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!resp.ok) {
+                const txt = await resp.text().catch(()=>null);
+                console.warn('addToBotBalance non-OK', resp.status, txt);
+                return { success:false, message:'HTTP '+resp.status };
             }
+            return await resp.json();
         }
 
-        // Fetch bot balance via GET endpoint (see get_balance.php)
+        // GET bot balance and sync UI (main balance)
         async function fetchBotBalance() {
             if (!currentUser) return;
             try {
@@ -1186,80 +595,40 @@
                 url.searchParams.set('user_id', currentUser.user_id);
 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                const resp = await fetch(url.toString(), {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' },
-                    signal: controller.signal
-                });
-
+                const timeoutId = setTimeout(()=>controller.abort(),8000);
+                const resp = await fetch(url.toString(), { method:'GET', headers:{ 'Accept':'application/json' }, signal: controller.signal });
                 clearTimeout(timeoutId);
-
                 if (!resp.ok) {
-                    console.warn('Bot get balance non-OK', resp.status);
+                    console.warn('fetchBotBalance non-OK', resp.status);
                     return;
                 }
-
                 const json = await resp.json();
                 if (json && json.success) {
-                    botBalance = json.balance || 0;
-                    document.getElementById('bot-balance').textContent = `${botBalance} 💎`;
-                    document.getElementById('bot-balance-card').textContent = `${botBalance} 💎`;
-                    document.getElementById('bot-balance-top').textContent = `${botBalance} 💎`;
+                    botBalance = parseInt(json.balance || 0) || 0;
+                    // Update displayed counts (main balance)
+                    document.getElementById('diamond-count').textContent = `${botBalance}`;
+                    document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
                 } else {
-                    console.warn('Bot get balance returned error', json);
+                    console.warn('fetchBotBalance returned error', json);
                 }
-
             } catch (err) {
                 console.warn('fetchBotBalance error', err);
             }
         }
 
-        function switchSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update menu items
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('data-section') === sectionId) {
-                    item.classList.add('active');
-                }
-            });
-            
-            currentSection = sectionId;
-        }
-
-        function showError(message) {
-            const statusDiv = document.getElementById('ad-status');
-            if (statusDiv) {
-                statusDiv.innerHTML = `<p class="text-red-400">${message}</p>`;
-            }
-        }
-
-        // Event Listeners
+        // Event bindings
         document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
+        document.querySelectorAll('.menu-item').forEach(item => item.addEventListener('click', () => {
+            const sectionId = item.getAttribute('data-section'); if (!sectionId) return;
+            document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(mi=>mi.classList.remove('active'));
+            item.classList.add('active');
+        }));
 
-        // Menu navigation
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const sectionId = item.getAttribute('data-section');
-                switchSection(sectionId);
-            });
-        });
-
-        // Initialize app
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeAppMain);
-        } else {
-            initializeAppMain();
-        }
+        // Init
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
+        else initializeAppMain();
     </script>
 </body>
 </html>
