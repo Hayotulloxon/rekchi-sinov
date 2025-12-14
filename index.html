@@ -11,105 +11,108 @@
         window.process = { env: { NODE_ENV: 'production' } };
     </script>
     <style>
+        /* --- Base styles (kechagi) --- */
         body {
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background: #0f0f0f;
             color: #ffffff;
         }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { 
-                box-shadow: 0 0 20px rgba(0, 150, 255, 0.3),
-                            0 0 40px rgba(0, 150, 255, 0.1); 
-            }
-            50% { 
-                box-shadow: 0 0 30px rgba(0, 150, 255, 0.5),
-                            0 0 60px rgba(0, 150, 255, 0.2); 
-            }
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes celebrate {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.15) rotate(-3deg); }
-            75% { transform: scale(1.15) rotate(3deg); }
-        }
-        
-        .float-animation { animation: float 3s ease-in-out infinite; }
-        .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-        .slide-up { animation: slideUp 0.4s ease-out; }
-        
-        .app-card {
-            background: linear-gradient(135deg, rgba(20,20,20,0.95), rgba(30,30,30,0.95));
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .gradient-bg { background: linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%); }
-        .diamond-icon { filter: drop-shadow(0 0 8px rgba(0,150,255,0.6)); color:#0096ff; }
 
-        .btn-primary {
-            background: linear-gradient(135deg,#0096ff 0%,#0066cc 100%);
-            box-shadow: 0 6px 20px rgba(0,150,255,0.3);
-            transition: all .3s cubic-bezier(.4,0,.2,1);
-            position: relative; overflow: hidden;
+        @keyframes float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)} }
+        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,0.3),0 0 40px rgba(0,150,255,0.1)}50%{box-shadow:0 0 30px rgba(0,150,255,0.5),0 0 60px rgba(0,150,255,0.2)}}
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes celebrate {0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.15) rotate(-3deg)}75%{transform:scale(1.15) rotate(3deg)}}
+
+        .float-animation{animation:float 3s ease-in-out infinite}
+        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite}
+        .slide-up{animation:slideUp .4s ease-out}
+
+        .app-card{background:linear-gradient(135deg,rgba(20,20,20,.95),rgba(30,30,30,.95));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+        .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
+        .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6));color:#0096ff}
+
+        .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%);box-shadow:0 6px 20px rgba(0,150,255,.3);transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+        .btn-primary:hover:not(:disabled){transform:translateY(-2px) scale(1.02);box-shadow:0 10px 25px rgba(0,150,255,.4)}
+        .btn-primary:active:not(:disabled){transform:translateY(0) scale(.98)}
+        .btn-primary::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transition:left .5s}
+        .btn-primary:hover::after{left:100%}
+
+        .avatar-container{width:64px;height:64px;border-radius:50%;overflow:hidden;position:relative;background:linear-gradient(135deg,#0096ff,#0066cc);flex:0 0 auto}
+        .avatar-image{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;display:block}
+        .gradient-avatar{width:100%;height:100%;background:linear-gradient(135deg,#0096ff,#0066cc);border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+        .status-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+        .reward-badge{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2)}
+        .diamond-count{background:rgba(0,150,255,.1);border:1px solid rgba(0,150,255,.2)}
+
+        .menu-container{position:fixed;bottom:0;left:0;right:0;background:rgba(15,15,15,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.1);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+        .menu-nav{display:flex;max-width:600px;margin:0 auto;padding:12px 16px;gap:8px}
+        .menu-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;border-radius:16px;background:transparent;border:none;color:rgba(255,255,255,.5);transition:all .3s ease;cursor:pointer;position:relative}
+        .menu-item.active{background:rgba(255,255,255,.1);color:white}
+        .menu-icon{font-size:24px;margin-bottom:4px}
+        .content-container{padding-bottom:100px}
+
+        ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:10px} ::-webkit-scrollbar-thumb{background:#0096ff;border-radius:10px} ::-webkit-scrollbar-thumb:hover{background:#0066cc}
+        ::selection{background:rgba(0,150,255,.3);color:white}
+
+        .content-section{display:none;animation:fadeIn .3s ease-out}
+        .content-section.active{display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+        /* --- Leaderboard styles --- */
+        .leaderboard {
+            max-width:640px;
+            margin:10px auto;
+            display:flex;
+            gap:12px;
+            align-items:flex-start;
+            padding:10px;
         }
-        .btn-primary:hover:not(:disabled){ transform: translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,0.4); }
-        .btn-primary:active:not(:disabled){ transform: translateY(0) scale(.98); }
-        .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
-        .btn-primary:hover::after{ left:100%; }
-
-        .user-avatar { background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); border:2px solid rgba(255,255,255,.15); box-shadow:0 4px 15px rgba(0,150,255,.3); transition:all .3s ease; overflow:hidden; }
-        .user-avatar:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(0,150,255,.4); }
-
-        /* Avatar container used everywhere (user profile and admin list) */
-        .avatar-container {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            overflow: hidden;
-            position: relative;
-            background: linear-gradient(135deg,#0096ff,#0066cc);
-            flex: 0 0 auto;
+        .leaderboard-tabs {
+            display:flex;
+            gap:8px;
+            background:rgba(255,255,255,0.02);
+            padding:6px;
+            border-radius:12px;
+            align-items:center;
         }
-        .avatar-image {
-            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-            min-width:100%; min-height:100%; width:auto; height:auto; object-fit:cover; display:block;
+        .leaderboard-tab {
+            padding:8px 12px;
+            border-radius:10px;
+            cursor:pointer;
+            color:rgba(255,255,255,0.7);
+            font-weight:600;
         }
-        .gradient-avatar { width:100%; height:100%; background: linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+        .leaderboard-tab.active {
+            background:linear-gradient(90deg,#0096ff,#0066cc);
+            color:white;
+            box-shadow:0 6px 18px rgba(0,150,255,0.15);
+        }
+        .leaderboard-list {
+            flex:1;
+            background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+            border:1px solid rgba(255,255,255,0.04);
+            padding:10px;
+            border-radius:12px;
+            min-height:64px;
+        }
+        .leader-item {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            padding:8px;
+            border-radius:10px;
+            transition:background .15s;
+        }
+        .leader-item + .leader-item { margin-top:6px; }
+        .leader-rank { width:32px; text-align:center; font-weight:700; color:#ffd54a; }
+        .leader-name { font-weight:700; color:#fff; }
+        .leader-count { margin-left:auto; font-weight:800; color:#ffd54a; }
 
-        .status-card { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
-        .reward-badge { background: rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); }
-        .diamond-count { background: rgba(0,150,255,0.1); border:1px solid rgba(0,150,255,0.2); }
-
-        /* Layout & menu */
-        .menu-container { position: fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-        .menu-nav { display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
-        .menu-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s ease; cursor:pointer; position:relative; }
-        .menu-item.active { background:rgba(255,255,255,.1); color:white; }
-        .menu-icon { font-size:24px; margin-bottom:4px; }
-        .content-container { padding-bottom:100px; }
-
-        /* other fine styles */
-        ::-webkit-scrollbar{ width:6px; } ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px; } ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px; } ::-webkit-scrollbar-thumb:hover{ background:#0066cc; }
-        ::selection{ background:rgba(0,150,255,.3); color:white; }
-        @keyframes loading { 0%{background-position:200% 0}100%{background-position:-200% 0} }
-        .avatar-loading { background: linear-gradient(90deg,#2d2d2d 25%,#3d3d3d 50%,#2d2d2d 75%); background-size:200% 100%; animation:loading 1.5s infinite; border-radius:50%; }
-
-        .content-section { display:none; animation: fadeIn .3s ease-out; }
-        .content-section.active { display:block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @media (max-width:420px) {
+            .leaderboard { flex-direction:column; gap:8px; padding:6px; }
+        }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
@@ -124,9 +127,9 @@
             </div>
         </div>
 
-        <!-- Main -->
+        <!-- Content -->
         <div id="content" class="hidden">
-            <!-- Top bar (only single/main balance shown) -->
+            <!-- Top Bar -->
             <div class="sticky top-0 z-50 top-bar border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
@@ -134,7 +137,7 @@
                             <div class="text-3xl diamond-icon">💎</div>
                             <div>
                                 <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Reklama ko'ring, olmos yeg'ing</p>
+                                <p class="text-xs text-white/60">Reklama ko'ring, olmos bot balansiga qo'shiladi</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
@@ -145,14 +148,24 @@
                 </div>
             </div>
 
+            <!-- Leaderboard (Daily / Overall) -->
+            <div class="leaderboard px-4">
+                <div class="leaderboard-tabs" role="tablist" aria-label="Leaderboard tabs">
+                    <div id="tab-daily" class="leaderboard-tab active" role="tab" aria-selected="true">Kunlik</div>
+                    <div id="tab-overall" class="leaderboard-tab" role="tab" aria-selected="false">Umumiy</div>
+                </div>
+                <div class="leaderboard-list" id="leaderboard-list" aria-live="polite">
+                    <!-- top10 items will be rendered here -->
+                    <div class="text-white/60 text-sm">Yuklanmoqda...</div>
+                </div>
+            </div>
+
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
-                <!-- Earn / Main -->
+                <!-- Earn Section -->
                 <div id="earn-section" class="content-section active">
                     <div class="app-card p-5 slide-up">
                         <div class="flex items-center space-x-4">
-                            <div id="user-avatar" class="avatar-container user-avatar">
-                                <!-- avatar -->
-                            </div>
+                            <div id="user-avatar" class="avatar-container user-avatar"></div>
                             <div class="flex-1">
                                 <h3 id="user-name" class="font-bold text-lg text-white/90">Foydalanuvchi</h3>
                                 <p id="user-id" class="text-white/50 text-sm">ID: Loading...</p>
@@ -251,13 +264,11 @@
                         <div class="text-xl">👥</div>
                         <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
                     </div>
-                    <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                        <!-- users -->
-                    </div>
+                    <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
                 </div>
             </div>
 
-            <!-- Single Menu (only main) -->
+            <!-- Single menu (only earn) -->
             <div class="menu-container">
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section">
@@ -273,7 +284,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-        // Firebase config (unchanged)
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
             authDomain: "rekchi-2dc2f.firebaseapp.com",
@@ -287,21 +298,24 @@
         const firebaseApp = initializeApp(firebaseConfig);
         const db = getDatabase(firebaseApp);
 
+        // Constants
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const AD_BLOCK_ID = '19084';
         const REWARD_AMOUNT = 1;
 
-        // Server API endpoints (your server must host add_balance.php and get_balance.php)
+        // Server endpoints (must host add_balance.php and get_balance.php)
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // keep on server ideally
+        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // keep server-side ideally
 
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let AdController = null;
         let botBalance = 0;
+        let currentLeaderboard = 'daily'; // 'daily' or 'overall'
 
+        /* ---------------- avatar helpers ---------------- */
         async function getTelegramProfilePhoto(userId, username, firstName) {
             try {
                 const tg = window.Telegram?.WebApp;
@@ -312,7 +326,6 @@
                 return createFullGradientAvatar(userId);
             }
         }
-
         function createFullGradientAvatar(userId) {
             const gradients = [
                 ['#FF6B6B','#FF8E53'], ['#4ECDC4','#44A08D'], ['#FFD93D','#FF6B6B'],
@@ -320,12 +333,13 @@
                 ['#FF9A9E','#FAD0C4'], ['#A18CD1','#FBC2EB'], ['#667eea','#764ba2'],
                 ['#f093fb','#f5576c']
             ];
-            const colorIndex = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
-            const [c1,c2] = gradients[colorIndex];
+            const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
+            const [c1,c2] = gradients[idx];
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
+        /* ---------------- init Telegram & Adsgram ---------------- */
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -345,21 +359,18 @@
                     };
                     isAdmin = ADMIN_IDS.includes(currentUser.user_id);
                 } else {
-                    currentUser = { user_id: 'web_' + Date.now(), username:'foydalanuvchi', first_name:'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
+                    currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url: null, language_code: 'uz' };
                 }
             } else {
-                currentUser = { user_id: 'web_' + Date.now(), username:'foydalanuvchi', first_name:'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
+                currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url: null, language_code: 'uz' };
             }
         }
-
         function initAdsgram() {
-            if (window.Adsgram) {
-                AdController = window.Adsgram.init({ blockId: AD_BLOCK_ID });
-            } else {
-                setTimeout(initAdsgram, 500);
-            }
+            if (window.Adsgram) AdController = window.Adsgram.init({ blockId: AD_BLOCK_ID });
+            else setTimeout(initAdsgram, 500);
         }
 
+        /* ---------------- Firebase user functions ---------------- */
         async function loadOrCreateUser() {
             if (!currentUser) return null;
             try {
@@ -374,6 +385,8 @@
                         last_name: currentUser.last_name || '',
                         photo_url: profilePhoto,
                         language_code: currentUser.language_code || 'uz',
+                        // KEY: ads_by_day stores counts by dateKey (YYYY-MM-DD)
+                        ads_by_day: {},
                         diamonds: 0,
                         ads_watched: 0,
                         withdraw_history: [],
@@ -391,10 +404,15 @@
                         await update(userRef, updates);
                         userData = { ...userData, ...updates };
                     }
+                    // ensure ads_by_day exists
+                    if (!userData.ads_by_day) {
+                        await update(userRef, { ads_by_day: {} });
+                        userData.ads_by_day = {};
+                    }
                     return userData;
                 }
             } catch (err) {
-                console.error('Error loadOrCreateUser', err);
+                console.error('loadOrCreateUser error', err);
                 return null;
             }
         }
@@ -406,78 +424,94 @@
                 await update(userRef, { ...updates, updated_at: new Date().toISOString() });
                 return true;
             } catch (err) {
-                console.error('Error updateUserData', err);
+                console.error('updateUserData error', err);
                 return false;
             }
         }
 
+        /* ---------------- subscribe admin users & leaderboard ---------------- */
         function subscribeToUsers() {
-            if (!isAdmin) return;
+            // subscribe to all users for admin + leaderboards
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
                 allUsers = [];
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    Object.keys(data).forEach(k => allUsers.push(data[k]));
-                    updateAdminPanel();
+                    Object.keys(data).forEach(k => {
+                        allUsers.push(data[k]);
+                    });
                 }
-            }, (err) => console.error('subscribeToUsers', err));
+                updateAdminPanel();     // update admin view if visible
+                updateLeaderboards();   // recompute leaderboards
+            }, (err) => {
+                console.error('subscribeToUsers error', err);
+            });
         }
 
-        async function initializeAppMain() {
-            initTelegram();
-            initAdsgram();
+        function updateLeaderboards() {
+            // render based on currentLeaderboard ('daily' or 'overall')
+            const listEl = document.getElementById('leaderboard-list');
+            if (!listEl) return;
 
-            const user = await loadOrCreateUser();
-            if (user) {
-                updateUI(user);
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                onValue(userRef, (snapshot) => {
-                    if (snapshot.exists()) updateUI(snapshot.val());
-                });
-                if (isAdmin) {
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                    subscribeToUsers();
-                }
-            }
+            // Prepare today's key (use local date YYYY-MM-DD)
+            const now = new Date();
+            const tzOffset = now.getTimezoneOffset() * 60000;
+            const localISO = new Date(now - tzOffset).toISOString().slice(0,10); // YYYY-MM-DD local-ish
 
-            // initial bot balance fetch and periodic refresh
-            if (currentUser) {
-                await fetchBotBalance();
-                setInterval(fetchBotBalance, 30000);
-            }
+            // Map users to objects with counts
+            const mapped = allUsers.map(u => {
+                const ads_by_day = u.ads_by_day || {};
+                const todayCount = parseInt(ads_by_day[localISO] || 0);
+                const overallCount = parseInt(u.ads_watched || 0);
+                return {
+                    id: u.user_id,
+                    name: u.first_name || 'Foydalanuvchi',
+                    username: u.username || '',
+                    photo_url: u.photo_url || '',
+                    todayCount,
+                    overallCount
+                };
+            });
 
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('content').classList.remove('hidden');
-        }
-
-        function updateUI(user) {
-            if (!user) return;
-            // avatar (use same markup as admin list to ensure identical appearance)
-            const avatarDiv = document.getElementById('user-avatar');
-            if (user.photo_url) {
-                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${user.first_name||'Foydalanuvchi'}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;gradient-avatar&quot;></div>'">`;
+            let sorted;
+            if (currentLeaderboard === 'daily') {
+                sorted = mapped.sort((a,b) => b.todayCount - a.todayCount || b.overallCount - a.overallCount);
             } else {
-                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+                sorted = mapped.sort((a,b) => b.overallCount - a.overallCount || b.todayCount - a.todayCount);
             }
 
-            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
-            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
-            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            document.getElementById('user-id-right').textContent = user.user_id || '—';
+            const top = sorted.slice(0, 10);
 
-            // Display main balance from BOT (botBalance)
-            document.getElementById('diamond-count').textContent = `${botBalance}`;
-            document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
-            document.getElementById('ads-watched').textContent = user.ads_watched || 0;
+            if (top.length === 0) {
+                listEl.innerHTML = `<div class="text-white/60 text-sm">Hali hech kim yo'q yoki ma'lumot yuklanmoqda.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = top.map((u, i) => `
+                <div class="leader-item">
+                    <div class="leader-rank">${i+1}</div>
+                    <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;flex:0 0 auto;">
+                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${u.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
+                    </div>
+                    <div style="margin-left:8px;">
+                        <div class="leader-name">${escapeHtml(u.name)}</div>
+                        <div class="text-xs text-white/50">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
+                    </div>
+                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 🎬</div>
+                </div>
+            `).join('');
         }
 
-        function updateAdminPanel() {
-            const totalUsers = allUsers.length;
-            const totalAds = allUsers.reduce((s,u)=>s+(u.ads_watched||0),0);
-            const totalDiamonds = allUsers.reduce((s,u)=>s+(u.diamonds||0),0);
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+        }
 
-            document.getElementById('admin-total-users').textContent = totalUsers;
+        /* ---------------- admin panel render (uses same avatar markup) ---------------- */
+        function updateAdminPanel() {
+            document.getElementById('admin-total-users').textContent = allUsers.length;
+            const totalAds = allUsers.reduce((s,u) => s + (u.ads_watched || 0), 0);
+            const totalDiamonds = allUsers.reduce((s,u) => s + (u.diamonds || 0), 0);
             document.getElementById('admin-total-ads').textContent = totalAds;
             document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
 
@@ -506,7 +540,7 @@
                 `).join('');
         }
 
-        // Watch ad: update Firebase user (ads_watched) and add to BOT via server, then refresh botBalance (main)
+        /* ---------------- ad watching flow ---------------- */
         async function watchAd() {
             if (!currentUser) return;
             const btn = document.getElementById('watch-ad-btn');
@@ -530,31 +564,45 @@
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">🎬 Reklama ko\'rsatilmoqda...</p>';
                 await AdController.show();
 
-                // Update Firebase: increase ads_watched (but we don't rely on user's local diamonds)
+                // Fetch current user snapshot
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val() || {};
-                const updated = await updateUserData({
-                    ads_watched: (userData.ads_watched || 0) + 1,
-                    last_ad_time: new Date().toISOString()
-                });
-                if (!updated) throw new Error('Firebase yangilashida xatolik');
 
-                // Add to BOT balance via server
-                let botResult = null;
+                // Prepare ads_by_day increment
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localISO = new Date(now - tzOffset).toISOString().slice(0,10); // YYYY-MM-DD
+
+                const ads_by_day = userData.ads_by_day || {};
+                const newDayCount = (ads_by_day[localISO] || 0) + 1;
+                const newOverall = (userData.ads_watched || 0) + 1;
+
+                // Update Firebase: ads_watched and ads_by_day
+                const updates = {
+                    ads_watched: newOverall,
+                    [`ads_by_day/${localISO}`]: newDayCount,
+                    last_ad_time: new Date().toISOString()
+                };
+
+                const success = await updateUserData(updates);
+                if (!success) throw new Error('Firebase yangilashida xatolik');
+
+                // Also notify server (bot) to add balance
                 try {
-                    botResult = await addToBotBalance(REWARD_AMOUNT);
+                    await addToBotBalance(REWARD_AMOUNT);
                 } catch (err) {
                     console.warn('addToBotBalance failed', err);
                 }
 
-                // Refresh bot balance from server (always try to sync)
+                // Refresh leaderboards & bot balance
+                // allUsers will update automatically via onValue; but ensure leaderboard re-render quickly:
                 await fetchBotBalance();
+                updateLeaderboards();
 
-                // Show success (even if bot API failed, user Firebase updated)
                 statusDiv.innerHTML = `
                     <div class="text-center slide-up">
-                        <div class="text-6xl mb-3" style="animation: celebrate .6s ease-out;">🎉</div>
+                        <div class="text-6xl mb-3" style="animation:celebrate .6s ease-out;">🎉</div>
                         <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
                         <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
                         <p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p>
@@ -570,7 +618,7 @@
             }
         }
 
-        // POST to server to add to BOT balance
+        /* ---------------- server bot API calls ---------------- */
         async function addToBotBalance(amount) {
             if (!currentUser) throw new Error('No user');
             const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
@@ -586,7 +634,6 @@
             return await resp.json();
         }
 
-        // GET bot balance and sync UI (main balance)
         async function fetchBotBalance() {
             if (!currentUser) return;
             try {
@@ -595,17 +642,13 @@
                 url.searchParams.set('user_id', currentUser.user_id);
 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(()=>controller.abort(),8000);
+                const timeoutId = setTimeout(()=>controller.abort(), 8000);
                 const resp = await fetch(url.toString(), { method:'GET', headers:{ 'Accept':'application/json' }, signal: controller.signal });
                 clearTimeout(timeoutId);
-                if (!resp.ok) {
-                    console.warn('fetchBotBalance non-OK', resp.status);
-                    return;
-                }
+                if (!resp.ok) { console.warn('fetchBotBalance non-OK', resp.status); return; }
                 const json = await resp.json();
                 if (json && json.success) {
                     botBalance = parseInt(json.balance || 0) || 0;
-                    // Update displayed counts (main balance)
                     document.getElementById('diamond-count').textContent = `${botBalance}`;
                     document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
                 } else {
@@ -616,17 +659,90 @@
             }
         }
 
-        // Event bindings
-        document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
-        document.querySelectorAll('.menu-item').forEach(item => item.addEventListener('click', () => {
-            const sectionId = item.getAttribute('data-section'); if (!sectionId) return;
-            document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            document.querySelectorAll('.menu-item').forEach(mi=>mi.classList.remove('active'));
-            item.classList.add('active');
-        }));
+        /* ---------------- UI bindings (tabs, menu) ---------------- */
+        function bindUI() {
+            document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
 
-        // Init
+            // leaderboard tabs
+            const tabDaily = document.getElementById('tab-daily');
+            const tabOverall = document.getElementById('tab-overall');
+            tabDaily?.addEventListener('click', () => {
+                currentLeaderboard = 'daily';
+                tabDaily.classList.add('active');
+                tabOverall.classList.remove('active');
+                updateLeaderboards();
+            });
+            tabOverall?.addEventListener('click', () => {
+                currentLeaderboard = 'overall';
+                tabOverall.classList.add('active');
+                tabDaily.classList.remove('active');
+                updateLeaderboards();
+            });
+
+            // menu - single
+            document.querySelectorAll('.menu-item').forEach(item=>{
+                item.addEventListener('click', ()=>{
+                    const sectionId = item.getAttribute('data-section');
+                    if (!sectionId) return;
+                    document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+                    document.getElementById(sectionId).classList.add('active');
+                    document.querySelectorAll('.menu-item').forEach(mi=>mi.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+        }
+
+        /* ---------------- initialize app ---------------- */
+        async function initializeAppMain() {
+            initTelegram();
+            initAdsgram();
+            bindUI();
+
+            const user = await loadOrCreateUser();
+            if (user) {
+                // subscribe to user's node to update UI on change
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                onValue(userRef, (snap)=>{
+                    if (snap.exists()) updateUI(snap.val());
+                });
+                // subscribe to all users for leaderboards & admin
+                subscribeToUsers();
+
+                if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
+            }
+
+            // fetch bot balance initially and periodically
+            if (currentUser) {
+                await fetchBotBalance();
+                setInterval(fetchBotBalance, 30000);
+            }
+
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+        }
+
+        function updateUI(user) {
+            if (!user) return;
+            // avatar (use same markup as admin)
+            const avatarDiv = document.getElementById('user-avatar');
+            if (user.photo_url) {
+                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
+            } else {
+                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+            }
+
+            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
+            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
+            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            document.getElementById('user-id-right').textContent = user.user_id || '—';
+
+            // Note: main visible balance is botBalance (kept in sync)
+            document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
+            document.getElementById('diamond-count').textContent = `${botBalance}`;
+            document.getElementById('ads-watched').textContent = user.ads_watched || 0;
+        }
+
+        // start
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
         else initializeAppMain();
     </script>
