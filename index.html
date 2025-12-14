@@ -9,7 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
-        /* Base styles */
         body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3),0 0 40px rgba(0,150,255,.1)} 50%{box-shadow:0 0 30px rgba(0,150,255,.5),0 0 60px rgba(0,150,255,.2)} }
@@ -17,38 +16,32 @@
         @keyframes celebrate { 0%,100%{transform:scale(1) rotate(0)} 25%{transform:scale(1.15) rotate(-3deg)} 75%{transform:scale(1.15) rotate(3deg)} }
         @keyframes loaderSpin { to { transform: rotate(360deg); } }
         @keyframes progressFill { 0% { width: 0%; } 100% { width: 100%; } }
-        .float-animation{animation:float 3s ease-in-out infinite} .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} .slide-up{animation:slideUp .4s ease-out}
 
+        .float-animation{animation:float 3s ease-in-out infinite}
+        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite}
+        .slide-up{animation:slideUp .4s ease-out}
         .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
         .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
         .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6)); color:#0096ff}
-
         .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); box-shadow:0 6px 20px rgba(0,150,255,.3); transition:all .3s; position:relative; overflow:hidden;}
         .btn-primary:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,.4); }
         .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
         .btn-primary:hover::after{ left:100%; }
-
         .avatar-container{ width:64px; height:64px; border-radius:50%; overflow:hidden; position:relative; background:linear-gradient(135deg,#0096ff,#0066cc); flex:0 0 auto; }
         .avatar-image{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; display:block; }
         .gradient-avatar{ width:100%; height:100%; background:linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
-
         .status-card{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); }
         .reward-badge{ background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); }
         .diamond-count{ background:rgba(0,150,255,.1); border:1px solid rgba(0,150,255,.2); }
-
         .menu-container{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
         .menu-nav{ display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
         .menu-item{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s; cursor:pointer; position:relative; }
         .menu-item.active{ background:rgba(255,255,255,.1); color:white; }
         .content-container{ padding-bottom:100px; }
-
         ::-webkit-scrollbar{ width:6px } ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px } ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px } ::-webkit-scrollbar-thumb:hover{ background:#0066cc }
         ::selection{ background:rgba(0,150,255,.3); color:white }
-
         .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
         @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
-
-        /* Leaderboard styles for standalone menu */
         .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
         .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
         .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
@@ -62,7 +55,6 @@
         .leader-name { font-weight:700; color:#fff; }
         .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
-
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
 
         /* Modern Loading animation */
@@ -123,7 +115,6 @@
             height: 100%;
             background: linear-gradient(90deg, #00d1ff, #0066ff);
             border-radius: inherit;
-            animation: progressFill 3s ease-in-out forwards;
             box-shadow: 0 8px 16px rgba(0,150,255,.25);
         }
         .progress-label {
@@ -139,23 +130,20 @@
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
     <div id="app" class="min-h-full w-full">
-        <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
             <div class="loading-card slide-up">
                 <div class="loader-ring"></div>
                 <p class="loading-status text-white">RekchiAi olmoslari yuklanmoqda</p>
-                <p class="loading-subtext">Interfeys va oloy holatlar tayyorlanmoqda...</p>
+                <p class="loading-subtext">Interfeys va olmoslar aniqlanmoqda...</p>
                 <div class="progress-meter">
                     <span class="progress-fill" id="loading-progress-fill"></span>
                 </div>
                 <p class="progress-label" id="loading-progress-value">0%</p>
-                <p class="loading-subtext">Yana bir oz sabr—olmoslar kelmoqda!</p>
+                <p class="loading-subtext">Yana bir oz sabr—olmoslar tezda tayyor!</p>
             </div>
         </div>
 
-        <!-- Content -->
         <div id="content" class="hidden">
-            <!-- Top bar -->
             <div class="sticky top-0 z-50 top-bar border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
@@ -175,9 +163,7 @@
             </div>
 
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
-                <!-- Earn Section -->
                 <div id="earn-section" class="content-section active">
-                    <!-- User card -->
                     <div class="app-card p-5 slide-up">
                         <div class="flex items-center space-x-4">
                             <div id="user-avatar" class="avatar-container user-avatar"></div>
@@ -189,7 +175,6 @@
                         </div>
                     </div>
 
-                    <!-- Ad watch card -->
                     <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
@@ -215,7 +200,6 @@
                     </div>
                 </div>
 
-                <!-- Leaderboard Section (standalone menu) -->
                 <div id="leaderboard-section" class="content-section">
                     <div class="leaderboard-wrapper slide-up">
                         <div class="leaderboard-card">
@@ -237,7 +221,6 @@
                     </div>
                 </div>
 
-                <!-- Admin panel (kept) -->
                 <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay:0.3s;">
                     <div class="flex items-center space-x-3 mb-6">
                         <div class="text-3xl">👑</div>
@@ -273,7 +256,6 @@
                 </div>
             </div>
 
-            <!-- Bottom menu: Olmos ishlash + Reytinglar -->
             <div class="menu-container">
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section" id="menu-earn">
@@ -289,12 +271,10 @@
         </div>
     </div>
 
-    <!-- Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
             authDomain: "rekchi-2dc2f.firebaseapp.com",
@@ -308,48 +288,50 @@
         const firebaseApp = initializeApp(firebaseConfig);
         const db = getDatabase(firebaseApp);
 
-        // Constants
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const AD_BLOCK_ID = '19084';
         const REWARD_AMOUNT = 1;
-
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // ideally keep on server
+        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
 
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let AdController = null;
         let botBalance = 0;
-        let currentLeaderboard = 'daily'; // 'daily' | 'overall'
+        let currentLeaderboard = 'daily';
         let loadingProgressValueEl = null;
-        let loadingProgress = 0;
         let loadingProgressInterval = null;
 
         function startLoadingProgress() {
             loadingProgressValueEl = document.getElementById('loading-progress-value');
             const progressFill = document.getElementById('loading-progress-fill');
             if (!loadingProgressValueEl || !progressFill) return;
-            loadingProgress = 12;
-            loadingProgressValueEl.textContent = `${loadingProgress}%`;
-            progressFill.style.animation = 'progressFill 3s ease-in-out forwards';
+            let value = 0;
+            loadingProgressValueEl.textContent = `0%`;
             loadingProgressInterval = setInterval(() => {
-                loadingProgress = Math.min(94, loadingProgress + Math.random() * 5);
-                loadingProgressValueEl.textContent = `${Math.floor(loadingProgress)}%`;
-            }, 350);
+                value = Math.min(94, value + Math.random() * 5);
+                loadingProgressValueEl.textContent = `${Math.floor(value)}%`;
+            }, 300);
+            setTimeout(() => {
+                progressFill.style.animation = 'progressFill 3s ease-in-out forwards';
+            }, 100);
         }
         function stopLoadingProgress() {
+            const progressFill = document.getElementById('loading-progress-fill');
+            if (progressFill) {
+                progressFill.style.width = '100%';
+            }
+            if (loadingProgressValueEl) {
+                loadingProgressValueEl.textContent = '100%';
+            }
             if (loadingProgressInterval) {
                 clearInterval(loadingProgressInterval);
                 loadingProgressInterval = null;
             }
-            if (loadingProgressValueEl) loadingProgressValueEl.textContent = '100%';
-            const progressFill = document.getElementById('loading-progress-fill');
-            if (progressFill) progressFill.style.width = '100%';
         }
 
-        // Helpers ...
         async function getTelegramProfilePhoto(userId, username) {
             try {
                 const tg = window.Telegram?.WebApp;
@@ -453,16 +435,229 @@
             }
         }
 
-        function subscribeToUsers() { /* ... existing code ... */ }
-        function renderLeaderboardsMain() { /* ... existing code ... */ }
+        function subscribeToUsers() {
+            const usersRef = ref(db, 'users');
+            onValue(usersRef, (snapshot) => {
+                allUsers = [];
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    Object.keys(data).forEach(k => allUsers.push(data[k]));
+                }
+                updateAdminPanel();
+                renderLeaderboardsMain();
+            }, (err) => console.error('subscribeToUsers error', err));
+        }
+
+        function renderLeaderboardsMain() {
+            const listEl = document.getElementById('leaderboard-list');
+            if (!listEl) return;
+            const now = new Date();
+            const tzOffset = now.getTimezoneOffset() * 60000;
+            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+
+            const mapped = allUsers.map(u => {
+                const ads_by_day = u.ads_by_day || {};
+                return {
+                    id: u.user_id,
+                    name: u.first_name || 'Foydalanuvchi',
+                    username: u.username || '',
+                    photo_url: u.photo_url || '',
+                    todayCount: parseInt(ads_by_day[localKey] || 0),
+                    overallCount: parseInt(u.ads_watched || 0)
+                };
+            });
+
+            let sorted;
+            if (currentLeaderboard === 'daily') {
+                sorted = mapped.sort((a,b) => b.todayCount - a.todayCount || b.overallCount - a.overallCount);
+            } else {
+                sorted = mapped.sort((a,b) => b.overallCount - a.overallCount || b.todayCount - a.todayCount);
+            }
+
+            const top = sorted.slice(0,10);
+            if (top.length === 0) {
+                listEl.innerHTML = `<div class="text-white/60 text-sm">Hozircha ma'lumot yo'q.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = top.map((u,i) => `
+                <div class="leaderboard-item">
+                    <div class="leader-rank">${i+1}</div>
+                    <div class="leader-avatar">
+                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
+                    </div>
+                    <div class="leader-meta">
+                        <div class="leader-name">${escapeHtml(u.name)}</div>
+                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
+                    </div>
+                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
+                </div>
+            `).join('');
+        }
+
         function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>"']/g, s => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[s])); }
-        function updateAdminPanel() { /* ... existing code ... */ }
-        async function watchAd() { /* ... existing code ... */ }
-        async function addToBotBalance(amount) { /* ... existing code ... */ }
-        async function fetchBotBalance() { /* ... existing code ... */ }
-        function bindUI() { /* ... existing code ... */ }
-        function switchSection(sectionId, menuButtonId) { /* ... existing code ... */ }
-        function updateUI(user) { /* ... existing code ... */ }
+
+        function updateAdminPanel() {
+            const totalUsers = allUsers.length;
+            const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
+            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds||0), 0);
+            document.getElementById('admin-total-users').textContent = totalUsers;
+            document.getElementById('admin-total-ads').textContent = totalAds;
+            document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
+
+            const usersList = document.getElementById('users-list');
+            if (!usersList) return;
+            usersList.innerHTML = allUsers
+                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
+                .slice(0,20)
+                .map(u => `
+                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="avatar-container">
+                                    ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
+                                    <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
+                                <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        async function watchAd() {
+            if (!currentUser) return;
+            const btn = document.getElementById('watch-ad-btn');
+            const statusDiv = document.getElementById('ad-status');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+
+            let attempts = 0;
+            while (!AdController && attempts < 20) { await new Promise(r=>setTimeout(r,250)); attempts++; }
+
+            if (!AdController) {
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama tizimi yuklanmagan. Sahifani yangilang.</p>';
+                btn.disabled = false;
+                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                return;
+            }
+
+            try {
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama (video) ko\'rsatilmoqda...</p>';
+                await AdController.show();
+
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+
+                const ads_by_day = userData.ads_by_day || {};
+                const newDayCount = (ads_by_day[localKey] || 0) + 1;
+                const newOverall = (userData.ads_watched || 0) + 1;
+
+                const updates = { ads_watched: newOverall, [`ads_by_day/${localKey}`]: newDayCount, last_ad_time: new Date().toISOString() };
+                const ok = await updateUserData(updates);
+                if (!ok) throw new Error('Firebase yangilashida xatolik');
+
+                try { await addToBotBalance(REWARD_AMOUNT); } catch(e){ console.warn('Bot add failed', e); }
+
+                renderLeaderboardsMain();
+                await fetchBotBalance();
+
+                statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
+            } catch (err) {
+                console.error('Ad error', err);
+                statusDiv.innerHTML = '<p class="text-orange-400">Reklama yopildi yoki xatolik yuz berdi.</p>';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                setTimeout(()=>{ statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; }, 3000);
+            }
+        }
+
+        async function addToBotBalance(amount) {
+            if (!currentUser) throw new Error('No user');
+            const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(()=>controller.abort(), 10000);
+            const resp = await fetch(BOT_API_ADD_URL, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: body.toString(), signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!resp.ok) { const txt = await resp.text().catch(()=>null); console.warn('addToBotBalance non-OK', resp.status, txt); return { success:false, message:'HTTP '+resp.status }; }
+            return await resp.json();
+        }
+
+        async function fetchBotBalance() {
+            if (!currentUser) return;
+            try {
+                const url = new URL(BOT_API_GET_URL);
+                url.searchParams.set('key', BOT_API_KEY);
+                url.searchParams.set('user_id', currentUser.user_id);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(()=>controller.abort(), 8000);
+                const resp = await fetch(url.toString(), { method:'GET', headers:{ 'Accept':'application/json' }, signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!resp.ok) { console.warn('fetchBotBalance non-OK', resp.status); return; }
+                const json = await resp.json();
+                if (json && json.success) {
+                    botBalance = parseInt(json.balance || 0) || 0;
+                    document.getElementById('diamond-count').textContent = `${botBalance}`;
+                } else {
+                    console.warn('fetchBotBalance returned error', json);
+                }
+            } catch (err) {
+                console.warn('fetchBotBalance error', err);
+            }
+        }
+
+        function bindUI() {
+            document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
+            document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
+            document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
+            document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
+                currentLeaderboard = 'daily';
+                document.getElementById('lb-tab-daily-main').classList.add('active');
+                document.getElementById('lb-tab-overall-main').classList.remove('active');
+                renderLeaderboardsMain();
+            });
+            document.getElementById('lb-tab-overall-main')?.addEventListener('click', () => {
+                currentLeaderboard = 'overall';
+                document.getElementById('lb-tab-overall-main').classList.add('active');
+                document.getElementById('lb-tab-daily-main').classList.remove('active');
+                renderLeaderboardsMain();
+            });
+        }
+
+        function switchSection(sectionId, menuButtonId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+            if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
+            if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
+        }
+
+        function updateUI(user) {
+            if (!user) return;
+            const avatarDiv = document.getElementById('user-avatar');
+            if (user.photo_url) {
+                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
+            } else {
+                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+            }
+            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
+            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
+            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            document.getElementById('diamond-count').textContent = `${botBalance}`;
+        }
 
         async function initializeAppMain() {
             startLoadingProgress();
@@ -474,9 +669,7 @@
             if (user) {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 onValue(userRef, (snap) => { if (snap.exists()) updateUI(snap.val()); });
-
                 subscribeToUsers();
-
                 if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
             }
 
@@ -485,10 +678,12 @@
                 setInterval(fetchBotBalance, 30000);
             }
 
-            document.getElementById('loading').classList.add('loading-complete');
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('content').classList.remove('hidden');
             stopLoadingProgress();
+            document.getElementById('loading').classList.add('loading-complete');
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
+            }, 350);
         }
 
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
