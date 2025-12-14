@@ -46,21 +46,22 @@
         .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
         @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-        /* Leaderboard small panel inside earn card */
-        .lb-toggle { display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:6px 10px; border-radius:12px; background:rgba(255,255,255,.02); color:rgba(255,255,255,.85); border:1px solid rgba(255,255,255,.04); }
-        .lb-panel { margin-top:12px; border-radius:12px; padding:10px; background:linear-gradient(135deg, rgba(255,255,255,.02), rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.04); }
-        .lb-tabs { display:flex; gap:8px; margin-bottom:8px; }
-        .lb-tab { padding:6px 10px; border-radius:10px; cursor:pointer; color:rgba(255,255,255,.7); background:transparent; border:1px solid transparent; font-weight:600; }
-        .lb-tab.active { background:linear-gradient(90deg,#0096ff,#0066cc); color:white; box-shadow:0 6px 18px rgba(0,150,255,.12); }
-        .lb-list { display:flex; flex-direction:column; gap:8px; max-height:300px; overflow:auto; }
-        .lb-item { display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; transition:background .12s; }
-        .lb-rank { width:28px; text-align:center; font-weight:800; color:#ffd54a; }
-        .lb-meta { flex:1; }
-        .lb-name { font-weight:700; color:#fff; }
-        .lb-username { font-size:12px; color:rgba(255,255,255,.6) }
-        .lb-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
+        /* Leaderboard styles for standalone menu */
+        .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
+        .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
+        .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
+        .leaderboard-tab { padding:8px 12px; border-radius:10px; cursor:pointer; color:rgba(255,255,255,.75); background:transparent; font-weight:600; border:1px solid transparent; }
+        .leaderboard-tab.active { background:linear-gradient(90deg,#0096ff,#0066cc); color:white; box-shadow:0 6px 18px rgba(0,150,255,0.12); }
+        .leaderboard-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; }
+        .leaderboard-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; transition:background .12s; }
+        .leader-rank { width:36px; text-align:center; font-weight:800; color:#ffd54a; }
+        .leader-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex:0 0 auto; }
+        .leader-meta { flex:1; }
+        .leader-name { font-weight:700; color:#fff; }
+        .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
+        .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
 
-        @media (max-width:420px) { .lb-panel { padding:8px } .lb-list { max-height:220px } }
+        @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
@@ -108,27 +109,6 @@
                                 <p id="user-id" class="text-white/50 text-sm">ID: Loading...</p>
                                 <p id="user-username" class="text-white/60 text-xs mt-1">@username</p>
                             </div>
-
-                            <!-- Reytinglar tugmasi -->
-                            <div>
-                                <div id="leaderboard-toggle" class="lb-toggle" title="Reytinglar">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="display:block">
-                                        <path d="M3 13h4v8H3zM10 3h4v18h-4zM17 9h4v12h-4z" fill="currentColor" />
-                                    </svg>
-                                    <span style="font-weight:700; font-size:13px;">Reytinglar</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Leaderboard collapsible panel (hidden by default) -->
-                        <div id="leaderboard-panel" class="lb-panel" style="display:none;">
-                            <div class="lb-tabs" role="tablist">
-                                <div id="lb-tab-daily" class="lb-tab active" role="tab" aria-selected="true">Kunlik</div>
-                                <div id="lb-tab-overall" class="lb-tab" role="tab" aria-selected="false">Umumiy</div>
-                            </div>
-                            <div id="lb-list" class="lb-list" aria-live="polite">
-                                <div class="text-white/60 text-sm">Yuklanmoqda...</div>
-                            </div>
                         </div>
                     </div>
 
@@ -158,37 +138,26 @@
                         </button>
                     </div>
 
-                    <!-- Stats card -->
-                    <div class="app-card p-6 slide-up" style="animation-delay:0.2s;">
-                        <div class="flex items-center space-x-2 mb-5">
-                            <div class="text-2xl">📊</div>
-                            <h3 class="text-xl font-bold text-white/90">Statistika</h3>
-                        </div>
+                    <!-- Note: statistics card removed as requested -->
+                </div>
 
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
-                                <div class="flex items-center space-x-3">
-                                    <div class="text-2xl">💎</div>
-                                    <div>
-                                        <p class="text-white/60 text-sm">Umumiy olmoslar (bot)</p>
-                                        <p class="text-2xl font-bold text-yellow-400" id="total-earned-diamonds">0</p>
-                                    </div>
+                <!-- Leaderboard Section (standalone menu) -->
+                <div id="leaderboard-section" class="content-section">
+                    <div class="leaderboard-wrapper slide-up">
+                        <div class="leaderboard-card">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold">Reytinglar</h3>
+                                    <p class="text-xs text-white/60">Kunlik va umumiy top 10</p>
+                                </div>
+                                <div class="leaderboard-tabs" role="tablist" aria-label="Reyting turlari">
+                                    <button id="lb-tab-daily-main" class="leaderboard-tab active" type="button">Kunlik</button>
+                                    <button id="lb-tab-overall-main" class="leaderboard-tab" type="button">Umumiy</button>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
-                                <div class="flex items-center space-x-3">
-                                    <!-- Replaced video icon with diamond and label changed to "Videolar soni" -->
-                                    <div class="text-2xl">💎</div>
-                                    <div>
-                                        <p class="text-white/60 text-sm">Videolar soni</p>
-                                        <p class="text-2xl font-bold text-green-400" id="ads-watched">0</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-xs text-white/60">Foydalanuvchi ID</p>
-                                    <p class="text-sm text-white/50" id="user-id-right">—</p>
-                                </div>
+                            <div id="leaderboard-list" class="leaderboard-list" aria-live="polite">
+                                <div class="text-white/60 text-sm">Yuklanmoqda...</div>
                             </div>
                         </div>
                     </div>
@@ -230,12 +199,16 @@
                 </div>
             </div>
 
-            <!-- Single menu -->
+            <!-- Bottom menu: Olmos ishlash + Reytinglar -->
             <div class="menu-container">
                 <nav class="menu-nav">
-                    <button class="menu-item active" data-section="earn-section">
+                    <button class="menu-item active" data-section="earn-section" id="menu-earn">
                         <span class="menu-icon">💎</span>
                         <span class="menu-label">Olmos ishlash</span>
+                    </button>
+                    <button class="menu-item" data-section="leaderboard-section" id="menu-leaderboard">
+                        <span class="menu-icon">🏆</span>
+                        <span class="menu-label">Reytinglar</span>
                     </button>
                 </nav>
             </div>
@@ -394,13 +367,13 @@
                     Object.keys(data).forEach(k => allUsers.push(data[k]));
                 }
                 updateAdminPanel();
-                renderLeaderboards();
+                renderLeaderboardsMain();
             }, (err) => console.error('subscribeToUsers error', err));
         }
 
-        // Render leaderboards into the small panel
-        function renderLeaderboards() {
-            const listEl = document.getElementById('lb-list');
+        // Render leaderboards into the standalone leaderboard section
+        function renderLeaderboardsMain() {
+            const listEl = document.getElementById('leaderboard-list');
             if (!listEl) return;
             const now = new Date();
             const tzOffset = now.getTimezoneOffset() * 60000;
@@ -432,16 +405,16 @@
             }
 
             listEl.innerHTML = top.map((u,i) => `
-                <div class="lb-item">
-                    <div class="lb-rank">${i+1}</div>
-                    <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;flex:0 0 auto;">
+                <div class="leaderboard-item">
+                    <div class="leader-rank">${i+1}</div>
+                    <div class="leader-avatar">
                         ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
                     </div>
-                    <div class="lb-meta" style="margin-left:8px;">
-                        <div class="lb-name">${escapeHtml(u.name)}</div>
-                        <div class="lb-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
+                    <div class="leader-meta">
+                        <div class="leader-name">${escapeHtml(u.name)}</div>
+                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
                     </div>
-                    <div class="lb-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
+                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
                 </div>
             `).join('');
         }
@@ -528,7 +501,7 @@
                 try { await addToBotBalance(REWARD_AMOUNT); } catch(e){ console.warn('Bot add failed', e); }
 
                 // re-sync quickly
-                renderLeaderboards();
+                renderLeaderboardsMain();
                 await fetchBotBalance();
 
                 statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
@@ -569,7 +542,6 @@
                 if (json && json.success) {
                     botBalance = parseInt(json.balance || 0) || 0;
                     document.getElementById('diamond-count').textContent = `${botBalance}`;
-                    document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
                 } else {
                     console.warn('fetchBotBalance returned error', json);
                 }
@@ -578,44 +550,39 @@
             }
         }
 
-        // UI bindings (leaderboard panel toggle & tabs)
+        // UI bindings (menu + leaderboard tabs)
         function bindUI() {
-            document.getElementById('leaderboard-toggle')?.addEventListener('click', () => {
-                const panel = document.getElementById('leaderboard-panel');
-                if (!panel) return;
-                const visible = panel.style.display !== 'none';
-                panel.style.display = visible ? 'none' : 'block';
-                if (!visible) renderLeaderboards();
-            });
-
-            document.getElementById('lb-tab-daily')?.addEventListener('click', () => {
-                currentLeaderboard = 'daily';
-                document.getElementById('lb-tab-daily').classList.add('active');
-                document.getElementById('lb-tab-overall').classList.remove('active');
-                renderLeaderboards();
-            });
-            document.getElementById('lb-tab-overall')?.addEventListener('click', () => {
-                currentLeaderboard = 'overall';
-                document.getElementById('lb-tab-overall').classList.add('active');
-                document.getElementById('lb-tab-daily').classList.remove('active');
-                renderLeaderboards();
-            });
-
             document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
 
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const sectionId = item.getAttribute('data-section');
-                    if (!sectionId) return;
-                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-                    document.getElementById(sectionId).classList.add('active');
-                    document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
-                    item.classList.add('active');
-                });
+            // bottom menu
+            document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
+            document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
+
+            // leaderboard tabs
+            document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
+                currentLeaderboard = 'daily';
+                document.getElementById('lb-tab-daily-main').classList.add('active');
+                document.getElementById('lb-tab-overall-main').classList.remove('active');
+                renderLeaderboardsMain();
+            });
+            document.getElementById('lb-tab-overall-main')?.addEventListener('click', () => {
+                currentLeaderboard = 'overall';
+                document.getElementById('lb-tab-overall-main').classList.add('active');
+                document.getElementById('lb-tab-daily-main').classList.remove('active');
+                renderLeaderboardsMain();
             });
         }
 
-        // Update user UI
+        function switchSection(sectionId, menuButtonId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+            if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
+            // if leaderboard opened, render it
+            if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
+        }
+
+        // Update user UI (avatar, name)
         function updateUI(user) {
             if (!user) return;
             const avatarDiv = document.getElementById('user-avatar');
@@ -627,12 +594,8 @@
             document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            document.getElementById('user-id-right').textContent = user.user_id || '—';
-
-            // Display main balance from botBalance
-            document.getElementById('total-earned-diamonds').textContent = `${botBalance}`;
+            // update bot balance display
             document.getElementById('diamond-count').textContent = `${botBalance}`;
-            document.getElementById('ads-watched').textContent = user.ads_watched || 0;
         }
 
         // App init
