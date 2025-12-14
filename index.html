@@ -9,39 +9,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
+        /* Base styles */
         body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3),0 0 40px rgba(0,150,255,.1)} 50%{box-shadow:0 0 30px rgba(0,150,255,.5),0 0 60px rgba(0,150,255,.2)} }
         @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
         @keyframes celebrate { 0%,100%{transform:scale(1) rotate(0)} 25%{transform:scale(1.15) rotate(-3deg)} 75%{transform:scale(1.15) rotate(3deg)} }
-        @keyframes loaderSpin { to { transform: rotate(360deg); } }
-        @keyframes progressFill { 0% { width: 0%; } 100% { width: 100%; } }
+        .float-animation{animation:float 3s ease-in-out infinite} .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} .slide-up{animation:slideUp .4s ease-out}
 
-        .float-animation{animation:float 3s ease-in-out infinite}
-        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite}
-        .slide-up{animation:slideUp .4s ease-out}
         .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
         .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
         .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6)); color:#0096ff}
+
         .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); box-shadow:0 6px 20px rgba(0,150,255,.3); transition:all .3s; position:relative; overflow:hidden;}
         .btn-primary:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,.4); }
         .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
         .btn-primary:hover::after{ left:100%; }
+
         .avatar-container{ width:64px; height:64px; border-radius:50%; overflow:hidden; position:relative; background:linear-gradient(135deg,#0096ff,#0066cc); flex:0 0 auto; }
         .avatar-image{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; display:block; }
         .gradient-avatar{ width:100%; height:100%; background:linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
         .status-card{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); }
         .reward-badge{ background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); }
         .diamond-count{ background:rgba(0,150,255,.1); border:1px solid rgba(0,150,255,.2); }
+
         .menu-container{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
         .menu-nav{ display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
         .menu-item{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s; cursor:pointer; position:relative; }
         .menu-item.active{ background:rgba(255,255,255,.1); color:white; }
         .content-container{ padding-bottom:100px; }
+
         ::-webkit-scrollbar{ width:6px } ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px } ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px } ::-webkit-scrollbar-thumb:hover{ background:#0066cc }
         ::selection{ background:rgba(0,150,255,.3); color:white }
+
         .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
         @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
+
+        /* Leaderboard styles for standalone menu */
         .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
         .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
         .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
@@ -55,95 +60,25 @@
         .leader-name { font-weight:700; color:#fff; }
         .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
-        @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
 
-        /* Modern Loading animation */
-        #loading {
-            background: radial-gradient(circle at 20% -20%, rgba(0,150,255,.3), transparent 45%), radial-gradient(circle at 80% 0%, rgba(255,255,255,.1), transparent 55%), linear-gradient(180deg, rgba(8,8,8,.95) 0%, rgba(12,12,12,.97) 60%, rgba(15,15,15,1) 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow: hidden;
-        }
-        .loading-card {
-            background: rgba(12,12,12,.9);
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 28px;
-            padding: 36px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.4);
-            max-width: 420px;
-            margin: 0 auto;
-            text-align: center;
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
-            backdrop-filter: blur(25px);
-        }
-        .loader-ring {
-            width: 110px;
-            height: 110px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            border: 8px solid rgba(255,255,255,.1);
-            border-top-color: rgba(0,150,255,.85);
-            animation: loaderSpin 1.2s linear infinite;
-            position: relative;
-        }
-        .loader-ring::after {
-            content: '';
-            position: absolute;
-            inset: 12px;
-            border-radius: 50%;
-            border: 4px dashed rgba(255,255,255,.15);
-        }
-        .loading-status {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .loading-subtext { font-size: 14px; color: rgba(255,255,255,.6); margin-bottom: 12px; }
-        .progress-meter {
-            width: 100%;
-            height: 12px;
-            border-radius: 999px;
-            background: rgba(255,255,255,.05);
-            overflow: hidden;
-            margin: 18px 0 6px;
-        }
-        .progress-fill {
-            display: block;
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #00d1ff, #0066ff);
-            border-radius: inherit;
-            box-shadow: 0 8px 16px rgba(0,150,255,.25);
-        }
-        .progress-label {
-            font-size: 13px;
-            letter-spacing: .3em;
-            color: rgba(255,255,255,.65);
-        }
-        .loading-complete {
-            opacity: 0;
-            transition: opacity .3s ease-out;
-        }
+        @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
     <div id="app" class="min-h-full w-full">
+        <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
-            <div class="loading-card slide-up">
-                <div class="loader-ring"></div>
-                <p class="loading-status text-white">RekchiAi olmoslari yuklanmoqda</p>
-                <p class="loading-subtext">Interfeys va olmoslar aniqlanmoqda...</p>
-                <div class="progress-meter">
-                    <span class="progress-fill" id="loading-progress-fill"></span>
-                </div>
-                <p class="progress-label" id="loading-progress-value">0%</p>
-                <p class="loading-subtext">Yana bir oz sabr—olmoslar tezda tayyor!</p>
+            <div class="text-center slide-up">
+                <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
+                <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
+                <p class="text-xl font-semibold text-white/90">RekchiAi olmoslari</p>
+                <p class="text-white/60 mt-2">Yuklanmoqda...</p>
             </div>
         </div>
 
+        <!-- Content -->
         <div id="content" class="hidden">
+            <!-- Top bar -->
             <div class="sticky top-0 z-50 top-bar border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
@@ -163,7 +98,9 @@
             </div>
 
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
+                <!-- Earn Section -->
                 <div id="earn-section" class="content-section active">
+                    <!-- User card -->
                     <div class="app-card p-5 slide-up">
                         <div class="flex items-center space-x-4">
                             <div id="user-avatar" class="avatar-container user-avatar"></div>
@@ -175,9 +112,11 @@
                         </div>
                     </div>
 
+                    <!-- Ad watch card -->
                     <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
+                                <!-- Icon changed to diamond as requested -->
                                 <div class="text-3xl">💎</div>
                                 <div>
                                     <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
@@ -198,8 +137,11 @@
                             <span>Reklamani boshlash</span>
                         </button>
                     </div>
+
+                    <!-- Note: statistics card removed as requested -->
                 </div>
 
+                <!-- Leaderboard Section (standalone menu) -->
                 <div id="leaderboard-section" class="content-section">
                     <div class="leaderboard-wrapper slide-up">
                         <div class="leaderboard-card">
@@ -221,6 +163,7 @@
                     </div>
                 </div>
 
+                <!-- Admin panel (kept) -->
                 <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay:0.3s;">
                     <div class="flex items-center space-x-3 mb-6">
                         <div class="text-3xl">👑</div>
@@ -256,6 +199,7 @@
                 </div>
             </div>
 
+            <!-- Bottom menu: Olmos ishlash + Reytinglar -->
             <div class="menu-container">
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section" id="menu-earn">
@@ -271,10 +215,12 @@
         </div>
     </div>
 
+    <!-- Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
             authDomain: "rekchi-2dc2f.firebaseapp.com",
@@ -288,50 +234,24 @@
         const firebaseApp = initializeApp(firebaseConfig);
         const db = getDatabase(firebaseApp);
 
+        // Constants
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const AD_BLOCK_ID = '19084';
         const REWARD_AMOUNT = 1;
+
+        // Server endpoints (host add_balance.php & get_balance.php)
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
+        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // ideally keep on server
 
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let AdController = null;
         let botBalance = 0;
-        let currentLeaderboard = 'daily';
-        let loadingProgressValueEl = null;
-        let loadingProgressInterval = null;
+        let currentLeaderboard = 'daily'; // 'daily' | 'overall'
 
-        function startLoadingProgress() {
-            loadingProgressValueEl = document.getElementById('loading-progress-value');
-            const progressFill = document.getElementById('loading-progress-fill');
-            if (!loadingProgressValueEl || !progressFill) return;
-            let value = 0;
-            loadingProgressValueEl.textContent = `0%`;
-            loadingProgressInterval = setInterval(() => {
-                value = Math.min(94, value + Math.random() * 5);
-                loadingProgressValueEl.textContent = `${Math.floor(value)}%`;
-            }, 300);
-            setTimeout(() => {
-                progressFill.style.animation = 'progressFill 3s ease-in-out forwards';
-            }, 100);
-        }
-        function stopLoadingProgress() {
-            const progressFill = document.getElementById('loading-progress-fill');
-            if (progressFill) {
-                progressFill.style.width = '100%';
-            }
-            if (loadingProgressValueEl) {
-                loadingProgressValueEl.textContent = '100%';
-            }
-            if (loadingProgressInterval) {
-                clearInterval(loadingProgressInterval);
-                loadingProgressInterval = null;
-            }
-        }
-
+        // Helpers
         async function getTelegramProfilePhoto(userId, username) {
             try {
                 const tg = window.Telegram?.WebApp;
@@ -350,6 +270,7 @@
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
+        // Init Telegram & Ads
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -380,6 +301,7 @@
             else setTimeout(initAdsgram, 500);
         }
 
+        // Load/create user in Firebase
         async function loadOrCreateUser() {
             if (!currentUser) return null;
             try {
@@ -394,7 +316,7 @@
                         last_name: currentUser.last_name || '',
                         photo_url: profilePhoto,
                         language_code: currentUser.language_code || 'uz',
-                        ads_by_day: {},
+                        ads_by_day: {}, // counts per YYYY-MM-DD
                         diamonds: 0,
                         ads_watched: 0,
                         withdraw_history: [],
@@ -435,6 +357,7 @@
             }
         }
 
+        // Subscribe to all users for leaderboard + admin
         function subscribeToUsers() {
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
@@ -448,6 +371,7 @@
             }, (err) => console.error('subscribeToUsers error', err));
         }
 
+        // Render leaderboards into the standalone leaderboard section
         function renderLeaderboardsMain() {
             const listEl = document.getElementById('leaderboard-list');
             if (!listEl) return;
@@ -495,8 +419,9 @@
             `).join('');
         }
 
-        function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>"']/g, s => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[s])); }
+        function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
 
+        // Admin panel render (avatars same style)
         function updateAdminPanel() {
             const totalUsers = allUsers.length;
             const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
@@ -531,6 +456,7 @@
                 `).join('');
         }
 
+        // Watch ad flow: update Firebase (ads_by_day & ads_watched) + call server add_balance then refresh leaderboards
         async function watchAd() {
             if (!currentUser) return;
             const btn = document.getElementById('watch-ad-btn');
@@ -553,6 +479,7 @@
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama (video) ko\'rsatilmoqda...</p>';
                 await AdController.show();
 
+                // read user
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val() || {};
@@ -565,12 +492,15 @@
                 const newDayCount = (ads_by_day[localKey] || 0) + 1;
                 const newOverall = (userData.ads_watched || 0) + 1;
 
+                // update firebase
                 const updates = { ads_watched: newOverall, [`ads_by_day/${localKey}`]: newDayCount, last_ad_time: new Date().toISOString() };
                 const ok = await updateUserData(updates);
                 if (!ok) throw new Error('Firebase yangilashida xatolik');
 
+                // notify server bot to add balance
                 try { await addToBotBalance(REWARD_AMOUNT); } catch(e){ console.warn('Bot add failed', e); }
 
+                // re-sync quickly
                 renderLeaderboardsMain();
                 await fetchBotBalance();
 
@@ -585,6 +515,7 @@
             }
         }
 
+        // Server bot API calls
         async function addToBotBalance(amount) {
             if (!currentUser) throw new Error('No user');
             const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
@@ -619,10 +550,15 @@
             }
         }
 
+        // UI bindings (menu + leaderboard tabs)
         function bindUI() {
             document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
+
+            // bottom menu
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
             document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
+
+            // leaderboard tabs
             document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
                 currentLeaderboard = 'daily';
                 document.getElementById('lb-tab-daily-main').classList.add('active');
@@ -642,9 +578,11 @@
             document.getElementById(sectionId).classList.add('active');
             document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
             if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
+            // if leaderboard opened, render it
             if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
         }
 
+        // Update user UI (avatar, name)
         function updateUI(user) {
             if (!user) return;
             const avatarDiv = document.getElementById('user-avatar');
@@ -656,11 +594,12 @@
             document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            // update bot balance display
             document.getElementById('diamond-count').textContent = `${botBalance}`;
         }
 
+        // App init
         async function initializeAppMain() {
-            startLoadingProgress();
             initTelegram();
             initAdsgram();
             bindUI();
@@ -669,7 +608,9 @@
             if (user) {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 onValue(userRef, (snap) => { if (snap.exists()) updateUI(snap.val()); });
+
                 subscribeToUsers();
+
                 if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
             }
 
@@ -678,14 +619,11 @@
                 setInterval(fetchBotBalance, 30000);
             }
 
-            stopLoadingProgress();
-            document.getElementById('loading').classList.add('loading-complete');
-            setTimeout(() => {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('content').classList.remove('hidden');
-            }, 350);
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
         }
 
+        // start
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
         else initializeAppMain();
     </script>
