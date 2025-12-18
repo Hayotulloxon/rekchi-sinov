@@ -7,6 +7,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Sonar reklama scriptini oldindan yuklash (async) -->
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840" async defer></script>
+    
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
         /* Base styles */
@@ -62,9 +66,24 @@
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
 
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
+        
+        /* Sonar reklama konteyneri */
+        #sonar-ad-container {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            margin: 0 auto;
+            max-width: 400px;
+            padding: 0 16px;
+        }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
+    <!-- Sonar reklama uchun konteyner -->
+    <div id="sonar-ad-container"></div>
+    
     <div id="app" class="min-h-full w-full">
         <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
@@ -137,8 +156,6 @@
                             <span>Reklamani boshlash</span>
                         </button>
                     </div>
-
-                    <!-- Note: statistics card removed as requested -->
                 </div>
 
                 <!-- Leaderboard Section (standalone menu) -->
@@ -270,6 +287,56 @@
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
+        // Sonar reklama funksiyalari
+        function initSonarAd() {
+            console.log("Sonar reklama yuklanishi boshlandi...");
+            
+            // Agar Sonar scripti yuklanmagan bo'lsa, qo'lda yuklash
+            if (!document.querySelector('script[src*="sonartech.io"]')) {
+                console.log("Sonar scripti yuklanmagan, qo'lda yuklanmoqda...");
+                const script = document.createElement('script');
+                script.src = 'https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840';
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+            
+            // 3 soniyadan keyin reklamani ko'rsatish
+            setTimeout(showSonarAd, 3000);
+        }
+
+        function showSonarAd() {
+            console.log("Sonar reklama ko'rsatishga urinmoqda...");
+            
+            if (window.Sonar && typeof window.Sonar.show === 'function') {
+                try {
+                    // Avval reklamani tozalash (agar bor bo'lsa)
+                    const container = document.getElementById('sonar-ad-container');
+                    if (container) {
+                        container.innerHTML = '';
+                    }
+                    
+                    // Reklamani ko'rsatish
+                    window.Sonar.show({ 
+                        adUnit: "rekchiai",
+                        container: container || undefined
+                    });
+                    console.log("✅ Sonar reklama muvaffaqiyatli ko'rsatildi");
+                    
+                    // Har 30 soniyada yangi reklama ko'rsatish
+                    setTimeout(showSonarAd, 30000);
+                } catch (err) {
+                    console.error("❌ Sonar reklama xatosi:", err);
+                    // Xatolik yuz bersa, 10 soniyadan keyin qayta urinish
+                    setTimeout(showSonarAd, 10000);
+                }
+            } else {
+                console.warn("⚠️ Sonar hali yuklanmagan, 5 soniyadan keyin qayta urinamiz...");
+                // 5 soniyadan keyin qayta urinish
+                setTimeout(showSonarAd, 5000);
+            }
+        }
+
         // Init Telegram & Ads
         function initTelegram() {
             if (window.Telegram?.WebApp) {
@@ -296,9 +363,15 @@
                 currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
             }
         }
+        
         function initAdsgram() {
-            if (window.Adsgram) AdController = window.Adsgram.init({ blockId: AD_BLOCK_ID });
-            else setTimeout(initAdsgram, 500);
+            if (window.Adsgram) {
+                AdController = window.Adsgram.init({ blockId: AD_BLOCK_ID });
+                console.log("Adsgram muvaffaqiyatli yuklandi");
+            } else {
+                console.log("Adsgram yuklanmagan, 500ms dan keyin qayta urinamiz...");
+                setTimeout(initAdsgram, 500);
+            }
         }
 
         // Load/create user in Firebase
@@ -345,6 +418,7 @@
                 return null;
             }
         }
+        
         async function updateUserData(updates) {
             if (!currentUser) return false;
             try {
@@ -503,6 +577,9 @@
                 // re-sync quickly
                 renderLeaderboardsMain();
                 await fetchBotBalance();
+                
+                // Reklama muvaffaqiyatli ko'rilgandan keyin Sonar reklamasini yangilash
+                setTimeout(showSonarAd, 2000);
 
                 statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
             } catch (err) {
@@ -618,6 +695,9 @@
                 await fetchBotBalance();
                 setInterval(fetchBotBalance, 30000);
             }
+
+            // Sonar reklamalarni ishga tushirish
+            initSonarAd();
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
