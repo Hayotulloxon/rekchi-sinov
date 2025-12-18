@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>RekchiAi olmoslari</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adsgram skripti o'chirildi -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
@@ -247,9 +246,9 @@
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
-        let AdController = null;
         let botBalance = 0;
         let currentLeaderboard = 'daily'; // 'daily' | 'overall'
+        let isWatchingAd = false; // Reklama ko'rilayotganligini kuzatish
 
         // Helpers
         async function getTelegramProfilePhoto(userId, username) {
@@ -270,7 +269,7 @@
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
-        // Init Telegram & Ads
+        // Init Telegram
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -295,12 +294,6 @@
             } else {
                 currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
             }
-        }
-
-        // Adsgram o'chirildi, o'rniga Sonar ishlatiladi
-        function initAdsgram() {
-            // Adsgram o'chirildi
-            // Endi faqat Sonar ishlaydi
         }
 
         // Load/create user in Firebase
@@ -458,52 +451,104 @@
                 `).join('');
         }
 
-        // Watch ad flow: update Firebase (ads_by_day & ads_watched) + call server add_balance then refresh leaderboards
+        // Watch ad flow: Sonar reklamasi tugagandan keyin bonus beradi
         async function watchAd() {
-            if (!currentUser) return;
+            if (!currentUser || isWatchingAd) return;
+            
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
+            isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
 
             try {
                 // Sonar reklamasini ko'rsatish
-                window.Sonar.show({ adUnit: "rekchiai" });
+                window.Sonar.show({ 
+                    adUnit: "rekchiai",
+                    onAdCompleted: async function() {
+                        // Reklama to'liq ko'rilgandan keyin bonus berish
+                        try {
+                            statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama tugadi, bonus berilmoqda...</p>';
+                            
+                            // Firebase yangilash
+                            const userRef = ref(db, 'users/' + currentUser.user_id);
+                            const snapshot = await get(userRef);
+                            const userData = snapshot.val() || {};
 
-                // Firebase yangilash
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
+                            const now = new Date();
+                            const tzOffset = now.getTimezoneOffset() * 60000;
+                            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
 
-                const now = new Date();
-                const tzOffset = now.getTimezoneOffset() * 60000;
-                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+                            const ads_by_day = userData.ads_by_day || {};
+                            const newDayCount = (ads_by_day[localKey] || 0) + 1;
+                            const newOverall = (userData.ads_watched || 0) + 1;
 
-                const ads_by_day = userData.ads_by_day || {};
-                const newDayCount = (ads_by_day[localKey] || 0) + 1;
-                const newOverall = (userData.ads_watched || 0) + 1;
+                            // update firebase
+                            const updates = { ads_watched: newOverall, [`ads_by_day/${localKey}`]: newDayCount, last_ad_time: new Date().toISOString() };
+                            const ok = await updateUserData(updates);
+                            if (!ok) throw new Error('Firebase yangilashida xatolik');
 
-                // update firebase
-                const updates = { ads_watched: newOverall, [`ads_by_day/${localKey}`]: newDayCount, last_ad_time: new Date().toISOString() };
-                const ok = await updateUserData(updates);
-                if (!ok) throw new Error('Firebase yangilashida xatolik');
+                            // notify server bot to add balance
+                            try { 
+                                await addToBotBalance(REWARD_AMOUNT); 
+                            } catch(e){ 
+                                console.warn('Bot add failed', e); 
+                            }
 
-                // notify server bot to add balance
-                try { await addToBotBalance(REWARD_AMOUNT); } catch(e){ console.warn('Bot add failed', e); }
+                            // re-sync quickly
+                            renderLeaderboardsMain();
+                            await fetchBotBalance();
 
-                // re-sync quickly
-                renderLeaderboardsMain();
-                await fetchBotBalance();
+                            statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
+                        } catch (err) {
+                            console.error('Bonus berishda xatolik', err);
+                            statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
+                        } finally {
+                            btn.disabled = false;
+                            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                            isWatchingAd = false;
+                            
+                            setTimeout(()=>{ 
+                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                            }, 3000);
+                        }
+                    },
+                    onAdSkipped: function() {
+                        // Reklama o'tkazib yuborilsa
+                        statusDiv.innerHTML = '<p class="text-orange-400">Reklama o\'tkazib yuborildi. Bonus berilmadi.</p>';
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                        isWatchingAd = false;
+                        
+                        setTimeout(()=>{ 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    },
+                    onAdError: function(error) {
+                        // Reklama xatosi
+                        console.error('Reklama xatosi:', error);
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                        isWatchingAd = false;
+                        
+                        setTimeout(()=>{ 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    }
+                });
 
-                statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
             } catch (err) {
-                console.error('Ad error', err);
-                statusDiv.innerHTML = '<p class="text-orange-400">Reklama yopildi yoki xatolik yuz berdi.</p>';
-            } finally {
+                console.error('Reklama ochishda xatolik', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik yuz berdi.</p>';
                 btn.disabled = false;
                 btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                setTimeout(()=>{ statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; }, 3000);
+                isWatchingAd = false;
+                
+                setTimeout(()=>{ 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                }, 3000);
             }
         }
 
@@ -593,7 +638,6 @@
         // App init
         async function initializeAppMain() {
             initTelegram();
-            initAdsgram();
             bindUI();
 
             const user = await loadOrCreateUser();
