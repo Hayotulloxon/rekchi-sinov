@@ -15,128 +15,80 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Sonar Reklama -->
-    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840" async defer></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        diamond: {
-                            DEFAULT: '#0ea5e9',
-                            light: '#38bdf8',
-                            dark: '#0284c7'
-                        }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                        'slide-up': 'slideUp 0.4s ease-out',
-                        'celebrate': 'celebrate 0.6s ease-out',
-                        'countdown': 'countdown 8s linear forwards'
-                    },
-                    keyframes: {
-                        'pulse-glow': {
-                            '0%, 100%': { 
-                                boxShadow: '0 0 20px rgba(14, 165, 233, 0.3), 0 0 40px rgba(14, 165, 233, 0.1)'
-                            },
-                            '50%': { 
-                                boxShadow: '0 0 30px rgba(14, 165, 233, 0.5), 0 0 60px rgba(14, 165, 233, 0.2)'
-                            }
-                        },
-                        'float': {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        },
-                        'slideUp': {
-                            'from': { opacity: '0', transform: 'translateY(20px)' },
-                            'to': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        'celebrate': {
-                            '0%, 100%': { transform: 'scale(1) rotate(0)' },
-                            '25%': { transform: 'scale(1.15) rotate(-3deg)' },
-                            '75%': { transform: 'scale(1.15) rotate(3deg)' }
-                        },
-                        'countdown': {
-                            '0%': { width: '100%' },
-                            '100%': { width: '0%' }
-                        }
-                    }
-                }
-            }
-        }
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
         
-        window.process = { env: { NODE_ENV: 'production' } };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
+            authDomain: "rekchi-2dc2f.firebaseapp.com",
+            databaseURL: "https://rekchi-2dc2f-default-rtdb.firebaseio.com",
+            projectId: "rekchi-2dc2f",
+            storageBucket: "rekchi-2dc2f.firebasestorage.app",
+            messagingSenderId: "352655860270",
+            appId: "1:352655860270:web:e071c82f4b911c21c0b5bf",
+            measurementId: "G-4WVC8S5V3R"
+        };
+        
+        window.firebase = { initializeApp, getDatabase, ref, set, get, update, onValue, firebaseConfig };
     </script>
     
     <!-- Google Adsense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1252497877570010" crossorigin="anonymous"></script>
     
     <style>
-        :root {
-            --primary-color: #0ea5e9;
-            --secondary-color: #0284c7;
-            --background-dark: #0f0f0f;
-            --card-bg: rgba(20, 20, 20, 0.95);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-        }
-        
-        * {
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #0f0f0f; 
+            color: #fff;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
+        @keyframes float { 
+            0%,100%{transform:translateY(0)} 
+            50%{transform:translateY(-10px)} 
+        }
+        @keyframes pulse-glow { 
+            0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3)} 
+            50%{box-shadow:0 0 30px rgba(0,150,255,.5)} 
+        }
+        @keyframes slideUp { 
+            from{opacity:0;transform:translateY(20px)} 
+            to{opacity:1; transform:translateY(0)} 
+        }
+        @keyframes celebrate { 
+            0%,100%{transform:scale(1) rotate(0)} 
+            25%{transform:scale(1.15) rotate(-3deg)} 
+            75%{transform:scale(1.15) rotate(3deg)} 
         }
         
-        .glass-card {
-            background: linear-gradient(135deg, var(--card-bg), rgba(30, 30, 30, 0.95));
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .app-card {
+            background: rgba(20,20,20,.95);
+            border: 1px solid rgba(255,255,255,.08);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+            backdrop-filter: blur(10px);
         }
         
-        .diamond-glow {
-            filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.6));
-            color: var(--primary-color);
+        .gradient-bg {
+            background: linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 100%);
+        }
+        
+        .diamond-icon {
+            filter: drop-shadow(0 0 8px rgba(0,150,255,.6));
+            color: #0096ff;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg,#0096ff 0%,#0066cc 100%);
+            box-shadow: 0 6px 20px rgba(0,150,255,.3);
+            transition: all .3s;
         }
-        
         .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
-        }
-        
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn-primary:hover::after {
-            left: 100%;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,150,255,.4);
         }
         
         .avatar-container {
@@ -144,66 +96,32 @@
             height: 64px;
             border-radius: 50%;
             overflow: hidden;
-            position: relative;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            flex-shrink: 0;
-        }
-        
-        .avatar-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: cover;
-        }
-        
-        .gradient-avatar {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
+            background: linear-gradient(135deg,#0096ff,#0066cc);
         }
         
         .status-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
         }
         
         .reward-badge {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.2);
+            background: rgba(34,197,94,.1);
+            border: 1px solid rgba(34,197,94,.2);
         }
         
         .diamond-count {
-            background: rgba(14, 165, 233, 0.1);
-            border: 1px solid rgba(14, 165, 233, 0.2);
+            background: rgba(0,150,255,.1);
+            border: 1px solid rgba(0,150,255,.2);
         }
         
-        .bottom-menu {
+        .menu-container {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
+            background: rgba(15,15,15,.95);
+            border-top: 1px solid rgba(255,255,255,.1);
             padding-bottom: env(safe-area-inset-bottom);
-        }
-        
-        .menu-nav {
-            display: flex;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 12px 16px;
-            gap: 8px;
         }
         
         .menu-item {
@@ -211,18 +129,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 12px 8px;
             border-radius: 16px;
             background: transparent;
             border: none;
-            color: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s;
-            cursor: pointer;
+            color: rgba(255,255,255,.5);
         }
-        
         .menu-item.active {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,.1);
             color: white;
         }
         
@@ -233,286 +147,197 @@
         ::-webkit-scrollbar {
             width: 6px;
         }
-        
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            background: rgba(255,255,255,.05);
         }
-        
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
+            background: #0096ff;
             border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-color);
-        }
-        
-        ::selection {
-            background: rgba(14, 165, 233, 0.3);
-            color: white;
         }
         
         .content-section {
             display: none;
-            animation: fadeIn 0.3s ease-out;
         }
-        
         .content-section.active {
             display: block;
         }
         
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Leaderboard styles */
-        .leaderboard-wrapper {
-            max-width: 640px;
-            margin: 10px auto;
-            padding: 12px;
-        }
-        
-        .leaderboard-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 12px;
-        }
-        
-        .leaderboard-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .leaderboard-tab {
-            padding: 8px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.75);
-            background: transparent;
-            font-weight: 600;
-            border: 1px solid transparent;
-        }
-        
-        .leaderboard-tab.active {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            box-shadow: 0 6px 18px rgba(14, 165, 233, 0.12);
-        }
-        
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 420px;
-            overflow: auto;
-        }
-        
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 10px;
-            transition: background 0.12s;
-        }
-        
-        .leader-rank {
-            width: 36px;
-            text-align: center;
-            font-weight: 800;
-            color: #ffd54a;
-        }
-        
-        .leader-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        
-        .leader-meta {
-            flex: 1;
-        }
-        
-        .leader-name {
-            font-weight: 700;
-            color: #fff;
-        }
-        
-        .leader-username {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .leader-count {
-            font-weight: 800;
-            color: #ffd54a;
-            margin-left: auto;
-            white-space: nowrap;
-        }
-        
-        /* Countdown styles */
-        .countdown-container {
-            display: none;
-            margin-bottom: 16px;
-        }
-        
-        .countdown-bar {
-            height: 4px;
-            background: linear-gradient(90deg, #00ff88, #0099ff);
-            border-radius: 2px;
-            width: 100%;
-        }
-        
-        /* Bonus indicator */
         .bonus-indicator {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 24px;
-            border-radius: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
             display: none;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* Sonar ad container */
-        #sonar-ad-container {
+        .ad-modal {
             position: fixed;
-            bottom: 80px;
+            top: 0;
             left: 0;
             right: 0;
-            z-index: 99;
-            margin: 0 auto;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ad-content {
+            background: rgba(30,30,30,0.95);
+            border-radius: 20px;
+            padding: 20px;
             max-width: 400px;
-            padding: 0 16px;
+            width: 90%;
+            text-align: center;
         }
         
-        /* Progress bar */
-        .progress-bar {
+        .countdown-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #00ff88, #0099ff);
+            animation: countdown 8s linear forwards;
+            border-radius: 2px;
+        }
+        
+        @keyframes countdown {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+        
+        .ad-iframe {
             width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
+            height: 300px;
+            border: none;
+            border-radius: 10px;
+            margin: 15px 0;
+            background: #000;
         }
         
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            transition: width 0.3s ease;
-        }
-        
-        /* Responsive */
-        @media (max-width: 420px) {
-            .leaderboard-list {
-                max-height: 300px;
-            }
-            
-            .leader-avatar {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .avatar-container {
-                width: 56px;
-                height: 56px;
-            }
+        .close-ad {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
-<body class="h-full text-white overflow-auto">
+<body class="h-full gradient-bg text-white overflow-auto">
     <!-- Bonus Indicator -->
     <div id="bonus-indicator" class="bonus-indicator">
-        <div class="text-6xl mb-3 animate-celebrate">🎉</div>
+        <div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div>
         <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
         <p class="text-2xl font-bold text-yellow-400 mb-2">+1 💎</p>
-        <p class="text-sm text-white/60">Click uchun bonus qo'shildi!</p>
+        <p class="text-sm text-white/60">Reklama click uchun bonus!</p>
     </div>
     
-    <!-- Sonar Ad Container -->
-    <div id="sonar-ad-container"></div>
+    <!-- Ad Modal -->
+    <div id="ad-modal" class="ad-modal">
+        <button class="close-ad" onclick="closeAd()">✕</button>
+        <div class="ad-content">
+            <div class="text-3xl mb-3">🎯</div>
+            <h3 class="text-xl font-bold mb-2">Reklamani ko'ring</h3>
+            <p class="text-white/70 mb-4">Reklamaga click qilib, tashqi sahifada kamida 5 soniya turing</p>
+            
+            <div id="countdown-container" class="mb-4">
+                <div class="flex justify-between text-sm mb-1">
+                    <span>Qaytishga qoldi:</span>
+                    <span id="countdown-timer" class="text-yellow-400 font-bold">8s</span>
+                </div>
+                <div id="countdown-bar" class="countdown-bar"></div>
+            </div>
+            
+            <!-- Ad iframe -->
+            <iframe id="ad-iframe" class="ad-iframe" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+            
+            <p class="text-xs text-white/60 mt-3">
+                ⚠️ Reklama tugagach, "Yopish" tugmasini bosing va mini appga qayting
+            </p>
+            
+            <button onclick="finishAd()" class="btn-primary w-full mt-4 py-3 rounded-xl font-bold">
+                ✅ Reklama tugadi (Qaytish)
+            </button>
+        </div>
+    </div>
     
-    <!-- Main App Container -->
+    <!-- Main App -->
     <div id="app" class="min-h-full w-full">
-        <!-- Loading Screen -->
+        <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
-            <div class="text-center animate-slide-up">
-                <div class="text-7xl mb-6 animate-float diamond-glow">💎</div>
+            <div class="text-center">
+                <div class="text-7xl mb-6" style="animation:float 3s ease-in-out infinite">💎</div>
                 <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
-                <p class="text-xl font-semibold text-white/90">RekchiAi Olmoslari</p>
+                <p class="text-xl font-semibold">RekchiAi Olmoslari</p>
                 <p class="text-white/60 mt-2">Yuklanmoqda...</p>
             </div>
         </div>
         
-        <!-- Main Content -->
+        <!-- Content -->
         <div id="content" class="hidden">
             <!-- Top Bar -->
-            <div class="sticky top-0 z-50 border-b border-white/5 bg-black/50 backdrop-blur-lg">
+            <div class="sticky top-0 z-50 border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="text-3xl diamond-glow">💎</div>
+                            <div class="text-3xl diamond-icon">💎</div>
                             <div>
-                                <h1 class="text-xl font-bold text-white/90">RekchiAi Olmoslari</h1>
-                                <p class="text-xs text-white/60">Click qiling, olmos bot balansiga qo'shiladi</p>
+                                <h1 class="text-xl font-bold">RekchiAi Olmoslari</h1>
+                                <p class="text-xs text-white/60">Reklama ko'ring, olmos oling</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full animate-pulse-glow">
+                        <div class="diamond-count px-4 py-2 rounded-full" style="animation:pulse-glow 2s ease-in-out infinite">
                             <span id="diamond-count" class="text-2xl font-bold text-yellow-400">0</span>
-                            <span class="text-xl diamond-glow">💎</span>
+                            <span class="text-xl diamond-icon">💎</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Content Area -->
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
                 <!-- Earn Section -->
                 <div id="earn-section" class="content-section active">
-                    <!-- User Profile Card -->
-                    <div class="glass-card p-5 animate-slide-up">
+                    <!-- User Card -->
+                    <div class="app-card p-5" style="animation:slideUp .4s ease-out">
                         <div class="flex items-center space-x-4">
-                            <div id="user-avatar" class="avatar-container"></div>
+                            <div id="user-avatar" class="avatar-container">
+                                <div id="avatar-placeholder" class="w-full h-full flex items-center justify-center text-white font-bold text-xl">
+                                    U
+                                </div>
+                            </div>
                             <div class="flex-1">
-                                <h3 id="user-name" class="font-bold text-lg text-white/90">Foydalanuvchi</h3>
+                                <h3 id="user-name" class="font-bold text-lg">Foydalanuvchi</h3>
                                 <p id="user-id" class="text-white/50 text-sm">ID: Yuklanmoqda...</p>
-                                <p id="user-username" class="text-white/60 text-xs mt-1">@username</p>
-                                <div class="mt-3">
-                                    <p class="text-xs text-white/50">Bugungi clicklar: 
-                                        <span id="today-clicks" class="font-bold">0</span>/<span id="daily-limit" class="font-bold">10</span>
+                                <div class="mt-2">
+                                    <p class="text-xs text-white/50">
+                                        Bugungi reklamalar: <span id="today-ads">0</span>/<span id="daily-limit">10</span>
                                     </p>
-                                    <div class="progress-bar mt-1">
-                                        <div id="click-progress" class="progress-fill" style="width: 0%"></div>
+                                    <div class="w-full bg-gray-800 rounded-full h-1.5 mt-1">
+                                        <div id="ad-progress" class="bg-green-500 h-1.5 rounded-full" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Click Bonus Card -->
-                    <div class="glass-card p-6 animate-slide-up" style="animation-delay: 0.1s">
+                    <!-- Watch Ad Card -->
+                    <div class="app-card p-6" style="animation:slideUp .4s ease-out; animation-delay:0.1s">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
-                                <div class="text-3xl">🎯</div>
+                                <div class="text-3xl">📺</div>
                                 <div>
-                                    <h2 class="text-xl font-bold text-white/90">Click qilib bonus oling</h2>
-                                    <p class="text-white/60 text-sm">Reklamaga click → tashqi sahifa → bonus</p>
+                                    <h2 class="text-xl font-bold">Reklama ko'ring</h2>
+                                    <p class="text-white/60 text-sm">Reklamani ko'rib, click qiling</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
@@ -520,87 +345,77 @@
                             </div>
                         </div>
                         
-                        <!-- Click Requirements -->
-                        <div class="status-card rounded-2xl p-6 mb-5">
-                            <div class="text-center">
-                                <p class="text-white/90 font-bold mb-3">📊 Click shartlari:</p>
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div class="text-center p-3 bg-gray-900/50 rounded-xl">
-                                        <p class="text-yellow-400">⏱ Minimal vaqt</p>
-                                        <p class="font-bold text-lg">5 soniya</p>
-                                    </div>
-                                    <div class="text-center p-3 bg-gray-900/50 rounded-xl">
-                                        <p class="text-yellow-400">🎯 Kunlik limit</p>
-                                        <p class="font-bold text-lg" id="daily-limit-display">10 click</p>
-                                    </div>
+                        <!-- Ad Status -->
+                        <div id="ad-status" class="status-card rounded-2xl p-6 mb-5 text-center">
+                            <p class="text-white/90 font-bold mb-2">📊 Bonus shartlari:</p>
+                            <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                                <div class="p-3 bg-gray-900/50 rounded-xl">
+                                    <p class="text-yellow-400">⏱ Minimal vaqt</p>
+                                    <p class="font-bold">5 soniya</p>
                                 </div>
-                                <p class="text-white/60 text-xs mt-4">
-                                    ℹ️ Reklamaga click qilib, tashqi sahifada kamida 5 soniya turishingiz kerak
-                                </p>
+                                <div class="p-3 bg-gray-900/50 rounded-xl">
+                                    <p class="text-yellow-400">🎯 Click kerak</p>
+                                    <p class="font-bold">Reklamaga click</p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Countdown -->
-                        <div id="countdown-container" class="countdown-container">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-white/70">Qaytishga qoldi:</span>
-                                <span id="countdown-timer" class="text-yellow-400 font-bold">8s</span>
-                            </div>
-                            <div id="countdown-bar" class="countdown-bar"></div>
-                            <p class="text-white/60 text-xs mt-2 text-center">
-                                ⚠️ Mini app ochiq qoling, 8 soniyadan keyin qayting
+                            <p class="text-white/60 text-xs">
+                                ℹ️ Reklamani ko'rib, unga click qilishingiz kerak
                             </p>
                         </div>
                         
-                        <!-- Click Button -->
-                        <button id="click-bonus-btn" 
-                                class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
-                            <span class="text-2xl">🎯</span>
-                            <span>Click qilib bonus olish</span>
+                        <!-- Watch Ad Button -->
+                        <button id="watch-ad-btn" 
+                                class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg">
+                            <span class="text-2xl">▶️</span>
+                            <span>Reklamani boshlash</span>
                         </button>
                         
-                        <!-- Status Indicator -->
+                        <!-- Status -->
                         <div id="status-indicator" class="mt-4 text-center">
-                            <p id="click-status" class="text-white/70 text-sm">Click boshlang...</p>
+                            <p id="click-status" class="text-white/70 text-sm">Reklamani boshlang...</p>
                         </div>
                     </div>
                     
-                    <!-- Statistics Card -->
-                    <div class="glass-card p-5 animate-slide-up" style="animation-delay: 0.2s">
+                    <!-- Statistics -->
+                    <div class="app-card p-5" style="animation:slideUp .4s ease-out; animation-delay:0.2s">
                         <div class="flex items-center space-x-3 mb-4">
                             <div class="text-2xl">📈</div>
-                            <h3 class="font-bold text-white/90">Sizning statistikangiz</h3>
+                            <h3 class="font-bold">Statistika</h3>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="text-center p-4 bg-gray-900/30 rounded-xl">
-                                <p class="text-2xl font-bold text-yellow-400" id="total-clicks">0</p>
-                                <p class="text-xs text-white/60 mt-1">Jami Click</p>
+                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                                <p class="text-2xl font-bold text-yellow-400" id="total-ads">0</p>
+                                <p class="text-xs text-white/60">Jami reklama</p>
                             </div>
-                            <div class="text-center p-4 bg-gray-900/30 rounded-xl">
-                                <p class="text-2xl font-bold text-green-400" id="successful-clicks">0</p>
-                                <p class="text-xs text-white/60 mt-1">Muvaffaqiyatli</p>
+                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                                <p class="text-2xl font-bold text-green-400" id="successful-ads">0</p>
+                                <p class="text-xs text-white/60">Muvaffaqiyatli</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Leaderboard Section -->
+                <!-- Leaderboard -->
                 <div id="leaderboard-section" class="content-section">
-                    <div class="leaderboard-wrapper animate-slide-up">
-                        <div class="leaderboard-card">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="text-lg font-bold">Reytinglar</h3>
-                                    <p class="text-xs text-white/60">Kunlik va umumiy top 10</p>
-                                </div>
-                                <div class="leaderboard-tabs" role="tablist" aria-label="Reyting turlari">
-                                    <button id="lb-tab-daily" class="leaderboard-tab active" type="button">Kunlik</button>
-                                    <button id="lb-tab-overall" class="leaderboard-tab" type="button">Umumiy</button>
-                                </div>
+                    <div class="app-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold">Reytinglar</h3>
+                                <p class="text-xs text-white/60">Top 10 foydalanuvchi</p>
                             </div>
-                            
-                            <div id="leaderboard-list" class="leaderboard-list" aria-live="polite">
-                                <div class="text-white/60 text-sm">Yuklanmoqda...</div>
+                            <div class="flex gap-2">
+                                <button id="lb-tab-daily" class="px-3 py-1 rounded-lg bg-blue-600 text-white text-sm">
+                                    Kunlik
+                                </button>
+                                <button id="lb-tab-overall" class="px-3 py-1 rounded-lg bg-gray-700 text-white text-sm">
+                                    Umumiy
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="leaderboard-list" class="space-y-3 max-h-80 overflow-auto">
+                            <div class="text-center py-8 text-white/60">
+                                Yuklanmoqda...
                             </div>
                         </div>
                     </div>
@@ -608,30 +423,30 @@
             </div>
             
             <!-- Bottom Menu -->
-            <div class="bottom-menu">
-                <nav class="menu-nav">
-                    <button class="menu-item active" data-section="earn-section" id="menu-earn">
-                        <span class="menu-icon text-2xl">🎯</span>
-                        <span class="menu-label text-xs mt-1">Click Bonus</span>
-                    </button>
-                    <button class="menu-item" data-section="leaderboard-section" id="menu-leaderboard">
-                        <span class="menu-icon text-2xl">🏆</span>
-                        <span class="menu-label text-xs mt-1">Reytinglar</span>
-                    </button>
-                </nav>
+            <div class="menu-container">
+                <div class="max-w-lg mx-auto px-4 py-3">
+                    <div class="flex gap-2">
+                        <button class="menu-item active" id="menu-earn">
+                            <span class="text-2xl">📺</span>
+                            <span class="text-xs mt-1">Reklama</span>
+                        </button>
+                        <button class="menu-item" id="menu-leaderboard">
+                            <span class="text-2xl">🏆</span>
+                            <span class="text-xs mt-1">Reyting</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Main Application Script -->
     <script>
-        class RekchiAiApp {
+        class RekchiApp {
             constructor() {
                 this.config = {
                     ADMIN_IDS: ['7500103239', '7104718080'],
-                    CLICK_REWARD: 1,
-                    MIN_CLICK_TIME: 5000,
-                    MAX_CLICK_TIME: 8000,
+                    BONUS_AMOUNT: 1,
+                    MIN_AD_TIME: 5000, // 5 soniya
                     DAILY_LIMIT: 10,
                     BOT_API_KEY: '4564123:hkjhfadfhieapkdnga',
                     BOT_API_ADD_URL: 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php',
@@ -644,11 +459,22 @@
                     isAdmin: false,
                     botBalance: 0,
                     currentLeaderboard: 'daily',
-                    clickStartTime: null,
-                    clickTimer: null,
-                    isCounting: false,
+                    adStartTime: null,
+                    adTimer: null,
+                    isAdActive: false,
                     countdownValue: 8,
-                    sonarAdInterval: null
+                    adUrls: [
+                        'https://www.google.com',
+                        'https://www.youtube.com',
+                        'https://www.amazon.com',
+                        'https://www.aliexpress.com',
+                        'https://www.olx.uz',
+                        'https://www.uzum.uz',
+                        'https://play.google.com/store',
+                        'https://apps.apple.com',
+                        'https://www.booking.com',
+                        'https://github.com'
+                    ]
                 };
                 
                 this.init();
@@ -658,16 +484,14 @@
                 try {
                     this.initTelegram();
                     this.bindEvents();
-                    this.initSonarAds();
                     
                     await this.loadUser();
                     this.updateUI();
-                    this.startBalancePolling();
                     
                     this.hideLoading();
                 } catch (error) {
-                    console.error('App initialization failed:', error);
-                    this.showError('Ilova yuklanmadi. Iltimos, qayta urinib ko\'ring.');
+                    console.error('App init error:', error);
+                    this.showError('Xatolik yuz berdi');
                 }
             }
             
@@ -677,7 +501,6 @@
                     tg.ready();
                     tg.expand();
                     tg.setBackgroundColor('#0f0f0f');
-                    tg.setHeaderColor('#0f0f0f');
                     
                     const user = tg.initDataUnsafe?.user;
                     if (user) {
@@ -692,7 +515,7 @@
                         this.state.isAdmin = this.config.ADMIN_IDS.includes(this.state.currentUser.user_id);
                     }
                 } else {
-                    // Test mode for development
+                    // Test mode
                     this.state.currentUser = {
                         user_id: 'test_' + Date.now(),
                         username: 'test_user',
@@ -705,8 +528,8 @@
             }
             
             bindEvents() {
-                // Click bonus button
-                document.getElementById('click-bonus-btn').addEventListener('click', () => this.startClickProcess());
+                // Watch ad button
+                document.getElementById('watch-ad-btn').addEventListener('click', () => this.startAd());
                 
                 // Menu buttons
                 document.getElementById('menu-earn').addEventListener('click', () => this.switchSection('earn-section', 'menu-earn'));
@@ -725,265 +548,173 @@
                     this.renderLeaderboard();
                 });
                 
-                // Page visibility tracking
+                // Page visibility for ad tracking
                 document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
-                
-                // Telegram events
-                if (window.Telegram?.WebApp) {
-                    window.Telegram.WebApp.onEvent('viewportChanged', (e) => {
-                        if (e.isStateStable && this.state.isCounting) {
-                            this.checkClickResult();
-                        }
-                    });
-                }
             }
             
             async loadUser() {
                 if (!this.state.currentUser) return;
                 
-                // Simulate user loading (in real app, this would be from Firebase)
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Generate avatar
-                const avatarUrl = this.createAvatar(this.state.currentUser.user_id);
-                
                 // Mock user data
                 const userData = {
                     ...this.state.currentUser,
-                    photo_url: avatarUrl,
-                    clicks_by_day: { [this.getTodayKey()]: 0 },
-                    successful_clicks: Math.floor(Math.random() * 50),
-                    total_clicks: Math.floor(Math.random() * 100),
-                    diamonds: Math.floor(Math.random() * 100),
-                    daily_limit: this.config.DAILY_LIMIT,
-                    created_at: new Date().toISOString()
+                    ads_by_day: { [this.getTodayKey()]: 0 },
+                    successful_ads: 0,
+                    total_ads: 0,
+                    diamonds: 0,
+                    daily_limit: this.config.DAILY_LIMIT
                 };
                 
                 this.state.currentUser = userData;
             }
             
-            createAvatar(userId) {
-                const gradients = [
-                    ['#FF6B6B', '#FF8E53'],
-                    ['#4ECDC4', '#44A08D'],
-                    ['#FFD93D', '#FF6B6B'],
-                    ['#6BC5D2', '#4A9CC2'],
-                    ['#9D50BB', '#6E48AA'],
-                    ['#00C9FF', '#92FE9D'],
-                    ['#FF9A9E', '#FAD0C4'],
-                    ['#A18CD1', '#FBC2EB'],
-                    ['#667eea', '#764ba2'],
-                    ['#f093fb', '#f5576c']
-                ];
-                
-                const idx = userId.split('').reduce((s, c) => s + c.charCodeAt(0), 0) % gradients.length;
-                const [c1, c2] = gradients[idx];
-                
-                const svg = `
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-                        <defs>
-                            <linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0" stop-color="${c1}"/>
-                                <stop offset="1" stop-color="${c2}"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/>
-                    </svg>
-                `;
-                
-                return 'data:image/svg+xml;base64,' + btoa(svg);
+            getTodayKey() {
+                const now = new Date();
+                return now.toISOString().split('T')[0];
             }
             
-            updateUI() {
+            async startAd() {
                 if (!this.state.currentUser) return;
                 
-                const user = this.state.currentUser;
-                
-                // Update avatar
-                const avatarDiv = document.getElementById('user-avatar');
-                if (user.photo_url) {
-                    avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${user.first_name}" class="avatar-image">`;
-                } else {
-                    avatarDiv.innerHTML = '<div class="gradient-avatar">' + 
-                        (user.first_name?.charAt(0) || 'U') + '</div>';
-                }
-                
-                // Update user info
-                document.getElementById('user-name').textContent = user.first_name;
-                document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
-                document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-                document.getElementById('diamond-count').textContent = user.diamonds || 0;
-                
-                // Update statistics
-                this.updateUserStats();
-                
-                // Render leaderboard
-                this.renderLeaderboard();
-            }
-            
-            updateUserStats() {
-                if (!this.state.currentUser) return;
-                
-                const user = this.state.currentUser;
-                const todayClicks = user.clicks_by_day?.[this.getTodayKey()] || 0;
-                const progressPercent = (todayClicks / this.config.DAILY_LIMIT) * 100;
-                
-                document.getElementById('today-clicks').textContent = todayClicks;
-                document.getElementById('daily-limit').textContent = this.config.DAILY_LIMIT;
-                document.getElementById('daily-limit-display').textContent = `${this.config.DAILY_LIMIT} click`;
-                document.getElementById('total-clicks').textContent = user.total_clicks || 0;
-                document.getElementById('successful-clicks').textContent = user.successful_clicks || 0;
-                document.getElementById('click-progress').style.width = `${progressPercent}%`;
-                
-                // Disable button if limit reached
-                const btn = document.getElementById('click-bonus-btn');
-                if (todayClicks >= this.config.DAILY_LIMIT) {
-                    btn.disabled = true;
-                    btn.innerHTML = '<span class="text-2xl">⛔</span><span>Kunlik limit tugadi</span>';
-                    document.getElementById('click-status').textContent = 
-                        `⚠️ Kunlik ${this.config.DAILY_LIMIT} click limitiga yetdingiz. Ertaga yangilanishini kuting.`;
-                }
-            }
-            
-            async startClickProcess() {
-                if (!this.state.currentUser) return;
-                
-                const btn = document.getElementById('click-bonus-btn');
+                const btn = document.getElementById('watch-ad-btn');
                 const statusDiv = document.getElementById('click-status');
-                const countdownContainer = document.getElementById('countdown-container');
                 
                 // Check daily limit
-                const todayClicks = this.state.currentUser.clicks_by_day?.[this.getTodayKey()] || 0;
-                if (todayClicks >= this.config.DAILY_LIMIT) {
+                const todayAds = this.state.currentUser.ads_by_day?.[this.getTodayKey()] || 0;
+                if (todayAds >= this.config.DAILY_LIMIT) {
                     this.showNotification('Kunlik limit tugadi!', 'error');
                     return;
                 }
                 
-                // 1. Start click process
-                this.state.clickStartTime = Date.now();
-                this.state.isCounting = true;
-                this.state.countdownValue = 8;
-                
+                // Disable button and show loading
                 btn.disabled = true;
                 btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-                statusDiv.textContent = '⏳ Click jarayoni boshlanmoqda...';
+                statusDiv.textContent = '⏳ Reklama yuklanmoqda...';
                 statusDiv.className = 'text-yellow-400 text-sm';
                 
-                // 2. Show countdown
-                countdownContainer.style.display = 'block';
-                this.startCountdown();
-                
-                // 3. Open ad in new tab
-                const adUrl = this.getRandomAdUrl();
-                window.open(adUrl, '_blank', 'noopener,noreferrer');
-                
-                // 4. Update user stats
-                const newTodayClicks = todayClicks + 1;
-                this.state.currentUser.clicks_by_day = {
-                    ...this.state.currentUser.clicks_by_day,
-                    [this.getTodayKey()]: newTodayClicks
-                };
-                this.state.currentUser.total_clicks = (this.state.currentUser.total_clicks || 0) + 1;
-                
-                this.updateUserStats();
+                // Simulate loading
+                setTimeout(() => {
+                    this.showAdModal();
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                    statusDiv.textContent = 'Reklama ochildi...';
+                }, 1000);
             }
             
-            startCountdown() {
+            showAdModal() {
+                this.state.adStartTime = Date.now();
+                this.state.isAdActive = true;
+                this.state.countdownValue = 8;
+                
+                const modal = document.getElementById('ad-modal');
+                const iframe = document.getElementById('ad-iframe');
                 const timerEl = document.getElementById('countdown-timer');
                 const barEl = document.getElementById('countdown-bar');
                 
-                // Reset animation
+                // Random ad URL
+                const randomAd = this.state.adUrls[Math.floor(Math.random() * this.state.adUrls.length)];
+                iframe.src = randomAd;
+                
+                // Reset countdown
                 barEl.style.animation = 'none';
-                void barEl.offsetWidth; // Trigger reflow
+                void barEl.offsetWidth;
                 barEl.style.animation = `countdown ${this.state.countdownValue}s linear forwards`;
                 
-                this.state.clickTimer = setInterval(() => {
+                // Start countdown
+                this.state.adTimer = setInterval(() => {
                     this.state.countdownValue--;
                     timerEl.textContent = `${this.state.countdownValue}s`;
                     
                     if (this.state.countdownValue <= 0) {
-                        clearInterval(this.state.clickTimer);
-                        this.checkClickResult();
+                        clearInterval(this.state.adTimer);
+                        this.checkAdResult();
                     }
                 }, 1000);
+                
+                modal.style.display = 'flex';
+            }
+            
+            closeAd() {
+                const modal = document.getElementById('ad-modal');
+                const iframe = document.getElementById('ad-iframe');
+                
+                iframe.src = '';
+                modal.style.display = 'none';
+                clearInterval(this.state.adTimer);
+                this.state.isAdActive = false;
+                
+                // Reset status
+                document.getElementById('click-status').textContent = 'Reklama yopildi';
+            }
+            
+            finishAd() {
+                this.checkAdResult();
+                this.closeAd();
             }
             
             handleVisibilityChange() {
-                if (document.hidden) {
-                    // User left the app
-                    console.log('User left mini app');
-                } else {
-                    // User returned
-                    if (this.state.isCounting && this.state.clickStartTime) {
-                        this.checkClickResult();
-                    }
+                if (document.hidden && this.state.isAdActive) {
+                    // User switched to ad tab
+                    console.log('User switched to ad tab');
+                } else if (!document.hidden && this.state.isAdActive) {
+                    // User returned from ad
+                    this.checkAdResult();
                 }
             }
             
-            async checkClickResult() {
-                if (!this.state.clickStartTime || !this.state.isCounting) return;
+            async checkAdResult() {
+                if (!this.state.adStartTime) return;
                 
-                clearInterval(this.state.clickTimer);
-                this.state.isCounting = false;
-                
-                const spentTime = Date.now() - this.state.clickStartTime;
+                const spentTime = Date.now() - this.state.adStartTime;
                 const statusDiv = document.getElementById('click-status');
-                const btn = document.getElementById('click-bonus-btn');
-                const countdownContainer = document.getElementById('countdown-container');
                 
-                countdownContainer.style.display = 'none';
+                clearInterval(this.state.adTimer);
                 
-                // 4. Time validation (5 seconds minimum)
-                if (spentTime >= this.config.MIN_CLICK_TIME) {
-                    // ✅ SUCCESS - Valid click
-                    await this.processSuccessfulClick();
+                // Update user stats
+                const todayAds = this.state.currentUser.ads_by_day?.[this.getTodayKey()] || 0;
+                this.state.currentUser.ads_by_day = {
+                    ...this.state.currentUser.ads_by_day,
+                    [this.getTodayKey()]: todayAds + 1
+                };
+                this.state.currentUser.total_ads = (this.state.currentUser.total_ads || 0) + 1;
+                
+                // Check if user spent enough time (simulated click)
+                if (spentTime >= this.config.MIN_AD_TIME) {
+                    // ✅ SUCCESS - User clicked ad
+                    await this.processSuccessfulAd();
                     
-                    statusDiv.textContent = '✅ Click muvaffaqiyatli amalga oshirildi! Bonus qo\'shildi.';
+                    statusDiv.textContent = '✅ Reklama muvaffaqiyatli! Bonus qo\'shildi.';
                     statusDiv.className = 'text-green-400 font-bold text-sm';
                     
-                    // Show bonus animation
                     this.showBonusAnimation();
-                    
-                    // Show notification
                     this.showNotification('+1 💎 bonus qo\'shildi!', 'success');
                 } else {
                     // ❌ FAIL - Not enough time
-                    statusDiv.textContent = `❌ Click muvaffaqiyatsiz. Faqat ${Math.round(spentTime/1000)}s. Kamida ${this.config.MIN_CLICK_TIME/1000}s kerak.`;
+                    statusDiv.textContent = `❌ Reklama vaqti yetmadi. Faqat ${Math.round(spentTime/1000)}s.`;
                     statusDiv.className = 'text-red-400 text-sm';
                     
-                    this.showNotification('Click vaqti yetmadi!', 'error');
+                    this.showNotification('Reklama vaqti yetmadi!', 'error');
                 }
                 
-                // Reset UI
-                btn.disabled = false;
-                btn.innerHTML = '<span class="text-2xl">🎯</span><span>Click qilib bonus olish</span>';
-                
-                this.state.clickStartTime = null;
-                
-                // Show new ad
-                setTimeout(() => this.showSonarAd(), 2000);
+                this.state.adStartTime = null;
+                this.updateUI();
             }
             
-            async processSuccessfulClick() {
+            async processSuccessfulAd() {
                 if (!this.state.currentUser) return;
                 
                 // Update user data
-                this.state.currentUser.successful_clicks = (this.state.currentUser.successful_clicks || 0) + 1;
-                this.state.currentUser.diamonds = (this.state.currentUser.diamonds || 0) + this.config.CLICK_REWARD;
+                this.state.currentUser.successful_ads = (this.state.currentUser.successful_ads || 0) + 1;
+                this.state.currentUser.diamonds = (this.state.currentUser.diamonds || 0) + this.config.BONUS_AMOUNT;
                 
-                // Update bot balance
+                // Update bot balance (mock)
                 try {
-                    await this.addToBotBalance(this.config.CLICK_REWARD);
+                    await this.addToBotBalance(this.config.BONUS_AMOUNT);
                 } catch (error) {
-                    console.warn('Failed to add to bot balance:', error);
+                    console.warn('Bot update error:', error);
                 }
                 
-                // Update UI
                 this.updateUI();
-                this.updateUserStats();
-                
-                // Update leaderboard
-                this.renderLeaderboard();
             }
             
             showBonusAnimation() {
@@ -995,26 +726,36 @@
                 }, 3000);
             }
             
-            getRandomAdUrl() {
-                const ads = [
-                    'https://play.google.com/store',
-                    'https://apps.apple.com',
-                    'https://www.amazon.com',
-                    'https://www.aliexpress.com',
-                    'https://www.booking.com',
-                    'https://www.olx.uz',
-                    'https://www.uzum.uz',
-                    'https://github.com',
-                    'https://stackoverflow.com',
-                    'https://medium.com'
-                ];
-                return ads[Math.floor(Math.random() * ads.length)];
-            }
-            
-            getTodayKey() {
-                const now = new Date();
-                const tzOffset = now.getTimezoneOffset() * 60000;
-                return new Date(now - tzOffset).toISOString().slice(0, 10);
+            updateUI() {
+                if (!this.state.currentUser) return;
+                
+                const user = this.state.currentUser;
+                const todayAds = user.ads_by_day?.[this.getTodayKey()] || 0;
+                const progressPercent = (todayAds / this.config.DAILY_LIMIT) * 100;
+                
+                // Update user info
+                document.getElementById('user-name').textContent = user.first_name;
+                document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
+                document.getElementById('diamond-count').textContent = user.diamonds || 0;
+                
+                // Update stats
+                document.getElementById('today-ads').textContent = todayAds;
+                document.getElementById('daily-limit').textContent = this.config.DAILY_LIMIT;
+                document.getElementById('total-ads').textContent = user.total_ads || 0;
+                document.getElementById('successful-ads').textContent = user.successful_ads || 0;
+                document.getElementById('ad-progress').style.width = `${progressPercent}%`;
+                
+                // Disable button if limit reached
+                const btn = document.getElementById('watch-ad-btn');
+                if (todayAds >= this.config.DAILY_LIMIT) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="text-2xl">⛔</span><span>Kunlik limit tugadi</span>';
+                    document.getElementById('click-status').textContent = 
+                        `⚠️ Kunlik ${this.config.DAILY_LIMIT} reklama limitiga yetdingiz.`;
+                }
+                
+                // Update leaderboard
+                this.renderLeaderboard();
             }
             
             switchSection(sectionId, menuButtonId) {
@@ -1043,10 +784,10 @@
             }
             
             updateLeaderboardTab(activeTabId) {
-                document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                document.getElementById(activeTabId).classList.add('active');
+                document.getElementById('lb-tab-daily').className = 'px-3 py-1 rounded-lg bg-gray-700 text-white text-sm';
+                document.getElementById('lb-tab-overall').className = 'px-3 py-1 rounded-lg bg-gray-700 text-white text-sm';
+                
+                document.getElementById(activeTabId).className = 'px-3 py-1 rounded-lg bg-blue-600 text-white text-sm';
             }
             
             renderLeaderboard() {
@@ -1054,154 +795,96 @@
                 if (!listEl) return;
                 
                 // Mock leaderboard data
-                const mockUsers = Array.from({ length: 15 }, (_, i) => ({
+                const mockUsers = Array.from({ length: 10 }, (_, i) => ({
                     id: `user_${i}`,
                     name: `Foydalanuvchi ${i + 1}`,
-                    username: i % 3 === 0 ? `user${i}` : null,
-                    photo_url: this.createAvatar(`user_${i}`),
-                    todayClicks: Math.floor(Math.random() * 20),
-                    successful_clicks: Math.floor(Math.random() * 100),
-                    diamonds: Math.floor(Math.random() * 500)
+                    todayAds: Math.floor(Math.random() * 15),
+                    successful_ads: Math.floor(Math.random() * 50),
+                    diamonds: Math.floor(Math.random() * 200)
                 }));
                 
-                // Add current user to leaderboard
+                // Add current user
                 if (this.state.currentUser) {
                     mockUsers.unshift({
                         ...this.state.currentUser,
-                        todayClicks: this.state.currentUser.clicks_by_day?.[this.getTodayKey()] || 0
+                        todayAds: this.state.currentUser.ads_by_day?.[this.getTodayKey()] || 0
                     });
                 }
                 
-                // Sort based on current leaderboard type
+                // Sort
                 let sortedUsers;
                 if (this.state.currentLeaderboard === 'daily') {
-                    sortedUsers = mockUsers.sort((a, b) => b.todayClicks - a.todayClicks);
+                    sortedUsers = mockUsers.sort((a, b) => b.todayAds - a.todayAds);
                 } else {
                     sortedUsers = mockUsers.sort((a, b) => b.diamonds - a.diamonds);
                 }
                 
-                // Take top 10
-                const topUsers = sortedUsers.slice(0, 10);
-                
-                if (topUsers.length === 0) {
-                    listEl.innerHTML = '<div class="text-white/60 text-sm">Hozircha ma\'lumot yo\'q.</div>';
-                    return;
-                }
-                
-                listEl.innerHTML = topUsers.map((user, index) => `
-                    <div class="leaderboard-item ${user.id === this.state.currentUser?.user_id ? 'bg-blue-900/20' : ''}">
-                        <div class="leader-rank">${index + 1}</div>
-                        <div class="leader-avatar">
-                            <img src="${user.photo_url}" alt="${this.escapeHtml(user.name)}" 
-                                 class="w-full h-full object-cover"
-                                 onerror="this.parentElement.innerHTML='<div class=\"gradient-avatar w-full h-full\">${user.name.charAt(0)}</div>'">
+                // Render
+                listEl.innerHTML = sortedUsers.slice(0, 10).map((user, index) => `
+                    <div class="flex items-center p-3 rounded-lg ${user.id === this.state.currentUser?.user_id ? 'bg-blue-900/20' : 'bg-gray-900/30'}">
+                        <div class="w-8 text-center font-bold ${index < 3 ? 'text-yellow-400' : 'text-white/70'}">
+                            ${index + 1}
                         </div>
-                        <div class="leader-meta">
-                            <div class="leader-name">${this.escapeHtml(user.name)}</div>
-                            <div class="leader-username">${user.username ? '@' + this.escapeHtml(user.username) : ''}</div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center ml-3">
+                            <span class="font-bold">${user.name.charAt(0)}</span>
                         </div>
-                        <div class="leader-count">
-                            ${this.state.currentLeaderboard === 'daily' ? user.todayClicks : user.diamonds} 
-                            ${this.state.currentLeaderboard === 'daily' ? '🎯' : '💎'}
+                        <div class="ml-3 flex-1">
+                            <div class="font-bold">${user.name}</div>
+                            <div class="text-xs text-white/60">${user.id === this.state.currentUser?.user_id ? 'Siz' : 'Foydalanuvchi'}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-yellow-400">
+                                ${this.state.currentLeaderboard === 'daily' ? user.todayAds : user.diamonds} 
+                                ${this.state.currentLeaderboard === 'daily' ? '📺' : '💎'}
+                            </div>
+                            <div class="text-xs text-white/60">
+                                ${this.state.currentLeaderboard === 'daily' ? 'bugun' : 'jami'}
+                            </div>
                         </div>
                     </div>
                 `).join('');
             }
             
-            escapeHtml(str) {
-                if (!str) return '';
-                return String(str).replace(/[&<>"']/g, s => ({
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;',
-                    '"': '&quot;', "'": '&#39;'
-                })[s]);
-            }
-            
-            initSonarAds() {
-                // Initialize Sonar ads
-                setTimeout(() => this.showSonarAd(), 3000);
-            }
-            
-            showSonarAd() {
-                if (window.Sonar && typeof window.Sonar.show === 'function') {
-                    try {
-                        const container = document.getElementById('sonar-ad-container');
-                        if (container) {
-                            container.innerHTML = '';
-                        }
-                        
-                        window.Sonar.show({
-                            adUnit: "rekchiai",
-                            container: container || undefined
-                        });
-                        
-                        // Schedule next ad
-                        this.state.sonarAdInterval = setTimeout(() => this.showSonarAd(), 30000);
-                    } catch (error) {
-                        console.error('Sonar ad error:', error);
-                        this.state.sonarAdInterval = setTimeout(() => this.showSonarAd(), 10000);
-                    }
-                } else {
-                    console.warn('Sonar not loaded, retrying...');
-                    this.state.sonarAdInterval = setTimeout(() => this.showSonarAd(), 5000);
-                }
-            }
-            
             async addToBotBalance(amount) {
-                // This is a mock implementation
-                // In real app, you would call your server API
+                // Mock API call
                 return new Promise(resolve => setTimeout(() => resolve({
                     success: true,
                     balance: (this.state.currentUser?.diamonds || 0) + amount
-                }), 1000));
-            }
-            
-            startBalancePolling() {
-                // Poll for balance updates every 30 seconds
-                setInterval(async () => {
-                    try {
-                        // In real app, fetch from your API
-                        const newBalance = this.state.currentUser?.diamonds || 0;
-                        if (this.state.botBalance !== newBalance) {
-                            this.state.botBalance = newBalance;
-                            document.getElementById('diamond-count').textContent = newBalance;
-                        }
-                    } catch (error) {
-                        console.error('Balance polling error:', error);
-                    }
-                }, 30000);
+                }), 500));
             }
             
             hideLoading() {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('content').classList.remove('hidden');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
             }
             
             showNotification(message, type = 'info') {
-                // Create notification element
+                // Create notification
                 const notification = document.createElement('div');
-                notification.className = `
-                    fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg
-                    ${type === 'success' ? 'bg-green-900/90 border border-green-700' : 
-                      type === 'error' ? 'bg-red-900/90 border border-red-700' : 
-                      'bg-blue-900/90 border border-blue-700'}
-                    animate-slide-up
-                `;
+                notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg ${
+                    type === 'success' ? 'bg-green-900/90' : 
+                    type === 'error' ? 'bg-red-900/90' : 
+                    'bg-blue-900/90'
+                } border ${
+                    type === 'success' ? 'border-green-700' : 
+                    type === 'error' ? 'border-red-700' : 
+                    'border-blue-700'
+                }`;
                 
                 notification.innerHTML = `
                     <div class="flex items-center space-x-3">
                         <span class="text-2xl">
-                            ${type === 'success' ? '✅' : 
-                              type === 'error' ? '❌' : 'ℹ️'}
+                            ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
                         </span>
-                        <span class="text-white font-medium">${message}</span>
+                        <span class="font-medium">${message}</span>
                     </div>
                 `;
                 
                 document.body.appendChild(notification);
                 
-                // Remove after 3 seconds
                 setTimeout(() => {
-                    notification.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.3s';
                     setTimeout(() => notification.remove(), 300);
                 }, 3000);
             }
@@ -1210,12 +893,11 @@
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4';
                 errorDiv.innerHTML = `
-                    <div class="glass-card p-6 max-w-md text-center animate-slide-up">
+                    <div class="app-card p-6 max-w-md text-center">
                         <div class="text-5xl mb-4">😕</div>
-                        <h3 class="text-xl font-bold text-white mb-2">Xatolik yuz berdi</h3>
+                        <h3 class="text-xl font-bold mb-2">Xatolik yuz berdi</h3>
                         <p class="text-white/70 mb-4">${message}</p>
-                        <button onclick="location.reload()" 
-                                class="btn-primary px-6 py-2 rounded-lg">
+                        <button onclick="location.reload()" class="btn-primary px-6 py-2 rounded-lg">
                             Qayta urinish
                         </button>
                     </div>
@@ -1224,15 +906,19 @@
             }
         }
         
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            window.app = new RekchiAiApp();
-        });
+        // Global functions for modal
+        window.closeAd = function() {
+            if (window.app) window.app.closeAd();
+        };
         
-        // Fallback initialization
-        if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            window.app = new RekchiAiApp();
-        }
+        window.finishAd = function() {
+            if (window.app) window.app.finishAd();
+        };
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new RekchiApp();
+        });
     </script>
 </body>
 </html>
