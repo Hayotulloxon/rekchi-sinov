@@ -1,226 +1,592 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uz" class="h-full dark">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>RekchiAi olmoslari</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RekchiAi Olmoslari</title>
     
-    <!-- Ads.txt faylini bog'lash -->
+    <!-- Ads.txt integratisiyasi -->
     <link rel="ads.txt" href="https://hayotulloxon.github.io/ads.txt">
+    <meta name="ads.txt-location" content="https://hayotulloxon.github.io/ads.txt">
     
-    <!-- Telegram Web App -->
+    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Sonar reklama tizimi -->
+    <!-- Sonar Reklama -->
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840" async defer></script>
     
-    <script>window.process = { env: { NODE_ENV: 'production' } };</script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        diamond: {
+                            DEFAULT: '#0ea5e9',
+                            light: '#38bdf8',
+                            dark: '#0284c7'
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'celebrate': 'celebrate 0.6s ease-out',
+                        'countdown': 'countdown 8s linear forwards'
+                    },
+                    keyframes: {
+                        'pulse-glow': {
+                            '0%, 100%': { 
+                                boxShadow: '0 0 20px rgba(14, 165, 233, 0.3), 0 0 40px rgba(14, 165, 233, 0.1)'
+                            },
+                            '50%': { 
+                                boxShadow: '0 0 30px rgba(14, 165, 233, 0.5), 0 0 60px rgba(14, 165, 233, 0.2)'
+                            }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        'slideUp': {
+                            'from': { opacity: '0', transform: 'translateY(20px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        'celebrate': {
+                            '0%, 100%': { transform: 'scale(1) rotate(0)' },
+                            '25%': { transform: 'scale(1.15) rotate(-3deg)' },
+                            '75%': { transform: 'scale(1.15) rotate(3deg)' }
+                        },
+                        'countdown': {
+                            '0%': { width: '100%' },
+                            '100%': { width: '0%' }
+                        }
+                    }
+                }
+            }
+        }
+        
+        window.process = { env: { NODE_ENV: 'production' } };
+    </script>
+    
+    <!-- Google Adsense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1252497877570010" crossorigin="anonymous"></script>
     
     <style>
-        body { 
-            box-sizing: border-box; 
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; 
-            background: #0f0f0f; 
-            color: #fff; 
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #0284c7;
+            --background-dark: #0f0f0f;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
         }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3),0 0 40px rgba(0,150,255,.1)} 50%{box-shadow:0 0 30px rgba(0,150,255,.5),0 0 60px rgba(0,150,255,.2)} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
-        @keyframes celebrate { 0%,100%{transform:scale(1) rotate(0)} 25%{transform:scale(1.15) rotate(-3deg)} 75%{transform:scale(1.15) rotate(3deg)} }
-        @keyframes countdown { 0%{width:100%} 100%{width:0%} }
-        .float-animation{animation:float 3s ease-in-out infinite} 
-        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} 
-        .slide-up{animation:slideUp .4s ease-out}
-        .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
-        .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
-        .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6)); color:#0096ff}
-        .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); box-shadow:0 6px 20px rgba(0,150,255,.3); transition:all .3s; position:relative; overflow:hidden;}
-        .btn-primary:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,.4); }
-        .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
-        .btn-primary:hover::after{ left:100%; }
-        .avatar-container{ width:64px; height:64px; border-radius:50%; overflow:hidden; position:relative; background:linear-gradient(135deg,#0096ff,#0066cc); flex:0 0 auto; }
-        .avatar-image{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; display:block; }
-        .gradient-avatar{ width:100%; height:100%; background:linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
-        .status-card{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); }
-        .reward-badge{ background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); }
-        .diamond-count{ background:rgba(0,150,255,.1); border:1px solid rgba(0,150,255,.2); }
-        .menu-container{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-        .menu-nav{ display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
-        .menu-item{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s; cursor:pointer; position:relative; }
-        .menu-item.active{ background:rgba(255,255,255,.1); color:white; }
-        .content-container{ padding-bottom:100px; }
-        ::-webkit-scrollbar{ width:6px } 
-        ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px } 
-        ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px } 
-        ::-webkit-scrollbar-thumb:hover{ background:#0066cc }
-        ::selection{ background:rgba(0,150,255,.3); color:white }
-        .content-section{ display:none; animation:fadeIn .3s ease-out; } 
-        .content-section.active{ display:block; }
-        @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
-        .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
-        .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
-        .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
-        .leaderboard-tab { padding:8px 12px; border-radius:10px; cursor:pointer; color:rgba(255,255,255,.75); background:transparent; font-weight:600; border:1px solid transparent; }
-        .leaderboard-tab.active { background:linear-gradient(90deg,#0096ff,#0066cc); color:white; box-shadow:0 6px 18px rgba(0,150,255,0.12); }
-        .leaderboard-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; }
-        .leaderboard-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; transition:background .12s; }
-        .leader-rank { width:36px; text-align:center; font-weight:800; color:#ffd54a; }
-        .leader-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex:0 0 auto; }
-        .leader-meta { flex:1; }
-        .leader-name { font-weight:700; color:#fff; }
-        .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
-        .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
-        @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
-        #sonar-ad-container { position: fixed; bottom: 80px; left: 0; right: 0; z-index: 99; margin: 0 auto; max-width: 400px; padding: 0 16px; }
-        .countdown-bar { height: 4px; background: linear-gradient(90deg, #00ff88, #0099ff); animation: countdown 8s linear forwards; border-radius: 2px; }
-        .bonus-indicator { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(0,0,0,0.9); padding: 20px; border-radius: 15px; text-align: center; display: none; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(30, 30, 30, 0.95));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .diamond-glow {
+            filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.6));
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+        }
+        
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::after {
+            left: 100%;
+        }
+        
+        .avatar-container {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            flex-shrink: 0;
+        }
+        
+        .avatar-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+        }
+        
+        .gradient-avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .reward-badge {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .diamond-count {
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+        
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .menu-nav {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 12px 16px;
+            gap: 8px;
+        }
+        
+        .menu-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 8px;
+            border-radius: 16px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .content-container {
+            padding-bottom: 100px;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        ::selection {
+            background: rgba(14, 165, 233, 0.3);
+            color: white;
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Leaderboard styles */
+        .leaderboard-wrapper {
+            max-width: 640px;
+            margin: 10px auto;
+            padding: 12px;
+        }
+        
+        .leaderboard-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        
+        .leaderboard-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .leaderboard-tab {
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.75);
+            background: transparent;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        
+        .leaderboard-tab.active {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 6px 18px rgba(14, 165, 233, 0.12);
+        }
+        
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.12s;
+        }
+        
+        .leader-rank {
+            width: 36px;
+            text-align: center;
+            font-weight: 800;
+            color: #ffd54a;
+        }
+        
+        .leader-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .leader-meta {
+            flex: 1;
+        }
+        
+        .leader-name {
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .leader-username {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .leader-count {
+            font-weight: 800;
+            color: #ffd54a;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+        
+        /* Countdown styles */
+        .countdown-container {
+            display: none;
+            margin-bottom: 16px;
+        }
+        
+        .countdown-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #00ff88, #0099ff);
+            border-radius: 2px;
+            width: 100%;
+        }
+        
+        /* Bonus indicator */
+        .bonus-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Sonar ad container */
+        #sonar-ad-container {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            margin: 0 auto;
+            max-width: 400px;
+            padding: 0 16px;
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 420px) {
+            .leaderboard-list {
+                max-height: 300px;
+            }
+            
+            .leader-avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .avatar-container {
+                width: 56px;
+                height: 56px;
+            }
+        }
     </style>
 </head>
-<body class="h-full gradient-bg text-white overflow-auto">
-    <!-- Bonus indicator -->
+<body class="h-full text-white overflow-auto">
+    <!-- Bonus Indicator -->
     <div id="bonus-indicator" class="bonus-indicator">
-        <div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div>
+        <div class="text-6xl mb-3 animate-celebrate">🎉</div>
         <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
         <p class="text-2xl font-bold text-yellow-400 mb-2">+1 💎</p>
         <p class="text-sm text-white/60">Click uchun bonus qo'shildi!</p>
     </div>
-
-    <!-- Sonar reklama -->
+    
+    <!-- Sonar Ad Container -->
     <div id="sonar-ad-container"></div>
     
+    <!-- Main App Container -->
     <div id="app" class="min-h-full w-full">
-        <!-- Loading -->
+        <!-- Loading Screen -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
-            <div class="text-center slide-up">
-                <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
+            <div class="text-center animate-slide-up">
+                <div class="text-7xl mb-6 animate-float diamond-glow">💎</div>
                 <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
-                <p class="text-xl font-semibold text-white/90">RekchiAi olmoslari</p>
+                <p class="text-xl font-semibold text-white/90">RekchiAi Olmoslari</p>
                 <p class="text-white/60 mt-2">Yuklanmoqda...</p>
             </div>
         </div>
-
-        <!-- Content -->
+        
+        <!-- Main Content -->
         <div id="content" class="hidden">
-            <!-- Top bar -->
-            <div class="sticky top-0 z-50 top-bar border-b border-white/5">
+            <!-- Top Bar -->
+            <div class="sticky top-0 z-50 border-b border-white/5 bg-black/50 backdrop-blur-lg">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="text-3xl diamond-icon">💎</div>
+                            <div class="text-3xl diamond-glow">💎</div>
                             <div>
-                                <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
+                                <h1 class="text-xl font-bold text-white/90">RekchiAi Olmoslari</h1>
                                 <p class="text-xs text-white/60">Click qiling, olmos bot balansiga qo'shiladi</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
+                        <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full animate-pulse-glow">
                             <span id="diamond-count" class="text-2xl font-bold text-yellow-400">0</span>
-                            <span class="text-xl diamond-icon">💎</span>
+                            <span class="text-xl diamond-glow">💎</span>
                         </div>
                     </div>
                 </div>
             </div>
-
+            
+            <!-- Content Area -->
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
                 <!-- Earn Section -->
                 <div id="earn-section" class="content-section active">
-                    <!-- User card -->
-                    <div class="app-card p-5 slide-up">
+                    <!-- User Profile Card -->
+                    <div class="glass-card p-5 animate-slide-up">
                         <div class="flex items-center space-x-4">
-                            <div id="user-avatar" class="avatar-container user-avatar"></div>
+                            <div id="user-avatar" class="avatar-container"></div>
                             <div class="flex-1">
                                 <h3 id="user-name" class="font-bold text-lg text-white/90">Foydalanuvchi</h3>
-                                <p id="user-id" class="text-white/50 text-sm">ID: Loading...</p>
+                                <p id="user-id" class="text-white/50 text-sm">ID: Yuklanmoqda...</p>
                                 <p id="user-username" class="text-white/60 text-xs mt-1">@username</p>
-                                <div class="mt-2">
-                                    <p class="text-xs text-white/50">Bugungi clicklar: <span id="today-clicks">0</span>/<span id="daily-limit">10</span></p>
-                                    <div class="w-full bg-gray-800 rounded-full h-1.5 mt-1">
-                                        <div id="click-progress" class="bg-green-500 h-1.5 rounded-full" style="width: 0%"></div>
+                                <div class="mt-3">
+                                    <p class="text-xs text-white/50">Bugungi clicklar: 
+                                        <span id="today-clicks" class="font-bold">0</span>/<span id="daily-limit" class="font-bold">10</span>
+                                    </p>
+                                    <div class="progress-bar mt-1">
+                                        <div id="click-progress" class="progress-fill" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Click bonus kartasi -->
-                    <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
+                    
+                    <!-- Click Bonus Card -->
+                    <div class="glass-card p-6 animate-slide-up" style="animation-delay: 0.1s">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
                                 <div class="text-3xl">🎯</div>
                                 <div>
                                     <h2 class="text-xl font-bold text-white/90">Click qilib bonus oling</h2>
-                                    <p class="text-white/60 text-sm">Reklamaga click qiling → tashqi sahifaga o'ting → bonus oling</p>
+                                    <p class="text-white/60 text-sm">Reklamaga click → tashqi sahifa → bonus</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
                                 <span class="text-green-400 font-bold text-sm">+1 💎</span>
                             </div>
                         </div>
-
-                        <!-- Vaqt va holat -->
-                        <div id="ad-status" class="status-card rounded-2xl p-6 mb-5">
+                        
+                        <!-- Click Requirements -->
+                        <div class="status-card rounded-2xl p-6 mb-5">
                             <div class="text-center">
-                                <p class="text-white/90 font-bold mb-2">📊 Click shartlari:</p>
+                                <p class="text-white/90 font-bold mb-3">📊 Click shartlari:</p>
                                 <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div class="text-center p-2 bg-gray-900/50 rounded-lg">
+                                    <div class="text-center p-3 bg-gray-900/50 rounded-xl">
                                         <p class="text-yellow-400">⏱ Minimal vaqt</p>
-                                        <p class="font-bold">5 soniya</p>
+                                        <p class="font-bold text-lg">5 soniya</p>
                                     </div>
-                                    <div class="text-center p-2 bg-gray-900/50 rounded-lg">
+                                    <div class="text-center p-3 bg-gray-900/50 rounded-xl">
                                         <p class="text-yellow-400">🎯 Kunlik limit</p>
-                                        <p class="font-bold" id="daily-limit-display">10 click</p>
+                                        <p class="font-bold text-lg" id="daily-limit-display">10 click</p>
                                     </div>
                                 </div>
-                                <p class="text-white/60 text-xs mt-4">ℹ️ Reklamaga click qilib, tashqi sahifada kamida 5 soniya turishingiz kerak</p>
+                                <p class="text-white/60 text-xs mt-4">
+                                    ℹ️ Reklamaga click qilib, tashqi sahifada kamida 5 soniya turishingiz kerak
+                                </p>
                             </div>
                         </div>
-
-                        <!-- Countdown bar -->
-                        <div id="countdown-container" class="hidden mb-4">
+                        
+                        <!-- Countdown -->
+                        <div id="countdown-container" class="countdown-container">
                             <div class="flex justify-between text-sm mb-1">
                                 <span class="text-white/70">Qaytishga qoldi:</span>
                                 <span id="countdown-timer" class="text-yellow-400 font-bold">8s</span>
                             </div>
                             <div id="countdown-bar" class="countdown-bar"></div>
-                            <p class="text-white/60 text-xs mt-2 text-center">⚠️ Mini app ochiq qoling, 8 soniyadan keyin qayting</p>
+                            <p class="text-white/60 text-xs mt-2 text-center">
+                                ⚠️ Mini app ochiq qoling, 8 soniyadan keyin qayting
+                            </p>
                         </div>
-
-                        <!-- Click tugmasi -->
-                        <button id="click-bonus-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
+                        
+                        <!-- Click Button -->
+                        <button id="click-bonus-btn" 
+                                class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">🎯</span>
                             <span>Click qilib bonus olish</span>
                         </button>
-
-                        <!-- Holat ko'rsatgichi -->
+                        
+                        <!-- Status Indicator -->
                         <div id="status-indicator" class="mt-4 text-center">
                             <p id="click-status" class="text-white/70 text-sm">Click boshlang...</p>
                         </div>
                     </div>
-
-                    <!-- Statistika -->
-                    <div class="app-card p-5 slide-up">
+                    
+                    <!-- Statistics Card -->
+                    <div class="glass-card p-5 animate-slide-up" style="animation-delay: 0.2s">
                         <div class="flex items-center space-x-3 mb-4">
                             <div class="text-2xl">📈</div>
                             <h3 class="font-bold text-white/90">Sizning statistikangiz</h3>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                            <div class="text-center p-4 bg-gray-900/30 rounded-xl">
                                 <p class="text-2xl font-bold text-yellow-400" id="total-clicks">0</p>
                                 <p class="text-xs text-white/60 mt-1">Jami Click</p>
                             </div>
-                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                            <div class="text-center p-4 bg-gray-900/30 rounded-xl">
                                 <p class="text-2xl font-bold text-green-400" id="successful-clicks">0</p>
                                 <p class="text-xs text-white/60 mt-1">Muvaffaqiyatli</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Leaderboard Section -->
                 <div id="leaderboard-section" class="content-section">
-                    <div class="leaderboard-wrapper slide-up">
+                    <div class="leaderboard-wrapper animate-slide-up">
                         <div class="leaderboard-card">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
@@ -228,11 +594,11 @@
                                     <p class="text-xs text-white/60">Kunlik va umumiy top 10</p>
                                 </div>
                                 <div class="leaderboard-tabs" role="tablist" aria-label="Reyting turlari">
-                                    <button id="lb-tab-daily-main" class="leaderboard-tab active" type="button">Kunlik</button>
-                                    <button id="lb-tab-overall-main" class="leaderboard-tab" type="button">Umumiy</button>
+                                    <button id="lb-tab-daily" class="leaderboard-tab active" type="button">Kunlik</button>
+                                    <button id="lb-tab-overall" class="leaderboard-tab" type="button">Umumiy</button>
                                 </div>
                             </div>
-
+                            
                             <div id="leaderboard-list" class="leaderboard-list" aria-live="polite">
                                 <div class="text-white/60 text-sm">Yuklanmoqda...</div>
                             </div>
@@ -240,669 +606,632 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom menu -->
-            <div class="menu-container">
+            
+            <!-- Bottom Menu -->
+            <div class="bottom-menu">
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section" id="menu-earn">
-                        <span class="menu-icon">🎯</span>
-                        <span class="menu-label">Click Bonus</span>
+                        <span class="menu-icon text-2xl">🎯</span>
+                        <span class="menu-label text-xs mt-1">Click Bonus</span>
                     </button>
                     <button class="menu-item" data-section="leaderboard-section" id="menu-leaderboard">
-                        <span class="menu-icon">🏆</span>
-                        <span class="menu-label">Reytinglar</span>
+                        <span class="menu-icon text-2xl">🏆</span>
+                        <span class="menu-label text-xs mt-1">Reytinglar</span>
                     </button>
                 </nav>
             </div>
         </div>
     </div>
-
-    <!-- Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
-            authDomain: "rekchi-2dc2f.firebaseapp.com",
-            databaseURL: "https://rekchi-2dc2f-default-rtdb.firebaseio.com",
-            projectId: "rekchi-2dc2f",
-            storageBucket: "rekchi-2dc2f.firebasestorage.app",
-            messagingSenderId: "352655860270",
-            appId: "1:352655860270:web:e071c82f4b911c21c0b5bf",
-            measurementId: "G-4WVC8S5V3R"
-        };
-        const firebaseApp = initializeApp(firebaseConfig);
-        const db = getDatabase(firebaseApp);
-
-        // Constants
-        const ADMIN_IDS = ['7500103239', '7104718080'];
-        const CLICK_REWARD = 1; // 1 olmos
-        const MIN_CLICK_TIME = 5000; // 5 soniya (millisecond)
-        const MAX_CLICK_TIME = 8000; // 8 soniya
-        const DAILY_LIMIT = 10; // Kunlik maksimal click
-        
-        // Server endpoints
-        const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
-        const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
-
-        // State
-        let currentUser = null;
-        let allUsers = [];
-        let isAdmin = false;
-        let botBalance = 0;
-        let currentLeaderboard = 'daily';
-        
-        // Click tracking
-        let clickStartTime = null;
-        let clickTimer = null;
-        let isCounting = false;
-        let countdownValue = 8;
-
-        // Helpers
-        async function getTelegramProfilePhoto(userId, username) {
-            try {
-                const tg = window.Telegram?.WebApp;
-                if (tg?.initDataUnsafe?.user?.photo_url) return tg.initDataUnsafe.user.photo_url;
-                if (username) return `https://t.me/i/userpic/320/${username}.jpg`;
-                return createFullGradientAvatar(userId);
-            } catch (e) {
-                return createFullGradientAvatar(userId);
+    
+    <!-- Main Application Script -->
+    <script>
+        class RekchiAiApp {
+            constructor() {
+                this.config = {
+                    ADMIN_IDS: ['7500103239', '7104718080'],
+                    CLICK_REWARD: 1,
+                    MIN_CLICK_TIME: 5000,
+                    MAX_CLICK_TIME: 8000,
+                    DAILY_LIMIT: 10,
+                    BOT_API_KEY: '4564123:hkjhfadfhieapkdnga',
+                    BOT_API_ADD_URL: 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php',
+                    BOT_API_GET_URL: 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php'
+                };
+                
+                this.state = {
+                    currentUser: null,
+                    allUsers: [],
+                    isAdmin: false,
+                    botBalance: 0,
+                    currentLeaderboard: 'daily',
+                    clickStartTime: null,
+                    clickTimer: null,
+                    isCounting: false,
+                    countdownValue: 8,
+                    sonarAdInterval: null
+                };
+                
+                this.init();
             }
-        }
-        
-        function createFullGradientAvatar(userId) {
-            const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
-            const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
-            const [c1,c2] = gradients[idx];
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
-            return 'data:image/svg+xml;base64,' + btoa(svg);
-        }
-
-        // Sonar reklama
-        function initSonarAd() {
-            setTimeout(showSonarAd, 3000);
-        }
-
-        function showSonarAd() {
-            if (window.Sonar && typeof window.Sonar.show === 'function') {
+            
+            async init() {
                 try {
-                    const container = document.getElementById('sonar-ad-container');
-                    if (container) container.innerHTML = '';
+                    this.initTelegram();
+                    this.bindEvents();
+                    this.initSonarAds();
                     
-                    window.Sonar.show({ 
-                        adUnit: "rekchiai",
-                        container: container || undefined
+                    await this.loadUser();
+                    this.updateUI();
+                    this.startBalancePolling();
+                    
+                    this.hideLoading();
+                } catch (error) {
+                    console.error('App initialization failed:', error);
+                    this.showError('Ilova yuklanmadi. Iltimos, qayta urinib ko\'ring.');
+                }
+            }
+            
+            initTelegram() {
+                if (window.Telegram?.WebApp) {
+                    const tg = window.Telegram.WebApp;
+                    tg.ready();
+                    tg.expand();
+                    tg.setBackgroundColor('#0f0f0f');
+                    tg.setHeaderColor('#0f0f0f');
+                    
+                    const user = tg.initDataUnsafe?.user;
+                    if (user) {
+                        this.state.currentUser = {
+                            user_id: user.id.toString(),
+                            username: user.username || '',
+                            first_name: user.first_name || 'Foydalanuvchi',
+                            last_name: user.last_name || '',
+                            photo_url: user.photo_url || null,
+                            language_code: user.language_code || 'uz'
+                        };
+                        this.state.isAdmin = this.config.ADMIN_IDS.includes(this.state.currentUser.user_id);
+                    }
+                } else {
+                    // Test mode for development
+                    this.state.currentUser = {
+                        user_id: 'test_' + Date.now(),
+                        username: 'test_user',
+                        first_name: 'Test Foydalanuvchi',
+                        last_name: '',
+                        photo_url: null,
+                        language_code: 'uz'
+                    };
+                }
+            }
+            
+            bindEvents() {
+                // Click bonus button
+                document.getElementById('click-bonus-btn').addEventListener('click', () => this.startClickProcess());
+                
+                // Menu buttons
+                document.getElementById('menu-earn').addEventListener('click', () => this.switchSection('earn-section', 'menu-earn'));
+                document.getElementById('menu-leaderboard').addEventListener('click', () => this.switchSection('leaderboard-section', 'menu-leaderboard'));
+                
+                // Leaderboard tabs
+                document.getElementById('lb-tab-daily').addEventListener('click', () => {
+                    this.state.currentLeaderboard = 'daily';
+                    this.updateLeaderboardTab('lb-tab-daily');
+                    this.renderLeaderboard();
+                });
+                
+                document.getElementById('lb-tab-overall').addEventListener('click', () => {
+                    this.state.currentLeaderboard = 'overall';
+                    this.updateLeaderboardTab('lb-tab-overall');
+                    this.renderLeaderboard();
+                });
+                
+                // Page visibility tracking
+                document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
+                
+                // Telegram events
+                if (window.Telegram?.WebApp) {
+                    window.Telegram.WebApp.onEvent('viewportChanged', (e) => {
+                        if (e.isStateStable && this.state.isCounting) {
+                            this.checkClickResult();
+                        }
                     });
-                    
-                    setTimeout(showSonarAd, 30000);
-                } catch (err) {
-                    setTimeout(showSonarAd, 10000);
                 }
-            } else {
-                setTimeout(showSonarAd, 5000);
             }
-        }
-
-        // Telegram init
-        function initTelegram() {
-            if (window.Telegram?.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-                window.Telegram.WebApp.setBackgroundColor('#0f0f0f');
-                window.Telegram.WebApp.setHeaderColor('#0f0f0f');
-                const tg = window.Telegram.WebApp;
-                const user = tg.initDataUnsafe?.user;
-                if (user) {
-                    currentUser = {
-                        user_id: user.id.toString(),
-                        username: user.username || '',
-                        first_name: user.first_name || 'Foydalanuvchi',
-                        last_name: user.last_name || '',
-                        photo_url: user.photo_url || null,
-                        language_code: user.language_code || 'uz'
-                    };
-                    isAdmin = ADMIN_IDS.includes(currentUser.user_id);
+            
+            async loadUser() {
+                if (!this.state.currentUser) return;
+                
+                // Simulate user loading (in real app, this would be from Firebase)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Generate avatar
+                const avatarUrl = this.createAvatar(this.state.currentUser.user_id);
+                
+                // Mock user data
+                const userData = {
+                    ...this.state.currentUser,
+                    photo_url: avatarUrl,
+                    clicks_by_day: { [this.getTodayKey()]: 0 },
+                    successful_clicks: Math.floor(Math.random() * 50),
+                    total_clicks: Math.floor(Math.random() * 100),
+                    diamonds: Math.floor(Math.random() * 100),
+                    daily_limit: this.config.DAILY_LIMIT,
+                    created_at: new Date().toISOString()
+                };
+                
+                this.state.currentUser = userData;
+            }
+            
+            createAvatar(userId) {
+                const gradients = [
+                    ['#FF6B6B', '#FF8E53'],
+                    ['#4ECDC4', '#44A08D'],
+                    ['#FFD93D', '#FF6B6B'],
+                    ['#6BC5D2', '#4A9CC2'],
+                    ['#9D50BB', '#6E48AA'],
+                    ['#00C9FF', '#92FE9D'],
+                    ['#FF9A9E', '#FAD0C4'],
+                    ['#A18CD1', '#FBC2EB'],
+                    ['#667eea', '#764ba2'],
+                    ['#f093fb', '#f5576c']
+                ];
+                
+                const idx = userId.split('').reduce((s, c) => s + c.charCodeAt(0), 0) % gradients.length;
+                const [c1, c2] = gradients[idx];
+                
+                const svg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+                        <defs>
+                            <linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0" stop-color="${c1}"/>
+                                <stop offset="1" stop-color="${c2}"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/>
+                    </svg>
+                `;
+                
+                return 'data:image/svg+xml;base64,' + btoa(svg);
+            }
+            
+            updateUI() {
+                if (!this.state.currentUser) return;
+                
+                const user = this.state.currentUser;
+                
+                // Update avatar
+                const avatarDiv = document.getElementById('user-avatar');
+                if (user.photo_url) {
+                    avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${user.first_name}" class="avatar-image">`;
                 } else {
-                    currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
+                    avatarDiv.innerHTML = '<div class="gradient-avatar">' + 
+                        (user.first_name?.charAt(0) || 'U') + '</div>';
                 }
-            } else {
-                currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
-            }
-        }
-
-        // Load/create user
-        async function loadOrCreateUser() {
-            if (!currentUser) return null;
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                const now = new Date();
-                const tzOffset = now.getTimezoneOffset() * 60000;
-                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
                 
-                if (!snapshot.exists()) {
-                    const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
-                    const newUser = {
-                        user_id: currentUser.user_id,
-                        username: currentUser.username || '',
-                        first_name: currentUser.first_name || 'Foydalanuvchi',
-                        last_name: currentUser.last_name || '',
-                        photo_url: profilePhoto,
-                        language_code: currentUser.language_code || 'uz',
-                        clicks_by_day: { [localKey]: 0 },
-                        successful_clicks: 0,
-                        total_clicks: 0,
-                        diamonds: 0,
-                        last_click_time: null,
-                        daily_limit: DAILY_LIMIT,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    };
-                    await set(userRef, newUser);
-                    return newUser;
-                } else {
-                    let userData = snapshot.val();
-                    
-                    // Yangi kunni tekshirish
-                    if (!userData.clicks_by_day || !userData.clicks_by_day[localKey]) {
-                        const updates = { 
-                            clicks_by_day: { ...(userData.clicks_by_day || {}), [localKey]: 0 },
-                            daily_limit: DAILY_LIMIT,
-                            updated_at: new Date().toISOString()
-                        };
-                        await update(userRef, updates);
-                        userData = { ...userData, ...updates };
-                    }
-                    
-                    if (!userData.photo_url) {
-                        const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
-                        const updates = { 
-                            photo_url: profilePhoto, 
-                            username: currentUser.username || userData.username, 
-                            first_name: currentUser.first_name || userData.first_name, 
-                            updated_at: new Date().toISOString() 
-                        };
-                        await update(userRef, updates);
-                        userData = { ...userData, ...updates };
-                    }
-                    
-                    return userData;
-                }
-            } catch (err) {
-                console.error('loadOrCreateUser error', err);
-                return null;
-            }
-        }
-        
-        async function updateUserData(updates) {
-            if (!currentUser) return false;
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                await update(userRef, { ...updates, updated_at: new Date().toISOString() });
-                return true;
-            } catch (err) {
-                console.error('updateUserData error', err);
-                return false;
-            }
-        }
-
-        // Click algoritmi
-        async function startClickProcess() {
-            if (!currentUser) return;
-            
-            const btn = document.getElementById('click-bonus-btn');
-            const statusDiv = document.getElementById('click-status');
-            const countdownContainer = document.getElementById('countdown-container');
-            
-            // 1️⃣ Click boshlanishi
-            clickStartTime = Date.now();
-            isCounting = true;
-            countdownValue = 8;
-            
-            btn.disabled = true;
-            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-            statusDiv.textContent = '⏳ Click jarayoni boshlanmoqda...';
-            
-            // 2️⃣ Countdown boshlash
-            countdownContainer.classList.remove('hidden');
-            startCountdown();
-            
-            // 3️⃣ Reklama ochish (simulyatsiya)
-            const adUrl = getRandomAdUrl();
-            window.open(adUrl, '_blank');
-            
-            // 4️⃣ Background tracking
-            setupVisibilityTracking();
-            
-            // 5️⃣ Statistikani yangilash
-            const userRef = ref(db, 'users/' + currentUser.user_id);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val() || {};
-            const now = new Date();
-            const tzOffset = now.getTimezoneOffset() * 60000;
-            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-            
-            const clicks_by_day = userData.clicks_by_day || {};
-            const newClickCount = (clicks_by_day[localKey] || 0) + 1;
-            
-            await updateUserData({
-                total_clicks: (userData.total_clicks || 0) + 1,
-                [`clicks_by_day/${localKey}`]: newClickCount,
-                last_click_time: new Date().toISOString()
-            });
-            
-            updateUserStats();
-        }
-
-        function startCountdown() {
-            const timerEl = document.getElementById('countdown-timer');
-            const barEl = document.getElementById('countdown-bar');
-            
-            barEl.style.animation = 'none';
-            void barEl.offsetWidth;
-            barEl.style.animation = `countdown ${countdownValue}s linear forwards`;
-            
-            clickTimer = setInterval(() => {
-                countdownValue--;
-                timerEl.textContent = `${countdownValue}s`;
+                // Update user info
+                document.getElementById('user-name').textContent = user.first_name;
+                document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
+                document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+                document.getElementById('diamond-count').textContent = user.diamonds || 0;
                 
-                if (countdownValue <= 0) {
-                    clearInterval(clickTimer);
-                    checkClickResult();
-                }
-            }, 1000);
-        }
-
-        function setupVisibilityTracking() {
-            // Page visibility tracking
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-            
-            // Telegram visibility tracking
-            if (window.Telegram?.WebApp) {
-                window.Telegram.WebApp.onEvent('viewportChanged', handleViewportChange);
+                // Update statistics
+                this.updateUserStats();
+                
+                // Render leaderboard
+                this.renderLeaderboard();
             }
-        }
-
-        function handleVisibilityChange() {
-            if (document.hidden) {
-                // User mini appni tark etdi
-                console.log('User left mini app');
-            } else {
-                // User qaytdi
-                if (isCounting && clickStartTime) {
-                    checkClickResult();
+            
+            updateUserStats() {
+                if (!this.state.currentUser) return;
+                
+                const user = this.state.currentUser;
+                const todayClicks = user.clicks_by_day?.[this.getTodayKey()] || 0;
+                const progressPercent = (todayClicks / this.config.DAILY_LIMIT) * 100;
+                
+                document.getElementById('today-clicks').textContent = todayClicks;
+                document.getElementById('daily-limit').textContent = this.config.DAILY_LIMIT;
+                document.getElementById('daily-limit-display').textContent = `${this.config.DAILY_LIMIT} click`;
+                document.getElementById('total-clicks').textContent = user.total_clicks || 0;
+                document.getElementById('successful-clicks').textContent = user.successful_clicks || 0;
+                document.getElementById('click-progress').style.width = `${progressPercent}%`;
+                
+                // Disable button if limit reached
+                const btn = document.getElementById('click-bonus-btn');
+                if (todayClicks >= this.config.DAILY_LIMIT) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="text-2xl">⛔</span><span>Kunlik limit tugadi</span>';
+                    document.getElementById('click-status').textContent = 
+                        `⚠️ Kunlik ${this.config.DAILY_LIMIT} click limitiga yetdingiz. Ertaga yangilanishini kuting.`;
                 }
             }
-        }
-
-        function handleViewportChange(e) {
-            if (e.isStateStable && isCounting && clickStartTime) {
-                checkClickResult();
-            }
-        }
-
-        async function checkClickResult() {
-            if (!clickStartTime || !isCounting) return;
             
-            clearInterval(clickTimer);
-            isCounting = false;
-            
-            const spentTime = Date.now() - clickStartTime;
-            const statusDiv = document.getElementById('click-status');
-            const btn = document.getElementById('click-bonus-btn');
-            const countdownContainer = document.getElementById('countdown-container');
-            
-            // Event listenerlarni olib tashlash
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            if (window.Telegram?.WebApp) {
-                window.Telegram.WebApp.offEvent('viewportChanged', handleViewportChange);
-            }
-            
-            // 4️⃣ VAQT TEKSHIRUVI
-            if (spentTime >= MIN_CLICK_TIME) {
-                // ✅ SUCCESS - Click to'g'ri
-                await processSuccessfulClick();
+            async startClickProcess() {
+                if (!this.state.currentUser) return;
                 
-                statusDiv.textContent = '✅ Click muvaffaqiyatli amalga oshirildi! Bonus qo\'shildi.';
-                statusDiv.className = 'text-green-400 font-bold text-sm';
+                const btn = document.getElementById('click-bonus-btn');
+                const statusDiv = document.getElementById('click-status');
+                const countdownContainer = document.getElementById('countdown-container');
                 
-                // Bonus ko'rsatish
-                showBonusAnimation();
-            } else {
-                // ❌ FAIL - Vaqt yetmadi
-                statusDiv.textContent = `❌ Click muvaffaqiyatsiz. Faqat ${Math.round(spentTime/1000)}s. Kamida ${MIN_CLICK_TIME/1000}s kerak.`;
-                statusDiv.className = 'text-red-400 text-sm';
-            }
-            
-            // UI ni tiklash
-            countdownContainer.classList.add('hidden');
-            btn.disabled = false;
-            btn.innerHTML = '<span class="text-2xl">🎯</span><span>Click qilib bonus olish</span>';
-            
-            clickStartTime = null;
-            
-            // Yangi reklama
-            setTimeout(showSonarAd, 2000);
-        }
-
-        async function processSuccessfulClick() {
-            if (!currentUser) return;
-            
-            const userRef = ref(db, 'users/' + currentUser.user_id);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val() || {};
-            const now = new Date();
-            const tzOffset = now.getTimezoneOffset() * 60000;
-            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-            
-            // Kunlik limitni tekshirish
-            const clicks_by_day = userData.clicks_by_day || {};
-            const todayClicks = clicks_by_day[localKey] || 0;
-            
-            if (todayClicks >= DAILY_LIMIT) {
-                document.getElementById('click-status').textContent = `❌ Kunlik limit (${DAILY_LIMIT} click) tugadi. Ertaga yangilanishini kuting.`;
-                return;
-            }
-            
-            // Yangilash
-            const updates = {
-                successful_clicks: (userData.successful_clicks || 0) + 1,
-                diamonds: (userData.diamonds || 0) + CLICK_REWARD,
-                [`clicks_by_day/${localKey}`]: todayClicks + 1
-            };
-            
-            await updateUserData(updates);
-            
-            // Bot balansiga qo'shish
-            try {
-                await addToBotBalance(CLICK_REWARD);
-            } catch(e) {
-                console.warn('Bot add failed', e);
-            }
-            
-            // UI yangilash
-            updateUserStats();
-            await fetchBotBalance();
-        }
-
-        function showBonusAnimation() {
-            const indicator = document.getElementById('bonus-indicator');
-            indicator.style.display = 'block';
-            
-            setTimeout(() => {
-                indicator.style.display = 'none';
-            }, 3000);
-        }
-
-        function getRandomAdUrl() {
-            const ads = [
-                'https://play.google.com/store',
-                'https://apps.apple.com',
-                'https://www.amazon.com',
-                'https://www.aliexpress.com',
-                'https://www.booking.com',
-                'https://www.olx.uz',
-                'https://www.uzum.uz'
-            ];
-            return ads[Math.floor(Math.random() * ads.length)];
-        }
-
-        function updateUserStats() {
-            if (!currentUser) return;
-            
-            const userRef = ref(db, 'users/' + currentUser.user_id);
-            onValue(userRef, (snap) => {
-                if (snap.exists()) {
-                    const user = snap.val();
-                    const now = new Date();
-                    const tzOffset = now.getTimezoneOffset() * 60000;
-                    const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-                    
-                    const clicks_by_day = user.clicks_by_day || {};
-                    const todayClicks = clicks_by_day[localKey] || 0;
-                    
-                    document.getElementById('today-clicks').textContent = todayClicks;
-                    document.getElementById('daily-limit').textContent = DAILY_LIMIT;
-                    document.getElementById('daily-limit-display').textContent = `${DAILY_LIMIT} click`;
-                    document.getElementById('total-clicks').textContent = user.total_clicks || 0;
-                    document.getElementById('successful-clicks').textContent = user.successful_clicks || 0;
-                    
-                    // Progress bar
-                    const progressPercent = (todayClicks / DAILY_LIMIT) * 100;
-                    document.getElementById('click-progress').style.width = `${progressPercent}%`;
-                    
-                    // Limit tugagan bo'lsa
-                    const btn = document.getElementById('click-bonus-btn');
-                    if (todayClicks >= DAILY_LIMIT) {
-                        btn.disabled = true;
-                        btn.innerHTML = '<span class="text-2xl">⛔</span><span>Kunlik limit tugadi</span>';
-                        document.getElementById('click-status').textContent = `⚠️ Kunlik ${DAILY_LIMIT} click limitiga yetdingiz. Ertaga yangilanishini kuting.`;
-                    }
-                }
-            });
-        }
-
-        // Bot API functions
-        async function addToBotBalance(amount) {
-            if (!currentUser) throw new Error('No user');
-            const body = new URLSearchParams({ 
-                key: BOT_API_KEY, 
-                user_id: currentUser.user_id, 
-                amount: amount 
-            });
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-            
-            try {
-                const resp = await fetch(BOT_API_ADD_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
-                    body: body.toString(), 
-                    signal: controller.signal 
-                });
-                clearTimeout(timeoutId);
-                
-                if (!resp.ok) {
-                    const txt = await resp.text().catch(() => null);
-                    console.warn('addToBotBalance non-OK', resp.status, txt);
-                    return { success: false, message: 'HTTP ' + resp.status };
-                }
-                return await resp.json();
-            } catch (err) {
-                console.error('addToBotBalance error', err);
-                return { success: false, message: err.message };
-            }
-        }
-
-        async function fetchBotBalance() {
-            if (!currentUser) return;
-            try {
-                const url = new URL(BOT_API_GET_URL);
-                url.searchParams.set('key', BOT_API_KEY);
-                url.searchParams.set('user_id', currentUser.user_id);
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                
-                const resp = await fetch(url.toString(), { 
-                    method: 'GET', 
-                    headers: { 'Accept': 'application/json' }, 
-                    signal: controller.signal 
-                });
-                clearTimeout(timeoutId);
-                
-                if (!resp.ok) {
-                    console.warn('fetchBotBalance non-OK', resp.status);
+                // Check daily limit
+                const todayClicks = this.state.currentUser.clicks_by_day?.[this.getTodayKey()] || 0;
+                if (todayClicks >= this.config.DAILY_LIMIT) {
+                    this.showNotification('Kunlik limit tugadi!', 'error');
                     return;
                 }
                 
-                const json = await resp.json();
-                if (json && json.success) {
-                    botBalance = parseInt(json.balance || 0) || 0;
-                    document.getElementById('diamond-count').textContent = `${botBalance}`;
-                }
-            } catch (err) {
-                console.warn('fetchBotBalance error', err);
-            }
-        }
-
-        // UI binding
-        function bindUI() {
-            // Click tugmasi
-            document.getElementById('click-bonus-btn')?.addEventListener('click', startClickProcess);
-            
-            // Bottom menu
-            document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
-            document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
-            
-            // Leaderboard tabs
-            document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
-                currentLeaderboard = 'daily';
-                document.getElementById('lb-tab-daily-main').classList.add('active');
-                document.getElementById('lb-tab-overall-main').classList.remove('active');
-                renderLeaderboards();
-            });
-            document.getElementById('lb-tab-overall-main')?.addEventListener('click', () => {
-                currentLeaderboard = 'overall';
-                document.getElementById('lb-tab-overall-main').classList.add('active');
-                document.getElementById('lb-tab-daily-main').classList.remove('active');
-                renderLeaderboards();
-            });
-        }
-
-        function switchSection(sectionId, menuButtonId) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
-            if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
-            if (sectionId === 'leaderboard-section') renderLeaderboards();
-        }
-
-        // Update user UI
-        function updateUI(user) {
-            if (!user) return;
-            const avatarDiv = document.getElementById('user-avatar');
-            if (user.photo_url) {
-                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
-            } else {
-                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
-            }
-            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
-            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
-            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            document.getElementById('diamond-count').textContent = `${botBalance}`;
-            
-            updateUserStats();
-        }
-
-        // Leaderboard functions
-        function renderLeaderboards() {
-            const listEl = document.getElementById('leaderboard-list');
-            if (!listEl) return;
-            
-            const now = new Date();
-            const tzOffset = now.getTimezoneOffset() * 60000;
-            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-
-            const mapped = allUsers.map(u => {
-                const clicks_by_day = u.clicks_by_day || {};
-                return {
-                    id: u.user_id,
-                    name: u.first_name || 'Foydalanuvchi',
-                    username: u.username || '',
-                    photo_url: u.photo_url || '',
-                    todayClicks: parseInt(clicks_by_day[localKey] || 0),
-                    totalClicks: parseInt(u.successful_clicks || 0),
-                    diamonds: parseInt(u.diamonds || 0)
+                // 1. Start click process
+                this.state.clickStartTime = Date.now();
+                this.state.isCounting = true;
+                this.state.countdownValue = 8;
+                
+                btn.disabled = true;
+                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+                statusDiv.textContent = '⏳ Click jarayoni boshlanmoqda...';
+                statusDiv.className = 'text-yellow-400 text-sm';
+                
+                // 2. Show countdown
+                countdownContainer.style.display = 'block';
+                this.startCountdown();
+                
+                // 3. Open ad in new tab
+                const adUrl = this.getRandomAdUrl();
+                window.open(adUrl, '_blank', 'noopener,noreferrer');
+                
+                // 4. Update user stats
+                const newTodayClicks = todayClicks + 1;
+                this.state.currentUser.clicks_by_day = {
+                    ...this.state.currentUser.clicks_by_day,
+                    [this.getTodayKey()]: newTodayClicks
                 };
-            });
-
-            let sorted;
-            if (currentLeaderboard === 'daily') {
-                sorted = mapped.sort((a,b) => b.todayClicks - a.todayClicks || b.totalClicks - a.totalClicks);
-            } else {
-                sorted = mapped.sort((a,b) => b.diamonds - a.diamonds || b.totalClicks - a.totalClicks);
+                this.state.currentUser.total_clicks = (this.state.currentUser.total_clicks || 0) + 1;
+                
+                this.updateUserStats();
             }
-
-            const top = sorted.slice(0,10);
-            if (top.length === 0) {
-                listEl.innerHTML = `<div class="text-white/60 text-sm">Hozircha ma'lumot yo'q.</div>`;
-                return;
+            
+            startCountdown() {
+                const timerEl = document.getElementById('countdown-timer');
+                const barEl = document.getElementById('countdown-bar');
+                
+                // Reset animation
+                barEl.style.animation = 'none';
+                void barEl.offsetWidth; // Trigger reflow
+                barEl.style.animation = `countdown ${this.state.countdownValue}s linear forwards`;
+                
+                this.state.clickTimer = setInterval(() => {
+                    this.state.countdownValue--;
+                    timerEl.textContent = `${this.state.countdownValue}s`;
+                    
+                    if (this.state.countdownValue <= 0) {
+                        clearInterval(this.state.clickTimer);
+                        this.checkClickResult();
+                    }
+                }, 1000);
             }
-
-            listEl.innerHTML = top.map((u,i) => `
-                <div class="leaderboard-item">
-                    <div class="leader-rank">${i+1}</div>
-                    <div class="leader-avatar">
-                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
-                    </div>
-                    <div class="leader-meta">
-                        <div class="leader-name">${escapeHtml(u.name)}</div>
-                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
-                    </div>
-                    <div class="leader-count">
-                        ${currentLeaderboard === 'daily' ? u.todayClicks : u.diamonds} 
-                        ${currentLeaderboard === 'daily' ? '🎯' : '💎'}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function escapeHtml(str) { 
-            if (!str) return ''; 
-            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
-        }
-
-        // Subscribe to users
-        function subscribeToUsers() {
-            const usersRef = ref(db, 'users');
-            onValue(usersRef, (snapshot) => {
-                allUsers = [];
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    Object.keys(data).forEach(k => allUsers.push(data[k]));
+            
+            handleVisibilityChange() {
+                if (document.hidden) {
+                    // User left the app
+                    console.log('User left mini app');
+                } else {
+                    // User returned
+                    if (this.state.isCounting && this.state.clickStartTime) {
+                        this.checkClickResult();
+                    }
                 }
-                renderLeaderboards();
-            }, (err) => console.error('subscribeToUsers error', err));
-        }
-
-        // App init
-        async function initializeAppMain() {
-            initTelegram();
-            bindUI();
-
-            const user = await loadOrCreateUser();
-            if (user) {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                onValue(userRef, (snap) => { 
-                    if (snap.exists()) updateUI(snap.val()); 
+            }
+            
+            async checkClickResult() {
+                if (!this.state.clickStartTime || !this.state.isCounting) return;
+                
+                clearInterval(this.state.clickTimer);
+                this.state.isCounting = false;
+                
+                const spentTime = Date.now() - this.state.clickStartTime;
+                const statusDiv = document.getElementById('click-status');
+                const btn = document.getElementById('click-bonus-btn');
+                const countdownContainer = document.getElementById('countdown-container');
+                
+                countdownContainer.style.display = 'none';
+                
+                // 4. Time validation (5 seconds minimum)
+                if (spentTime >= this.config.MIN_CLICK_TIME) {
+                    // ✅ SUCCESS - Valid click
+                    await this.processSuccessfulClick();
+                    
+                    statusDiv.textContent = '✅ Click muvaffaqiyatli amalga oshirildi! Bonus qo\'shildi.';
+                    statusDiv.className = 'text-green-400 font-bold text-sm';
+                    
+                    // Show bonus animation
+                    this.showBonusAnimation();
+                    
+                    // Show notification
+                    this.showNotification('+1 💎 bonus qo\'shildi!', 'success');
+                } else {
+                    // ❌ FAIL - Not enough time
+                    statusDiv.textContent = `❌ Click muvaffaqiyatsiz. Faqat ${Math.round(spentTime/1000)}s. Kamida ${this.config.MIN_CLICK_TIME/1000}s kerak.`;
+                    statusDiv.className = 'text-red-400 text-sm';
+                    
+                    this.showNotification('Click vaqti yetmadi!', 'error');
+                }
+                
+                // Reset UI
+                btn.disabled = false;
+                btn.innerHTML = '<span class="text-2xl">🎯</span><span>Click qilib bonus olish</span>';
+                
+                this.state.clickStartTime = null;
+                
+                // Show new ad
+                setTimeout(() => this.showSonarAd(), 2000);
+            }
+            
+            async processSuccessfulClick() {
+                if (!this.state.currentUser) return;
+                
+                // Update user data
+                this.state.currentUser.successful_clicks = (this.state.currentUser.successful_clicks || 0) + 1;
+                this.state.currentUser.diamonds = (this.state.currentUser.diamonds || 0) + this.config.CLICK_REWARD;
+                
+                // Update bot balance
+                try {
+                    await this.addToBotBalance(this.config.CLICK_REWARD);
+                } catch (error) {
+                    console.warn('Failed to add to bot balance:', error);
+                }
+                
+                // Update UI
+                this.updateUI();
+                this.updateUserStats();
+                
+                // Update leaderboard
+                this.renderLeaderboard();
+            }
+            
+            showBonusAnimation() {
+                const indicator = document.getElementById('bonus-indicator');
+                indicator.style.display = 'block';
+                
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 3000);
+            }
+            
+            getRandomAdUrl() {
+                const ads = [
+                    'https://play.google.com/store',
+                    'https://apps.apple.com',
+                    'https://www.amazon.com',
+                    'https://www.aliexpress.com',
+                    'https://www.booking.com',
+                    'https://www.olx.uz',
+                    'https://www.uzum.uz',
+                    'https://github.com',
+                    'https://stackoverflow.com',
+                    'https://medium.com'
+                ];
+                return ads[Math.floor(Math.random() * ads.length)];
+            }
+            
+            getTodayKey() {
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                return new Date(now - tzOffset).toISOString().slice(0, 10);
+            }
+            
+            switchSection(sectionId, menuButtonId) {
+                // Hide all sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
                 });
-
-                subscribeToUsers();
-                updateUserStats();
+                
+                // Deactivate all menu items
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Show selected section
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Activate selected menu item
+                if (menuButtonId) {
+                    document.getElementById(menuButtonId).classList.add('active');
+                }
+                
+                // Render leaderboard if needed
+                if (sectionId === 'leaderboard-section') {
+                    this.renderLeaderboard();
+                }
             }
-
-            if (currentUser) {
-                await fetchBotBalance();
-                setInterval(fetchBotBalance, 30000);
+            
+            updateLeaderboardTab(activeTabId) {
+                document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.getElementById(activeTabId).classList.add('active');
             }
-
-            // Sonar reklamalar
-            initSonarAd();
-
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('content').classList.remove('hidden');
+            
+            renderLeaderboard() {
+                const listEl = document.getElementById('leaderboard-list');
+                if (!listEl) return;
+                
+                // Mock leaderboard data
+                const mockUsers = Array.from({ length: 15 }, (_, i) => ({
+                    id: `user_${i}`,
+                    name: `Foydalanuvchi ${i + 1}`,
+                    username: i % 3 === 0 ? `user${i}` : null,
+                    photo_url: this.createAvatar(`user_${i}`),
+                    todayClicks: Math.floor(Math.random() * 20),
+                    successful_clicks: Math.floor(Math.random() * 100),
+                    diamonds: Math.floor(Math.random() * 500)
+                }));
+                
+                // Add current user to leaderboard
+                if (this.state.currentUser) {
+                    mockUsers.unshift({
+                        ...this.state.currentUser,
+                        todayClicks: this.state.currentUser.clicks_by_day?.[this.getTodayKey()] || 0
+                    });
+                }
+                
+                // Sort based on current leaderboard type
+                let sortedUsers;
+                if (this.state.currentLeaderboard === 'daily') {
+                    sortedUsers = mockUsers.sort((a, b) => b.todayClicks - a.todayClicks);
+                } else {
+                    sortedUsers = mockUsers.sort((a, b) => b.diamonds - a.diamonds);
+                }
+                
+                // Take top 10
+                const topUsers = sortedUsers.slice(0, 10);
+                
+                if (topUsers.length === 0) {
+                    listEl.innerHTML = '<div class="text-white/60 text-sm">Hozircha ma\'lumot yo\'q.</div>';
+                    return;
+                }
+                
+                listEl.innerHTML = topUsers.map((user, index) => `
+                    <div class="leaderboard-item ${user.id === this.state.currentUser?.user_id ? 'bg-blue-900/20' : ''}">
+                        <div class="leader-rank">${index + 1}</div>
+                        <div class="leader-avatar">
+                            <img src="${user.photo_url}" alt="${this.escapeHtml(user.name)}" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.parentElement.innerHTML='<div class=\"gradient-avatar w-full h-full\">${user.name.charAt(0)}</div>'">
+                        </div>
+                        <div class="leader-meta">
+                            <div class="leader-name">${this.escapeHtml(user.name)}</div>
+                            <div class="leader-username">${user.username ? '@' + this.escapeHtml(user.username) : ''}</div>
+                        </div>
+                        <div class="leader-count">
+                            ${this.state.currentLeaderboard === 'daily' ? user.todayClicks : user.diamonds} 
+                            ${this.state.currentLeaderboard === 'daily' ? '🎯' : '💎'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/[&<>"']/g, s => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                    '"': '&quot;', "'": '&#39;'
+                })[s]);
+            }
+            
+            initSonarAds() {
+                // Initialize Sonar ads
+                setTimeout(() => this.showSonarAd(), 3000);
+            }
+            
+            showSonarAd() {
+                if (window.Sonar && typeof window.Sonar.show === 'function') {
+                    try {
+                        const container = document.getElementById('sonar-ad-container');
+                        if (container) {
+                            container.innerHTML = '';
+                        }
+                        
+                        window.Sonar.show({
+                            adUnit: "rekchiai",
+                            container: container || undefined
+                        });
+                        
+                        // Schedule next ad
+                        this.state.sonarAdInterval = setTimeout(() => this.showSonarAd(), 30000);
+                    } catch (error) {
+                        console.error('Sonar ad error:', error);
+                        this.state.sonarAdInterval = setTimeout(() => this.showSonarAd(), 10000);
+                    }
+                } else {
+                    console.warn('Sonar not loaded, retrying...');
+                    this.state.sonarAdInterval = setTimeout(() => this.showSonarAd(), 5000);
+                }
+            }
+            
+            async addToBotBalance(amount) {
+                // This is a mock implementation
+                // In real app, you would call your server API
+                return new Promise(resolve => setTimeout(() => resolve({
+                    success: true,
+                    balance: (this.state.currentUser?.diamonds || 0) + amount
+                }), 1000));
+            }
+            
+            startBalancePolling() {
+                // Poll for balance updates every 30 seconds
+                setInterval(async () => {
+                    try {
+                        // In real app, fetch from your API
+                        const newBalance = this.state.currentUser?.diamonds || 0;
+                        if (this.state.botBalance !== newBalance) {
+                            this.state.botBalance = newBalance;
+                            document.getElementById('diamond-count').textContent = newBalance;
+                        }
+                    } catch (error) {
+                        console.error('Balance polling error:', error);
+                    }
+                }, 30000);
+            }
+            
+            hideLoading() {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
+            }
+            
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `
+                    fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg
+                    ${type === 'success' ? 'bg-green-900/90 border border-green-700' : 
+                      type === 'error' ? 'bg-red-900/90 border border-red-700' : 
+                      'bg-blue-900/90 border border-blue-700'}
+                    animate-slide-up
+                `;
+                
+                notification.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">
+                            ${type === 'success' ? '✅' : 
+                              type === 'error' ? '❌' : 'ℹ️'}
+                        </span>
+                        <span class="text-white font-medium">${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+            
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4';
+                errorDiv.innerHTML = `
+                    <div class="glass-card p-6 max-w-md text-center animate-slide-up">
+                        <div class="text-5xl mb-4">😕</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Xatolik yuz berdi</h3>
+                        <p class="text-white/70 mb-4">${message}</p>
+                        <button onclick="location.reload()" 
+                                class="btn-primary px-6 py-2 rounded-lg">
+                            Qayta urinish
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+            }
         }
-
-        // Start
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeAppMain);
-        } else {
-            initializeAppMain();
+        
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new RekchiAiApp();
+        });
+        
+        // Fallback initialization
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            window.app = new RekchiAiApp();
         }
     </script>
 </body>
