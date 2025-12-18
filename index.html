@@ -235,7 +235,6 @@
 
         // Constants
         const ADMIN_IDS = ['7500103239', '7104718080'];
-        const AD_BLOCK_ID = '18961';
         const REWARD_AMOUNT = 1;
 
         // Server endpoints (host add_balance.php & get_balance.php)
@@ -451,7 +450,7 @@
                 `).join('');
         }
 
-        // Watch ad flow: Sonar reklamasi tugagandan keyin bonus beradi
+        // Watch ad flow: Sonar Rewarded Ad bilan ishlash
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -463,11 +462,49 @@
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
 
             try {
-                // Sonar reklamasini ko'rsatish
-                window.Sonar.show({ 
+                // Sonar Rewarded Ad ni ko'rsatish
+                window.Sonar.show({
                     adUnit: "rekchiai",
-                    onAdCompleted: async function() {
-                        // Reklama to'liq ko'rilgandan keyin bonus berish
+                    loader: true,
+                    
+                    onStart: () => {
+                        console.log('Reklama yuklanishi boshlandi');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+                    },
+                    
+                    onShow: () => {
+                        console.log('Reklama ko\'rsatildi');
+                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama ko\'rsatilmoqda...</p>';
+                    },
+                    
+                    onError: (error) => {
+                        console.error('Reklama xatosi:', error);
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                        isWatchingAd = false;
+                        
+                        setTimeout(() => { 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    },
+
+                    onClose: () => {
+                        console.log('Reklama yopildi');
+                        // Reklama yopilganda button ni qayta faollashtirish
+                        if (!statusDiv.innerHTML.includes('Tabriklaymiz')) {
+                            btn.disabled = false;
+                            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                            isWatchingAd = false;
+                            
+                            setTimeout(() => { 
+                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                            }, 1000);
+                        }
+                    },
+
+                    onReward: async () => {
+                        console.log('Reklama to\'liq ko\'rildi, bonus berish');
                         try {
                             statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama tugadi, bonus berilmoqda...</p>';
                             
@@ -485,57 +522,42 @@
                             const newOverall = (userData.ads_watched || 0) + 1;
 
                             // update firebase
-                            const updates = { ads_watched: newOverall, [`ads_by_day/${localKey}`]: newDayCount, last_ad_time: new Date().toISOString() };
+                            const updates = { 
+                                ads_watched: newOverall, 
+                                [`ads_by_day/${localKey}`]: newDayCount, 
+                                last_ad_time: new Date().toISOString() 
+                            };
                             const ok = await updateUserData(updates);
                             if (!ok) throw new Error('Firebase yangilashida xatolik');
 
-                            // notify server bot to add balance
+                            // Bot balansiga qo'shish
                             try { 
                                 await addToBotBalance(REWARD_AMOUNT); 
                             } catch(e){ 
                                 console.warn('Bot add failed', e); 
                             }
 
-                            // re-sync quickly
+                            // Re-sync quickly
                             renderLeaderboardsMain();
                             await fetchBotBalance();
 
+                            // Muhim: onReward callback dan keyin onClose ham chaqiriladi
+                            // Shuning uchun button holatini bu yerda o'zgartirmaymiz
                             statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
+                            
                         } catch (err) {
                             console.error('Bonus berishda xatolik', err);
                             statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
-                        } finally {
-                            btn.disabled = false;
-                            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                            isWatchingAd = false;
-                            
-                            setTimeout(()=>{ 
-                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                            }, 3000);
                         }
                     },
-                    onAdSkipped: function() {
-                        // Reklama o'tkazib yuborilsa
-                        statusDiv.innerHTML = '<p class="text-orange-400">Reklama o\'tkazib yuborildi. Bonus berilmadi.</p>';
+                }).then((result) => {
+                    console.log('Sonar result:', result);
+                    if (result.status === 'error') {
+                        console.error('Ad failed to show:', result.message);
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                         btn.disabled = false;
                         btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
                         isWatchingAd = false;
-                        
-                        setTimeout(()=>{ 
-                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                        }, 3000);
-                    },
-                    onAdError: function(error) {
-                        // Reklama xatosi
-                        console.error('Reklama xatosi:', error);
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
-                        btn.disabled = false;
-                        btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                        isWatchingAd = false;
-                        
-                        setTimeout(()=>{ 
-                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                        }, 3000);
                     }
                 });
 
@@ -546,7 +568,7 @@
                 btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
                 isWatchingAd = false;
                 
-                setTimeout(()=>{ 
+                setTimeout(() => { 
                     statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
                 }, 3000);
             }
@@ -557,10 +579,19 @@
             if (!currentUser) throw new Error('No user');
             const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
             const controller = new AbortController();
-            const timeoutId = setTimeout(()=>controller.abort(), 10000);
-            const resp = await fetch(BOT_API_ADD_URL, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: body.toString(), signal: controller.signal });
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const resp = await fetch(BOT_API_ADD_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                body: body.toString(), 
+                signal: controller.signal 
+            });
             clearTimeout(timeoutId);
-            if (!resp.ok) { const txt = await resp.text().catch(()=>null); console.warn('addToBotBalance non-OK', resp.status, txt); return { success:false, message:'HTTP '+resp.status }; }
+            if (!resp.ok) { 
+                const txt = await resp.text().catch(() => null); 
+                console.warn('addToBotBalance non-OK', resp.status, txt); 
+                return { success: false, message: 'HTTP ' + resp.status }; 
+            }
             return await resp.json();
         }
 
@@ -571,10 +602,17 @@
                 url.searchParams.set('key', BOT_API_KEY);
                 url.searchParams.set('user_id', currentUser.user_id);
                 const controller = new AbortController();
-                const timeoutId = setTimeout(()=>controller.abort(), 8000);
-                const resp = await fetch(url.toString(), { method:'GET', headers:{ 'Accept':'application/json' }, signal: controller.signal });
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const resp = await fetch(url.toString(), { 
+                    method: 'GET', 
+                    headers: { 'Accept': 'application/json' }, 
+                    signal: controller.signal 
+                });
                 clearTimeout(timeoutId);
-                if (!resp.ok) { console.warn('fetchBotBalance non-OK', resp.status); return; }
+                if (!resp.ok) { 
+                    console.warn('fetchBotBalance non-OK', resp.status); 
+                    return; 
+                }
                 const json = await resp.json();
                 if (json && json.success) {
                     botBalance = parseInt(json.balance || 0) || 0;
