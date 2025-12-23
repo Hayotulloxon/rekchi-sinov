@@ -61,6 +61,10 @@
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
 
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
+        
+        /* Click tracking styles */
+        .click-timer { font-size: 14px; font-weight: bold; color: #00ff88; background: rgba(0, 255, 136, 0.1); padding: 2px 8px; border-radius: 10px; }
+        .click-info { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 5px; }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
@@ -135,9 +139,12 @@
                             <span class="text-2xl">▶️</span>
                             <span>Reklamani boshlash</span>
                         </button>
+                        
+                        <!-- Click instructions -->
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-white/50">💡 <strong>Qanday ishlaydi:</strong> Reklamani oching → tashqi sahifaga o'ting → 5-30 soniya ichida qayting → bonus oling!</p>
+                        </div>
                     </div>
-
-                    <!-- Note: statistics card removed as requested -->
                 </div>
 
                 <!-- Leaderboard Section (standalone menu) -->
@@ -249,6 +256,16 @@
         let currentLeaderboard = 'daily'; // 'daily' | 'overall'
         let isWatchingAd = false; // Reklama ko'rilayotganligini kuzatish
 
+        // 🔥 CLICK TRACKING SYSTEM
+        let clickTracking = {
+            startTime: null,
+            timer: null,
+            clicked: false,
+            minTimeForBonus: 5000, // 5 soniya minimum
+            maxTimeForBonus: 30000, // 30 soniya maksimum
+            eventListeners: []
+        };
+
         // Helpers
         async function getTelegramProfilePhoto(userId, username) {
             try {
@@ -316,7 +333,12 @@
                         withdraw_history: [],
                         last_ad_time: new Date().toISOString(),
                         created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
+                        updated_at: new Date().toISOString(),
+                        // 🔥 Click tracking ma'lumotlari
+                        total_clicks: 0,
+                        click_history: [],
+                        last_click_time: null,
+                        avg_click_duration: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -332,6 +354,15 @@
                         await update(userRef, { ads_by_day: {} });
                         userData.ads_by_day = {};
                     }
+                    // 🔥 Click tracking ma'lumotlarini tekshirish
+                    if (!userData.total_clicks) {
+                        await update(userRef, { 
+                            total_clicks: 0,
+                            click_history: [],
+                            last_click_time: null,
+                            avg_click_duration: 0
+                        });
+                    }
                     return userData;
                 }
             } catch (err) {
@@ -339,6 +370,7 @@
                 return null;
             }
         }
+        
         async function updateUserData(updates) {
             if (!currentUser) return false;
             try {
@@ -444,15 +476,32 @@
                             <div class="text-right">
                                 <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
                                 <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
+                                ${u.total_clicks ? `<p class="text-xs text-green-400">${u.total_clicks} click</p>` : ''}
                             </div>
                         </div>
                     </div>
                 `).join('');
         }
 
-        // Watch ad flow: Sonar Rewarded Ad bilan ishlash
+        // 🔥 CLICK-ASOSLI REKLAMA TIZIMI
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
+            
+            // Bonus olish huquqini tekshirish
+            const canBonus = await canReceiveBonus(currentUser.user_id);
+            if (!canBonus) {
+                const statusDiv = document.getElementById('ad-status');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-yellow-400 font-bold mb-2">Cheklov!</p>
+                        <p class="text-sm text-white/70">Iltimos, 30 soniyadan keyin qayta urinib ko'ring</p>
+                    </div>
+                `;
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
+                }, 3000);
+                return;
+            }
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
@@ -460,6 +509,13 @@
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+            
+            // Click tracking ni boshlash
+            clickTracking.startTime = Date.now();
+            clickTracking.clicked = false;
+            
+            // Sahifa fokusini yo'qotish/ortga qaytishni kuzatish
+            setupPageVisibilityTracking();
 
             try {
                 // Sonar Rewarded Ad ni ko'rsatish
@@ -474,16 +530,32 @@
                     
                     onShow: () => {
                         console.log('Reklama ko\'rsatildi');
-                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama ko\'rsatilmoqda...</p>';
+                        statusDiv.innerHTML = `
+                            <div class="text-center">
+                                <p class="text-green-400 font-bold mb-3">Reklama ochildi!</p>
+                                <p class="text-sm text-white/70 mb-2">👆 Reklamani BOSING va tashqi sahifaga o'ting</p>
+                                <p class="text-xs text-white/50">Bonus olish uchun kamida 5 soniya tashqi sahifada bo'ling</p>
+                                <div class="mt-4">
+                                    <span class="click-timer">⏳ Vaqt: <span id="click-timer">0</span>s</span>
+                                    <p class="click-info">Tashqi sahifaga o'tishni kutyapmiz...</p>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Timer boshlash
+                        let seconds = 0;
+                        clickTracking.timer = setInterval(() => {
+                            seconds++;
+                            const timerEl = document.getElementById('click-timer');
+                            if (timerEl) timerEl.textContent = seconds;
+                        }, 1000);
                     },
                     
                     onError: (error) => {
                         console.error('Reklama xatosi:', error);
+                        clearTracking();
                         statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
-                        btn.disabled = false;
-                        btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                        isWatchingAd = false;
-                        
+                        resetWatchButton();
                         setTimeout(() => { 
                             statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
                         }, 3000);
@@ -491,86 +563,309 @@
 
                     onClose: () => {
                         console.log('Reklama yopildi');
-                        // Reklama yopilganda button ni qayta faollashtirish
-                        if (!statusDiv.innerHTML.includes('Tabriklaymiz')) {
-                            btn.disabled = false;
-                            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                            isWatchingAd = false;
-                            
-                            setTimeout(() => { 
-                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                            }, 1000);
-                        }
+                        clearTracking();
+                        // Click aniqlanganmi tekshirish
+                        setTimeout(() => {
+                            if (clickTracking.clicked) {
+                                checkAndGiveBonus();
+                            } else {
+                                statusDiv.innerHTML = `
+                                    <div class="text-center">
+                                        <p class="text-yellow-400 font-bold mb-2">Reklama yopildi</p>
+                                        <p class="text-sm text-white/70">Agar tashqi sahifaga o'tgan bo'lsangiz, bir necha soniyada bonus olasiz</p>
+                                    </div>
+                                `;
+                                resetWatchButton();
+                                
+                                setTimeout(() => { 
+                                    if (!statusDiv.innerHTML.includes('Tabriklaymiz')) {
+                                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                                    }
+                                }, 3000);
+                            }
+                        }, 1000);
                     },
 
                     onReward: async () => {
-                        console.log('Reklama to\'liq ko\'rildi, bonus berish');
-                        try {
-                            statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Reklama tugadi, bonus berilmoqda...</p>';
-                            
-                            // Firebase yangilash
-                            const userRef = ref(db, 'users/' + currentUser.user_id);
-                            const snapshot = await get(userRef);
-                            const userData = snapshot.val() || {};
-
-                            const now = new Date();
-                            const tzOffset = now.getTimezoneOffset() * 60000;
-                            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-
-                            const ads_by_day = userData.ads_by_day || {};
-                            const newDayCount = (ads_by_day[localKey] || 0) + 1;
-                            const newOverall = (userData.ads_watched || 0) + 1;
-
-                            // update firebase
-                            const updates = { 
-                                ads_watched: newOverall, 
-                                [`ads_by_day/${localKey}`]: newDayCount, 
-                                last_ad_time: new Date().toISOString() 
-                            };
-                            const ok = await updateUserData(updates);
-                            if (!ok) throw new Error('Firebase yangilashida xatolik');
-
-                            // Bot balansiga qo'shish
-                            try { 
-                                await addToBotBalance(REWARD_AMOUNT); 
-                            } catch(e){ 
-                                console.warn('Bot add failed', e); 
-                            }
-
-                            // Re-sync quickly
-                            renderLeaderboardsMain();
-                            await fetchBotBalance();
-
-                            // Muhim: onReward callback dan keyin onClose ham chaqiriladi
-                            // Shuning uchun button holatini bu yerda o'zgartirmaymiz
-                            statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
-                            
-                        } catch (err) {
-                            console.error('Bonus berishda xatolik', err);
-                            statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
-                        }
+                        console.log('Reklama to\'liq ko\'rildi, click tekshiruvi kutilmoqda...');
+                        // Click tracking natijasiga qarab bonus beriladi
                     },
                 }).then((result) => {
                     console.log('Sonar result:', result);
                     if (result.status === 'error') {
                         console.error('Ad failed to show:', result.message);
+                        clearTracking();
                         statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
-                        btn.disabled = false;
-                        btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                        isWatchingAd = false;
+                        resetWatchButton();
                     }
                 });
 
             } catch (err) {
                 console.error('Reklama ochishda xatolik', err);
+                clearTracking();
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik yuz berdi.</p>';
-                btn.disabled = false;
-                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                isWatchingAd = false;
-                
+                resetWatchButton();
                 setTimeout(() => { 
                     statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
                 }, 3000);
+            }
+        }
+
+        // 📌 YANGI FUNKSIYALAR:
+
+        // Sahifa fokusini kuzatish
+        function setupPageVisibilityTracking() {
+            // Document visibility change
+            const visibilityHandler = () => handleVisibilityChange();
+            document.addEventListener('visibilitychange', visibilityHandler);
+            clickTracking.eventListeners.push({ type: 'visibilitychange', handler: visibilityHandler });
+            
+            // Pagehide va pageshow
+            const pageHideHandler = () => handlePageHide();
+            const pageShowHandler = () => handlePageShow();
+            window.addEventListener('pagehide', pageHideHandler);
+            window.addEventListener('pageshow', pageShowHandler);
+            clickTracking.eventListeners.push({ type: 'pagehide', handler: pageHideHandler });
+            clickTracking.eventListeners.push({ type: 'pageshow', handler: pageShowHandler });
+            
+            // Blur va focus (fallback)
+            const blurHandler = () => handleWindowBlur();
+            const focusHandler = () => handleWindowFocus();
+            window.addEventListener('blur', blurHandler);
+            window.addEventListener('focus', focusHandler);
+            clickTracking.eventListeners.push({ type: 'blur', handler: blurHandler });
+            clickTracking.eventListeners.push({ type: 'focus', handler: focusHandler });
+            
+            // Telegram WebApp events
+            if (window.Telegram?.WebApp) {
+                Telegram.WebApp.onEvent('viewportChanged', (params) => {
+                    if (params.is_expanded === false) {
+                        // User appni yopdi/yashirdi
+                        console.log('Telegram WebApp yopildi');
+                        clickTracking.clicked = true;
+                    }
+                });
+            }
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                // Sahifa yashirildi (user boshqa tabga o'tdi)
+                console.log('Sahifa yashirildi - click bo\'lishi mumkin');
+                if (clickTracking.startTime) {
+                    clickTracking.clicked = true;
+                }
+            } else {
+                // Sahifa ko'rsatildi (user qaytdi)
+                console.log('Sahifa ko\'rsatildi - user qaytdi');
+                if (clickTracking.clicked) {
+                    setTimeout(checkAndGiveBonus, 1000);
+                }
+            }
+        }
+
+        function handlePageHide() {
+            console.log('Page hide - user sahifani tark etdi');
+            if (clickTracking.startTime) {
+                clickTracking.clicked = true;
+            }
+        }
+
+        function handlePageShow() {
+            console.log('Page show - user qaytdi');
+            if (clickTracking.clicked) {
+                setTimeout(checkAndGiveBonus, 1000);
+            }
+        }
+
+        function handleWindowBlur() {
+            console.log('Window blur - fokus yo\'qoldi');
+            if (clickTracking.startTime) {
+                clickTracking.clicked = true;
+            }
+        }
+
+        function handleWindowFocus() {
+            console.log('Window focus - fokus qaytdi');
+            if (clickTracking.clicked) {
+                setTimeout(checkAndGiveBonus, 1000);
+            }
+        }
+
+        // Bonus tekshirish va berish
+        async function checkAndGiveBonus() {
+            if (!clickTracking.startTime || !clickTracking.clicked) {
+                console.log('Click aniqlanmadi');
+                return;
+            }
+            
+            const spentTime = Date.now() - clickTracking.startTime;
+            console.log(`Sarflangan vaqt: ${spentTime}ms`);
+            
+            const statusDiv = document.getElementById('ad-status');
+            const btn = document.getElementById('watch-ad-btn');
+            
+            // Vaqt tekshiruvi
+            if (spentTime < clickTracking.minTimeForBonus) {
+                console.log('Vaqt yetarli emas:', spentTime, 'ms');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-red-400 font-bold mb-2">Vaqt yetarli emas!</p>
+                        <p class="text-sm text-white/70">Iltimos, reklamani to'liq ko'ring va tashqi sahifada kamida 5 soniya bo'ling</p>
+                        <p class="text-xs text-white/50 mt-2">Sarflangan vaqt: ${Math.round(spentTime/1000)}s</p>
+                    </div>
+                `;
+                resetWatchButton();
+                return;
+            }
+            
+            if (spentTime > clickTracking.maxTimeForBonus) {
+                console.log('Vaqt juda ko\'p:', spentTime, 'ms');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-yellow-400 font-bold mb-2">Vaqt chegarasidan oshib ketdi</p>
+                        <p class="text-sm text-white/70">Keyingi reklamada tezroq qayting</p>
+                        <p class="text-xs text-white/50 mt-2">Sarflangan vaqt: ${Math.round(spentTime/1000)}s (limit: 30s)</p>
+                    </div>
+                `;
+                resetWatchButton();
+                return;
+            }
+            
+            // ✅ BONUS BERISH
+            console.log('Bonus beriladi! Sarflangan vaqt:', spentTime, 'ms');
+            
+            try {
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Click aniqlandi, bonus berilmoqda...</p>';
+                
+                // Firebase yangilash
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+
+                const ads_by_day = userData.ads_by_day || {};
+                const newDayCount = (ads_by_day[localKey] || 0) + 1;
+                const newOverall = (userData.ads_watched || 0) + 1;
+                const totalClicks = (userData.total_clicks || 0) + 1;
+                
+                // Click history
+                const clickHistory = userData.click_history || [];
+                clickHistory.push({
+                    time: new Date().toISOString(),
+                    duration: spentTime,
+                    rewarded: true,
+                    type: 'click'
+                });
+                // Faqat oxirgi 10 ta clickni saqlash
+                const limitedHistory = clickHistory.slice(-10);
+
+                // update firebase
+                const updates = { 
+                    ads_watched: newOverall, 
+                    [`ads_by_day/${localKey}`]: newDayCount, 
+                    last_ad_time: new Date().toISOString(),
+                    last_click_time: new Date().toISOString(),
+                    click_duration: spentTime,
+                    total_clicks: totalClicks,
+                    click_history: limitedHistory,
+                    avg_click_duration: ((userData.avg_click_duration || 0) * (totalClicks - 1) + spentTime) / totalClicks
+                };
+                const ok = await updateUserData(updates);
+                if (!ok) throw new Error('Firebase yangilashida xatolik');
+
+                // Bot balansiga qo'shish
+                try { 
+                    await addToBotBalance(REWARD_AMOUNT); 
+                } catch(e){ 
+                    console.warn('Bot add failed', e); 
+                }
+
+                // Re-sync quickly
+                renderLeaderboardsMain();
+                await fetchBotBalance();
+
+                // Muhim: Success UI
+                statusDiv.innerHTML = `
+                    <div class="text-center slide-up">
+                        <div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div>
+                        <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
+                        <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
+                        <p class="text-sm text-white/70 mb-2">Click uchun bonus berildi</p>
+                        <p class="text-xs text-white/50">Sarflangan vaqt: ${Math.round(spentTime/1000)} soniya</p>
+                    </div>
+                `;
+                
+                // Button reset
+                resetWatchButton();
+                
+            } catch (err) {
+                console.error('Bonus berishda xatolik', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
+                resetWatchButton();
+            }
+        }
+
+        // Trackerni tozalash
+        function clearTracking() {
+            if (clickTracking.timer) {
+                clearInterval(clickTracking.timer);
+                clickTracking.timer = null;
+            }
+            
+            // Event listenerlarni olib tashlash
+            clickTracking.eventListeners.forEach(item => {
+                if (item.type === 'visibilitychange') {
+                    document.removeEventListener('visibilitychange', item.handler);
+                } else {
+                    window.removeEventListener(item.type, item.handler);
+                }
+            });
+            clickTracking.eventListeners = [];
+        }
+
+        // Buttonni reset qilish
+        function resetWatchButton() {
+            const btn = document.getElementById('watch-ad-btn');
+            isWatchingAd = false;
+            btn.disabled = false;
+            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+            
+            // Trackerni tozalash
+            clickTracking.startTime = null;
+            clickTracking.clicked = false;
+        }
+
+        // Bonus olish huquqini tekshirish
+        async function canReceiveBonus(userId) {
+            try {
+                const userRef = ref(db, 'users/' + userId);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                
+                const now = new Date();
+                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
+                
+                // 1. 30 soniyadan keyin qayta ruxsat
+                if (lastClick && (now - lastClick) < 30000) {
+                    return false;
+                }
+                
+                // 2. Kunlik cheklov (masalan, 50 ta)
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+                const todayClicks = (userData.ads_by_day || {})[localKey] || 0;
+                if (todayClicks >= 50) {
+                    return false;
+                }
+                
+                return true;
+            } catch (err) {
+                console.error('Bonus tekshirish xatosi:', err);
+                return true; // Xatolikda ruxsat ber
             }
         }
 
