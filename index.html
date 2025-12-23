@@ -238,88 +238,198 @@
         let isWatchingAd = false;
         let adsgramController = null;
 
-        // YANGI: ONLINE/OFFLINE TRACKING SISTEMASI
-        let connectionTracking = {
+        // YANGI: MINI APP CHIQISH/KIRISH TRACKING SISTEMASI
+        let appTracking = {
             startTime: null,
-            connectionLost: false,
-            connectionRestored: false,
-            lastOnlineStatus: navigator.onLine,
+            appClosed: false,
+            appReopened: false,
+            lastAppState: true, // true = app ochiq, false = app yopilgan
             checkInterval: null,
+            pageVisibility: true,
             
             startTracking: function() {
                 this.startTime = Date.now();
-                this.connectionLost = false;
-                this.connectionRestored = false;
-                this.lastOnlineStatus = navigator.onLine;
+                this.appClosed = false;
+                this.appReopened = false;
+                this.lastAppState = true;
+                this.pageVisibility = !document.hidden;
                 
-                // Online/offline eventlarini kuzatish
-                window.addEventListener('online', this.handleOnline.bind(this));
-                window.addEventListener('offline', this.handleOffline.bind(this));
+                console.log('App tracking boshlandi');
                 
-                // 1 soniyada bir tekshirish
+                // 1. TELEGRAM MINI APP EVENTS
+                if (window.Telegram?.WebApp) {
+                    // Viewport o'zgarishi - app yopilganda
+                    Telegram.WebApp.onEvent('viewportChanged', (params) => {
+                        console.log('Telegram viewportChanged:', params);
+                        if (params.is_expanded === false) {
+                            this.appClosed = true;
+                            console.log('Telegram Mini App yopildi');
+                        }
+                    });
+                    
+                    // App background/foreground ga o'tganda
+                    Telegram.WebApp.onEvent('themeChanged', () => {
+                        console.log('Telegram themeChanged - app holati o\'zgardi');
+                        setTimeout(() => {
+                            if (this.appClosed) {
+                                this.appReopened = true;
+                                console.log('Telegram Mini App qayta ochildi');
+                            }
+                        }, 500);
+                    });
+                }
+                
+                // 2. PAGE VISIBILITY API
+                const handleVisibilityChange = () => {
+                    console.log('Page visibility changed:', document.hidden ? 'hidden' : 'visible');
+                    
+                    if (document.hidden) {
+                        // Sahifa yashirildi - user appdan chiqdi
+                        this.appClosed = true;
+                        this.pageVisibility = false;
+                        console.log('User appdan chiqdi (page hidden)');
+                    } else {
+                        // Sahifa ko'rsatildi - user appga qaytdi
+                        if (this.appClosed) {
+                            this.appReopened = true;
+                            console.log('User appga qaytdi (page visible)');
+                        }
+                        this.pageVisibility = true;
+                    }
+                };
+                
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                this.visibilityHandler = handleVisibilityChange;
+                
+                // 3. PAGEHIDE/PAGESHOW EVENTS
+                const handlePageHide = () => {
+                    console.log('Pagehide event - app yopilmoqda');
+                    this.appClosed = true;
+                };
+                
+                const handlePageShow = () => {
+                    console.log('Pageshow event - app ochilmoqda');
+                    if (this.appClosed) {
+                        this.appReopened = true;
+                    }
+                };
+                
+                window.addEventListener('pagehide', handlePageHide);
+                window.addEventListener('pageshow', handlePageShow);
+                this.pageHideHandler = handlePageHide;
+                this.pageShowHandler = handlePageShow;
+                
+                // 4. INTERVAL TEKSHIRISH
                 this.checkInterval = setInterval(() => {
-                    const currentOnline = navigator.onLine;
-                    if (this.lastOnlineStatus && !currentOnline) {
-                        this.connectionLost = true;
-                        console.log('Connection lost detected');
+                    const currentVisibility = !document.hidden;
+                    
+                    if (this.pageVisibility && !currentVisibility) {
+                        // App yopildi
+                        this.appClosed = true;
+                        this.pageVisibility = false;
+                        console.log('Interval: App yopildi detected');
                     }
-                    if (!this.lastOnlineStatus && currentOnline) {
-                        this.connectionRestored = true;
-                        console.log('Connection restored detected');
+                    
+                    if (!this.pageVisibility && currentVisibility) {
+                        // App ochildi
+                        if (this.appClosed) {
+                            this.appReopened = true;
+                            console.log('Interval: App qayta ochildi detected');
+                        }
+                        this.pageVisibility = true;
                     }
-                    this.lastOnlineStatus = currentOnline;
-                }, 1000);
+                }, 500);
             },
             
             stopTracking: function() {
+                console.log('App tracking to\'xtatildi');
+                
                 if (this.checkInterval) {
                     clearInterval(this.checkInterval);
                     this.checkInterval = null;
                 }
-                window.removeEventListener('online', this.handleOnline);
-                window.removeEventListener('offline', this.handleOffline);
+                
+                if (this.visibilityHandler) {
+                    document.removeEventListener('visibilitychange', this.visibilityHandler);
+                }
+                
+                if (this.pageHideHandler) {
+                    window.removeEventListener('pagehide', this.pageHideHandler);
+                }
+                
+                if (this.pageShowHandler) {
+                    window.removeEventListener('pageshow', this.pageShowHandler);
+                }
+                
+                // Telegram events
+                if (window.Telegram?.WebApp) {
+                    try {
+                        Telegram.WebApp.offEvent('viewportChanged');
+                        Telegram.WebApp.offEvent('themeChanged');
+                    } catch (e) {
+                        console.log('Telegram events cleanup error:', e);
+                    }
+                }
             },
             
-            handleOnline: function() {
-                this.connectionRestored = true;
-                console.log('Online event triggered');
-            },
-            
-            handleOffline: function() {
-                this.connectionLost = true;
-                console.log('Offline event triggered');
-            },
-            
-            getConnectionData: function() {
+            getTrackingData: function() {
                 return {
                     spentTime: Date.now() - this.startTime,
-                    connectionLost: this.connectionLost,
-                    connectionRestored: this.connectionRestored,
-                    isOnline: navigator.onLine
+                    appClosed: this.appClosed,
+                    appReopened: this.appReopened,
+                    currentVisibility: !document.hidden,
+                    isValid: this.isValidClick()
                 };
             },
             
             isValidClick: function() {
-                const data = this.getConnectionData();
-                // Agar connection yo'qolib, qayta tiklanganda - bu haqiqiy click
-                return data.connectionLost && data.connectionRestored && data.spentTime >= 3000;
+                // App yopilib, keyin qayta ochilganda - bu haqiqiy click
+                const minTime = 3000; // 3 soniya
+                const spentTime = Date.now() - this.startTime;
+                
+                const isValid = this.appClosed && this.appReopened && spentTime >= minTime;
+                console.log('Click validation:', {
+                    appClosed: this.appClosed,
+                    appReopened: this.appReopened,
+                    spentTime: spentTime,
+                    minTime: minTime,
+                    isValid: isValid
+                });
+                
+                return isValid;
             }
         };
 
-        // REKLAMA NAVBATI
+        // REKLAMA NAVBATI - KETMA-KET
         let adQueue = {
-            currentProvider: 'sonar',
+            currentProvider: 'sonar', // Birinchi Sonar bilan boshlaydi
+            providerHistory: [],
+            
             getNextProvider: function() {
+                // Ketma-ket almashish: Sonar → AdsGram → Sonar → AdsGram
                 if (this.currentProvider === 'sonar') {
                     this.currentProvider = 'adsgram';
                 } else {
                     this.currentProvider = 'sonar';
                 }
+                
+                this.providerHistory.push(this.currentProvider);
+                if (this.providerHistory.length > 10) {
+                    this.providerHistory.shift();
+                }
+                
+                console.log(`Navbat: ${this.currentProvider}, History: ${this.providerHistory.join(' → ')}`);
                 return this.currentProvider;
             },
             
             getCurrentProvider: function() {
                 return this.currentProvider;
+            },
+            
+            getProviderStats: function() {
+                const sonarCount = this.providerHistory.filter(p => p === 'sonar').length;
+                const adsgramCount = this.providerHistory.filter(p => p === 'adsgram').length;
+                return { sonar: sonarCount, adsgram: adsgramCount };
             }
         };
 
@@ -421,9 +531,9 @@
                         external_clicks: 0,
                         sonar_ads: 0,
                         adsgram_ads: 0,
-                        // YANGI: Connection tracking stats
-                        connection_clicks: 0,
-                        connection_lost_count: 0
+                        // YANGI: App tracking stats
+                        app_clicks: 0,
+                        app_closed_count: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -456,8 +566,8 @@
                             external_clicks: userData.external_clicks || 0,
                             sonar_ads: userData.sonar_ads || 0,
                             adsgram_ads: userData.adsgram_ads || 0,
-                            connection_clicks: userData.connection_clicks || 0,
-                            connection_lost_count: userData.connection_lost_count || 0
+                            app_clicks: userData.app_clicks || 0,
+                            app_closed_count: userData.app_closed_count || 0
                         });
                     }
                     return userData;
@@ -578,24 +688,24 @@
                 `).join('');
         }
 
-        // YANGI: ONLINE/OFFLINE TRACKING ASOSIDA REKLAMA
+        // YANGI: MINI APP CHIQISH/KIRISH TRACKING ASOSIDA REKLAMA
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
             
-            // Connection trackingni boshlash
-            connectionTracking.startTracking();
+            // App trackingni boshlash
+            appTracking.startTracking();
             
             isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
                 const provider = adQueue.getCurrentProvider();
                 console.log(`Boshlash: ${provider}`);
+                statusDiv.innerHTML = `<p class="text-green-400 font-bold">${provider === 'sonar' ? 'Sonar' : 'AdsGram'} reklamasi yuklanmoqda...</p>`;
                 
                 if (provider === 'sonar') {
                     await showSonarAd();
@@ -603,11 +713,12 @@
                     await showAdsgramAd();
                 }
                 
+                // Navbatni yangilash - keyingi reklama uchun
                 adQueue.getNextProvider();
                 
             } catch (err) {
                 console.error('Xatolik:', err);
-                connectionTracking.stopTracking();
+                appTracking.stopTracking();
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                 resetWatchButton();
                 setTimeout(() => { 
@@ -616,56 +727,54 @@
             }
         }
 
-        // SONAR REKLAMASI - ONLINE/OFFLINE TRACKING BILAN
+        // SONAR REKLAMASI - APP TRACKING BILAN
         async function showSonarAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
-                
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
                 
                 window.Sonar.show({
                     adUnit: "rekchiai",
                     loader: true,
                     
                     onStart: () => {
-                        console.log('Reklama yuklanishi boshlandi');
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+                        console.log('Sonar reklama yuklanishi boshlandi');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Sonar reklamasi yuklanmoqda...</p>';
                     },
                     
                     onShow: () => {
-                        console.log('Reklama ko\'rsatildi');
-                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ko\'rsatilmoqda...</p>';
+                        console.log('Sonar reklama ko\'rsatildi');
+                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">Sonar reklamasi ko\'rsatilmoqda...</p>';
                     },
                     
                     onError: (error) => {
-                        console.error('Reklama xatosi:', error);
-                        connectionTracking.stopTracking();
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi.</p>';
+                        console.error('Sonar reklama xatosi:', error);
+                        appTracking.stopTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Sonar reklama yuklanmadi.</p>';
                         resetWatchButton();
                         reject(error);
                     },
 
                     onClose: () => {
-                        console.log('Reklama yopildi');
+                        console.log('Sonar reklama yopildi');
                         
-                        // Connection tracking natijalarini tekshirish
+                        // App tracking natijalarini tekshirish
                         setTimeout(() => {
-                            checkConnectionForBonus();
+                            checkAppForBonus();
                         }, 1000);
                     },
 
                     onReward: async () => {
-                        console.log('Reklama to\'liq ko\'rildi');
-                        // Connection tracking natijalarini tekshirish
+                        console.log('Sonar reklama to\'liq ko\'rildi');
+                        // App tracking natijalarini tekshirish
                         setTimeout(() => {
-                            checkConnectionForBonus();
+                            checkAppForBonus();
                         }, 1000);
                     },
                 }).then((result) => {
                     console.log('Sonar natijasi:', result);
                     if (result.status === 'error') {
-                        connectionTracking.stopTracking();
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
+                        appTracking.stopTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Sonar reklama ochishda xatolik.</p>';
                         resetWatchButton();
                         reject(result);
                     }
@@ -673,58 +782,61 @@
             });
         }
 
-        // ADSGRAM REKLAMASI - ONLINE/OFFLINE TRACKING BILAN
+        // ADSGRAM REKLAMASI - APP TRACKING BILAN
         async function showAdsgramAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
                 
+                // AdsGram controllerini ishga tushirish
                 if (!adsgramController) {
                     try {
                         adsgramController = window.Adsgram.init({ blockId: "19784" });
+                        console.log('AdsGram controller ishga tushirildi');
                     } catch (e) {
                         console.error('AdsGram init xatosi:', e);
+                        appTracking.stopTracking();
                         reject(e);
                         return;
                     }
                 }
                 
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
+                console.log('AdsGram reklama ko\'rsatilmoqda...');
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">AdsGram reklamasi yuklanmoqda...</p>';
                 
                 adsgramController.show().then((result) => {
                     console.log('AdsGram natijasi:', result);
-                    connectionTracking.stopTracking();
                     
-                    // Connection tracking natijalarini tekshirish
+                    // App tracking natijalarini tekshirish
                     setTimeout(() => {
-                        checkConnectionForBonus();
+                        checkAppForBonus();
                     }, 1000);
                     
                 }).catch((errorResult) => {
                     console.error('AdsGram xatosi:', errorResult);
-                    connectionTracking.stopTracking();
-                    statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
+                    appTracking.stopTracking();
+                    statusDiv.innerHTML = '<p class="text-red-400">AdsGram reklama xatosi.</p>';
                     resetWatchButton();
                     reject(new Error('Ad error'));
                 });
             });
         }
 
-        // YANGI: CONNECTION ASOSIDA BONUS TEKSHIRISH
-        async function checkConnectionForBonus() {
-            const connectionData = connectionTracking.getConnectionData();
-            console.log('Connection data:', connectionData);
+        // YANGI: APP CHIQISH/KIRISH ASOSIDA BONUS TEKSHIRISH
+        async function checkAppForBonus() {
+            const trackingData = appTracking.getTrackingData();
+            console.log('App tracking data:', trackingData);
             
             const statusDiv = document.getElementById('ad-status');
             
-            // Connection trackingni to'xtatish
-            connectionTracking.stopTracking();
+            // App trackingni to'xtatish
+            appTracking.stopTracking();
             
-            // Agar connection yo'qolib, qayta tiklanganda - bu haqiqiy click
-            if (connectionTracking.isValidClick()) {
-                console.log('✅ Online/offline click aniqlandi! Bonus beriladi...');
-                await giveBonusToUser(connectionData.spentTime, adQueue.currentProvider === 'sonar' ? 'adsgram' : 'sonar');
+            // Agar app yopilib, keyin qayta ochilganda - bu haqiqiy click
+            if (appTracking.isValidClick()) {
+                console.log('✅ Mini App chiqib kirish aniqlandi! Bonus beriladi...');
+                await giveBonusToUser(trackingData.spentTime, adQueue.currentProvider);
             } else {
-                console.log('❌ Online/offline click aniqlanmadi');
+                console.log('❌ Mini App chiqib kirish aniqlanmadi');
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
                 resetWatchButton();
                 setTimeout(() => { 
@@ -753,19 +865,19 @@
                 const newOverall = (userData.ads_watched || 0) + 1;
                 const totalClicks = (userData.total_clicks || 0) + 1;
                 const verifiedClicks = (userData.verified_clicks || 0) + 1;
-                const connectionClicks = (userData.connection_clicks || 0) + 1;
-                const connectionLostCount = (userData.connection_lost_count || 0) + 1;
+                const appClicks = (userData.app_clicks || 0) + 1;
+                const appClosedCount = (userData.app_closed_count || 0) + 1;
                 
                 const clickHistory = userData.click_history || [];
                 clickHistory.push({
                     time: new Date().toISOString(),
                     duration: spentTime,
                     rewarded: true,
-                    type: 'connection_click',
+                    type: 'app_click',
                     verified: true,
                     provider: provider,
-                    connection_lost: true,
-                    connection_restored: true
+                    app_closed: true,
+                    app_reopened: true
                 });
                 const limitedHistory = clickHistory.slice(-20);
 
@@ -778,8 +890,8 @@
                     click_duration: spentTime,
                     total_clicks: totalClicks,
                     verified_clicks: verifiedClicks,
-                    connection_clicks: connectionClicks,
-                    connection_lost_count: connectionLostCount,
+                    app_clicks: appClicks,
+                    app_closed_count: appClosedCount,
                     click_history: limitedHistory,
                     avg_click_duration: ((userData.avg_click_duration || 0) * (verifiedClicks - 1) + spentTime) / verifiedClicks,
                     external_clicks: (userData.external_clicks || 0) + 1,
@@ -805,6 +917,7 @@
                         <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
                         <div class="my-4">
                             <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
+                            <p class="text-sm text-white/60">${provider === 'sonar' ? 'Sonar' : 'AdsGram'} reklamasi uchun</p>
                         </div>
                     </div>
                 `;
@@ -828,8 +941,8 @@
             btn.disabled = false;
             btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
             
-            // Connection trackingni to'liq tozalash
-            connectionTracking.stopTracking();
+            // App trackingni to'liq tozalash
+            appTracking.stopTracking();
         }
 
         // Server bot API calls
