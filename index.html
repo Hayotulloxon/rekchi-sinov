@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>RekchiAi olmoslari</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Adsgram SDK -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
@@ -21,7 +17,7 @@
         .float-animation{animation:float 3s ease-in-out infinite} .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} .slide-up{animation:slideUp .4s ease-out}
 
         .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
-        .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a2a 50%,#2d2d3d 100%)}
+        .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
         .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6)); color:#0096ff}
 
         .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); box-shadow:0 6px 20px rgba(0,150,255,.3); transition:all .3s; position:relative; overflow:hidden;}
@@ -49,34 +45,6 @@
         .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
         @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-        /* Loading Modal */
-        .loading-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        .loading-modal.active {
-            display: flex;
-        }
-        .loading-content {
-            background: linear-gradient(135deg, rgba(30,30,30,.95), rgba(40,40,40,.95));
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 24px;
-            padding: 32px;
-            text-align: center;
-            max-width: 320px;
-            width: 90%;
-            animation: slideUp .3s ease-out;
-        }
-
         /* Leaderboard styles for standalone menu */
         .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
         .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
@@ -92,52 +60,14 @@
         .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
 
-        /* Online indicator */
-        .online-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            margin-right: 4px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        .online-count {
-            color: #22c55e;
-            font-weight: bold;
-        }
-
-        .user-count {
-            color: #60a5fa;
-            font-weight: bold;
-        }
-
-        .ad-count {
-            color: #fbbf24;
-            font-weight: bold;
-        }
-
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
+        
+        /* Click tracking styles */
+        .click-timer { font-size: 14px; font-weight: bold; color: #00ff88; background: rgba(0, 255, 136, 0.1); padding: 2px 8px; border-radius: 10px; }
+        .click-info { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 5px; }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
-    <!-- Loading Modal -->
-    <div id="loading-modal" class="loading-modal">
-        <div class="loading-content">
-            <div class="text-6xl mb-6 float-animation diamond-icon">💎</div>
-            <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
-            <p class="text-xl font-semibold text-white/90">Reklama yuklanyapti...</p>
-            <p class="text-white/60 mt-2">Iltimos, kuting</p>
-        </div>
-    </div>
-
     <div id="app" class="min-h-full w-full">
         <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
@@ -189,6 +119,7 @@
                     <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
+                                <!-- Icon changed to diamond as requested -->
                                 <div class="text-3xl">💎</div>
                                 <div>
                                     <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
@@ -208,6 +139,11 @@
                             <span class="text-2xl">▶️</span>
                             <span>Reklamani boshlash</span>
                         </button>
+                        
+                        <!-- Click instructions -->
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-white/50">💡 <strong>Qanday ishlaydi:</strong> Reklamani oching → tashqi sahifaga o'ting → 3-30 soniya ichida qayting → bonus oling!</p>
+                        </div>
                     </div>
                 </div>
 
@@ -247,18 +183,16 @@
                         </div>
                         <div class="grid grid-cols-3 gap-4 text-center">
                             <div>
-                                <p class="text-2xl font-bold user-count" id="admin-total-users">1500</p>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-users">0</p>
                                 <p class="text-xs text-white/60 mt-1">Foydalanuvchi</p>
                             </div>
                             <div>
-                                <p class="text-2xl font-bold ad-count" id="admin-total-ads">63230</p>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-ads">0</p>
                                 <p class="text-xs text-white/60 mt-1">Reklamalar</p>
                             </div>
                             <div>
-                                <p class="text-2xl font-bold online-count" id="admin-online-users">3</p>
-                                <p class="text-xs text-white/60 mt-1 flex items-center justify-center">
-                                    <span class="online-indicator"></span> Online
-                                </p>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
+                                <p class="text-xs text-white/60 mt-1">Olmoslar</p>
                             </div>
                         </div>
                     </div>
@@ -308,9 +242,7 @@
 
         // Constants
         const ADMIN_IDS = ['7500103239', '7104718080'];
-        const AD_BLOCK_ID = '18961';
         const REWARD_AMOUNT = 1;
-        const ONLINE_TIMEOUT = 5 * 60 * 1000; // 5 daqiqa (300000 ms)
 
         // Server endpoints (host add_balance.php & get_balance.php)
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
@@ -320,12 +252,19 @@
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
-        let AdController = null;
         let botBalance = 0;
         let currentLeaderboard = 'daily'; // 'daily' | 'overall'
-        let onlineUsers = new Set(); // Online foydalanuvchilar
-        let userActivityTimes = {}; // Har bir foydalanuvchining so'nggi faollik vaqti
-        let adCompletedSuccessfully = false; // Reklama to'liq ko'rilganligini tekshirish
+        let isWatchingAd = false; // Reklama ko'rilayotganligini kuzatish
+
+        // 🔥 CLICK TRACKING SYSTEM - 3 soniya
+        let clickTracking = {
+            startTime: null,
+            timer: null,
+            clicked: false,
+            minTimeForBonus: 3000, // 3 soniya minimum
+            maxTimeForBonus: 30000, // 30 soniya maksimum
+            eventListeners: []
+        };
 
         // Helpers
         async function getTelegramProfilePhoto(userId, username) {
@@ -338,7 +277,6 @@
                 return createFullGradientAvatar(userId);
             }
         }
-        
         function createFullGradientAvatar(userId) {
             const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
             const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
@@ -347,82 +285,7 @@
             return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
-        // Modalni ko'rsatish
-        function showLoadingModal() {
-            const modal = document.getElementById('loading-modal');
-            if (modal) {
-                modal.classList.add('active');
-            }
-        }
-
-        // Modalni yopish
-        function hideLoadingModal() {
-            const modal = document.getElementById('loading-modal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-        }
-
-        // Faollikni yangilash (har safar foydalanuvchi biror amal bajarsa)
-        function updateUserActivity() {
-            if (!currentUser) return;
-            
-            const userId = currentUser.user_id;
-            userActivityTimes[userId] = Date.now();
-            
-            // Firebase'ga yangilash (ixtiyoriy)
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                update(userRef, { last_activity: new Date().toISOString() });
-            } catch (err) {
-                console.warn('Activity update failed', err);
-            }
-            
-            // Online ro'yxatga qo'shish
-            onlineUsers.add(userId);
-            
-            // Admin panelni yangilash
-            updateOnlineCount();
-        }
-
-        // Online foydalanuvchilarni hisoblash
-        function calculateOnlineUsers() {
-            const now = Date.now();
-            const activeUsers = new Set();
-            
-            // Oxirgi 5 daqiqada faol bo'lgan foydalanuvchilar
-            Object.keys(userActivityTimes).forEach(userId => {
-                const lastActive = userActivityTimes[userId];
-                if (now - lastActive <= ONLINE_TIMEOUT) {
-                    activeUsers.add(userId);
-                }
-            });
-            
-            // Har bir foydalanuvchi uchun Firebase'dan oxirgi faollikni tekshirish
-            allUsers.forEach(user => {
-                if (user.last_activity) {
-                    const lastActive = new Date(user.last_activity).getTime();
-                    if (now - lastActive <= ONLINE_TIMEOUT) {
-                        activeUsers.add(user.user_id);
-                    }
-                }
-            });
-            
-            return activeUsers;
-        }
-
-        // Online sonini yangilash
-        function updateOnlineCount() {
-            if (!isAdmin) return;
-            
-            const onlineUsersSet = calculateOnlineUsers();
-            onlineUsers = onlineUsersSet;
-            const onlineCount = onlineUsersSet.size;
-            
-            document.getElementById('admin-online-users').textContent = onlineCount;
-        }
-
-        // Init Telegram & Ads
+        // Init Telegram
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -447,68 +310,6 @@
             } else {
                 currentUser = { user_id: 'web_' + Date.now(), username: 'foydalanuvchi', first_name: 'Foydalanuvchi', last_name:'', photo_url:null, language_code:'uz' };
             }
-            
-            // Dastlabki faollikni yangilash
-            updateUserActivity();
-        }
-
-        // Adsgram'ni ishga tushirish
-        function initAdServices() {
-            console.log('Adsgram SDK yuklanmoqda...');
-            
-            // Adsgram SDK'ni yuklanganligini tekshirish
-            if (typeof window.Adsgram !== 'undefined') {
-                console.log('Adsgram SDK yuklandi');
-                
-                // Adsgram'ni ishga tushirish
-                try {
-                    AdController = window.Adsgram.init({ 
-                        blockId: AD_BLOCK_ID
-                    });
-                    console.log('Adsgram muvaffaqiyatli ishga tushdi');
-                } catch (error) {
-                    console.error('Adsgram init xatosi:', error);
-                }
-            } else {
-                console.warn('Adsgram SDK yuklanmadi');
-            }
-        }
-
-        // Adsgram reklamasini ko'rsatish
-        async function showAdsgramAd() {
-            return new Promise((resolve, reject) => {
-                try {
-                    if (!AdController) {
-                        // Controller yuklanmagan bo'lsa, yangi init qilish
-                        if (typeof window.Adsgram !== 'undefined') {
-                            AdController = window.Adsgram.init({ 
-                                blockId: AD_BLOCK_ID
-                            });
-                            console.log('Adsgram controller yangilandi');
-                        } else {
-                            reject(new Error('Adsgram yuklanmagan'));
-                            return;
-                        }
-                    }
-                    
-                    console.log('Adsgram reklamasi ko\'rsatilmoqda...');
-                    
-                    // Reklamani ko'rsatish
-                    AdController.show()
-                        .then(() => {
-                            console.log('Adsgram reklamasi muvaffaqiyatli ko\'rildi');
-                            resolve(true);
-                        })
-                        .catch(err => {
-                            console.error('Adsgram reklama xatosi:', err);
-                            reject(err);
-                        });
-                        
-                } catch (error) {
-                    console.error('Adsgram interfaol xatosi:', error);
-                    reject(error);
-                }
-            });
         }
 
         // Load/create user in Firebase
@@ -531,9 +332,13 @@
                         ads_watched: 0,
                         withdraw_history: [],
                         last_ad_time: new Date().toISOString(),
-                        last_activity: new Date().toISOString(),
                         created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
+                        updated_at: new Date().toISOString(),
+                        // 🔥 Click tracking ma'lumotlari
+                        total_clicks: 0,
+                        click_history: [],
+                        last_click_time: null,
+                        avg_click_duration: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -541,13 +346,7 @@
                     let userData = snapshot.val();
                     if (!userData.photo_url) {
                         const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
-                        const updates = { 
-                            photo_url: profilePhoto, 
-                            username: currentUser.username || userData.username, 
-                            first_name: currentUser.first_name || userData.first_name, 
-                            last_activity: new Date().toISOString(),
-                            updated_at: new Date().toISOString() 
-                        };
+                        const updates = { photo_url: profilePhoto, username: currentUser.username || userData.username, first_name: currentUser.first_name || userData.first_name, updated_at: new Date().toISOString() };
                         await update(userRef, updates);
                         userData = { ...userData, ...updates };
                     }
@@ -555,9 +354,14 @@
                         await update(userRef, { ads_by_day: {} });
                         userData.ads_by_day = {};
                     }
-                    if (!userData.last_activity) {
-                        await update(userRef, { last_activity: new Date().toISOString() });
-                        userData.last_activity = new Date().toISOString();
+                    // 🔥 Click tracking ma'lumotlarini tekshirish
+                    if (!userData.total_clicks) {
+                        await update(userRef, { 
+                            total_clicks: 0,
+                            click_history: [],
+                            last_click_time: null,
+                            avg_click_duration: 0
+                        });
                     }
                     return userData;
                 }
@@ -589,7 +393,6 @@
                     Object.keys(data).forEach(k => allUsers.push(data[k]));
                 }
                 updateAdminPanel();
-                updateOnlineCount();
                 renderLeaderboardsMain();
             }, (err) => console.error('subscribeToUsers error', err));
         }
@@ -648,165 +451,421 @@
         function updateAdminPanel() {
             const totalUsers = allUsers.length;
             const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
-            
+            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds||0), 0);
             document.getElementById('admin-total-users').textContent = totalUsers;
             document.getElementById('admin-total-ads').textContent = totalAds;
-            
-            // Online sonini yangilash
-            updateOnlineCount();
+            document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
 
             const usersList = document.getElementById('users-list');
             if (!usersList) return;
-            
-            // Foydalanuvchilarni online holatiga qarab tartiblash
-            const sortedUsers = allUsers
-                .map(u => {
-                    const isOnline = onlineUsers.has(u.user_id);
-                    const lastActivityTime = u.last_activity ? new Date(u.last_activity).getTime() : 0;
-                    const now = Date.now();
-                    const minutesAgo = lastActivityTime ? Math.floor((now - lastActivityTime) / 60000) : 999;
-                    
-                    return {
-                        ...u,
-                        isOnline,
-                        lastActivityTime,
-                        minutesAgo
-                    };
-                })
-                .sort((a, b) => {
-                    // Avval onlinelar, keyin offlinelar
-                    if (a.isOnline && !b.isOnline) return -1;
-                    if (!a.isOnline && b.isOnline) return 1;
-                    
-                    // Online bo'lsa, oxirgi faollik bo'yicha tartiblash
-                    if (a.isOnline && b.isOnline) {
-                        return a.lastActivityTime > b.lastActivityTime ? -1 : 1;
-                    }
-                    
-                    // Offline bo'lsa, olmoslar soni bo'yicha tartiblash
-                    return (b.diamonds||0) - (a.diamonds||0);
-                })
-                .slice(0,20);
-            
-            usersList.innerHTML = sortedUsers.map(u => {
-                const isOnline = onlineUsers.has(u.user_id);
-                const statusColor = isOnline ? '#22c55e' : '#ef4444';
-                const statusText = isOnline ? 'Online' : `${u.minutesAgo < 60 ? u.minutesAgo + ' min oldin' : 'Offline'}`;
-                
-                return `
+            usersList.innerHTML = allUsers
+                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
+                .slice(0,20)
+                .map(u => `
                     <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="avatar-container relative">
+                                <div class="avatar-container">
                                     ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
-                                    <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#0f0f0f]" style="background-color: ${statusColor};"></div>
                                 </div>
                                 <div>
                                     <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
                                     <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
-                                    <p class="text-xs mt-1" style="color: ${statusColor};">${statusText}</p>
                                 </div>
                             </div>
                             <div class="text-right">
                                 <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
                                 <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
+                                ${u.total_clicks ? `<p class="text-xs text-green-400">${u.total_clicks} click</p>` : ''}
                             </div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                `).join('');
         }
 
-        // Watch ad flow: update Firebase (ads_by_day & ads_watched) + call server add_balance then refresh leaderboards
+        // 🔥 CLICK-ASOSLI REKLAMA TIZIMI (3 soniya)
         async function watchAd() {
-            if (!currentUser) return;
+            if (!currentUser || isWatchingAd) return;
             
-            // Faollikni yangilash
-            updateUserActivity();
+            // Bonus olish huquqini tekshirish
+            const canBonus = await canReceiveBonus(currentUser.user_id);
+            if (!canBonus) {
+                const statusDiv = document.getElementById('ad-status');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-yellow-400 font-bold mb-2">Cheklov!</p>
+                        <p class="text-sm text-white/70">Iltimos, 30 soniyadan keyin qayta urinib ko'ring</p>
+                    </div>
+                `;
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
+                }, 3000);
+                return;
+            }
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
+            isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
-
-            adCompletedSuccessfully = false;
+            
+            // Click tracking ni boshlash
+            clickTracking.startTime = Date.now();
+            clickTracking.clicked = false;
+            
+            // Sahifa fokusini yo'qotish/ortga qaytishni kuzatish
+            setupPageVisibilityTracking();
 
             try {
-                // 1. Avval loading modalni ko'rsatish
-                showLoadingModal();
-                
-                // 2. Reklamani ko'rsatish
-                await showAdsgramAd();
-                
-                // 3. Reklama tugagach, loading modalni yopish
-                hideLoadingModal();
-                
-                // 4. Faqat reklama to'liq ko'rilgandan keyin bonusni berish
-                adCompletedSuccessfully = true;
-                
-                if (adCompletedSuccessfully) {
-                    // read user
-                    const userRef = ref(db, 'users/' + currentUser.user_id);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val() || {};
+                // Sonar Rewarded Ad ni ko'rsatish
+                window.Sonar.show({
+                    adUnit: "rekchiai",
+                    loader: true,
+                    
+                    onStart: () => {
+                        console.log('Reklama yuklanishi boshlandi');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+                    },
+                    
+                    onShow: () => {
+                        console.log('Reklama ko\'rsatildi');
+                        statusDiv.innerHTML = `
+                            <div class="text-center">
+                                <p class="text-green-400 font-bold mb-3">Reklama ochildi!</p>
+                                <p class="text-sm text-white/70 mb-2">👆 Reklamani BOSING va tashqi sahifaga o'ting</p>
+                                <p class="text-xs text-white/50">Bonus olish uchun kamida 3 soniya tashqi sahifada bo'ling</p>
+                                <div class="mt-4">
+                                    <span class="click-timer">⏳ Vaqt: <span id="click-timer">0</span>s</span>
+                                    <p class="click-info">Tashqi sahifaga o'tishni kutyapmiz...</p>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Timer boshlash
+                        let seconds = 0;
+                        clickTracking.timer = setInterval(() => {
+                            seconds++;
+                            const timerEl = document.getElementById('click-timer');
+                            if (timerEl) timerEl.textContent = seconds;
+                        }, 1000);
+                    },
+                    
+                    onError: (error) => {
+                        console.error('Reklama xatosi:', error);
+                        clearTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
+                        resetWatchButton();
+                        setTimeout(() => { 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    },
 
-                    const now = new Date();
-                    const tzOffset = now.getTimezoneOffset() * 60000;
-                    const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+                    onClose: () => {
+                        console.log('Reklama yopildi');
+                        clearTracking();
+                        // Click aniqlanganmi tekshirish
+                        setTimeout(() => {
+                            if (clickTracking.clicked) {
+                                checkAndGiveBonus();
+                            } else {
+                                statusDiv.innerHTML = `
+                                    <div class="text-center">
+                                        <p class="text-yellow-400 font-bold mb-2">Reklama yopildi</p>
+                                        <p class="text-sm text-white/70">Agar tashqi sahifaga o'tgan bo'lsangiz, bir necha soniyada bonus olasiz</p>
+                                    </div>
+                                `;
+                                resetWatchButton();
+                                
+                                setTimeout(() => { 
+                                    if (!statusDiv.innerHTML.includes('Tabriklaymiz')) {
+                                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                                    }
+                                }, 3000);
+                            }
+                        }, 1000);
+                    },
 
-                    const ads_by_day = userData.ads_by_day || {};
-                    const newDayCount = (ads_by_day[localKey] || 0) + 1;
-                    const newOverall = (userData.ads_watched || 0) + 1;
-
-                    // update firebase
-                    const updates = { 
-                        ads_watched: newOverall, 
-                        [`ads_by_day/${localKey}`]: newDayCount, 
-                        last_ad_time: new Date().toISOString(),
-                        last_activity: new Date().toISOString()
-                    };
-                    const ok = await updateUserData(updates);
-                    if (!ok) throw new Error('Firebase yangilashida xatolik');
-
-                    // notify server bot to add balance
-                    try { 
-                        await addToBotBalance(REWARD_AMOUNT); 
-                    } catch(e){ 
-                        console.warn('Bot add failed', e); 
+                    onReward: async () => {
+                        console.log('Reklama to\'liq ko\'rildi, click tekshiruvi kutilmoqda...');
+                        // Click tracking natijasiga qarab bonus beriladi
+                    },
+                }).then((result) => {
+                    console.log('Sonar result:', result);
+                    if (result.status === 'error') {
+                        console.error('Ad failed to show:', result.message);
+                        clearTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
+                        resetWatchButton();
                     }
+                });
 
-                    // re-sync quickly
-                    renderLeaderboardsMain();
-                    await fetchBotBalance();
-
-                    statusDiv.innerHTML = `<div class="text-center slide-up"><div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div><p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p><p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p><p class="text-sm text-white/60">Olmos bot balansiga qo'shildi</p></div>`;
-                }
             } catch (err) {
-                console.error('Ad error', err);
-                // Agar loading modal ko'rsatilgan bo'lsa, uni yopish
-                hideLoadingModal();
-                
-                // Reklama to'liq ko'rilmagan bo'lsa, bonus bermaslik
-                adCompletedSuccessfully = false;
-                
-                // Xato xabarini aniqroq qilish
-                statusDiv.innerHTML = '<p class="text-orange-400">Reklama yopildi yoki xatolik yuz berdi. Olmos berilmadi.</p>';
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                
-                // Agar reklama muvaffaqiyatli yakunlangan bo'lsa, 3 soniyadan keyin statusni tiklash
-                if (adCompletedSuccessfully) {
-                    setTimeout(() => { 
-                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                    }, 3000);
-                } else {
-                    // Agar reklama to'liq ko'rilmagan bo'lsa, 2 soniyadan keyin statusni tiklash
-                    setTimeout(() => { 
-                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                    }, 2000);
+                console.error('Reklama ochishda xatolik', err);
+                clearTracking();
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik yuz berdi.</p>';
+                resetWatchButton();
+                setTimeout(() => { 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                }, 3000);
+            }
+        }
+
+        // 📌 YANGI FUNKSIYALAR:
+
+        // Sahifa fokusini kuzatish
+        function setupPageVisibilityTracking() {
+            // Document visibility change
+            const visibilityHandler = () => handleVisibilityChange();
+            document.addEventListener('visibilitychange', visibilityHandler);
+            clickTracking.eventListeners.push({ type: 'visibilitychange', handler: visibilityHandler });
+            
+            // Pagehide va pageshow
+            const pageHideHandler = () => handlePageHide();
+            const pageShowHandler = () => handlePageShow();
+            window.addEventListener('pagehide', pageHideHandler);
+            window.addEventListener('pageshow', pageShowHandler);
+            clickTracking.eventListeners.push({ type: 'pagehide', handler: pageHideHandler });
+            clickTracking.eventListeners.push({ type: 'pageshow', handler: pageShowHandler });
+            
+            // Blur va focus (fallback)
+            const blurHandler = () => handleWindowBlur();
+            const focusHandler = () => handleWindowFocus();
+            window.addEventListener('blur', blurHandler);
+            window.addEventListener('focus', focusHandler);
+            clickTracking.eventListeners.push({ type: 'blur', handler: blurHandler });
+            clickTracking.eventListeners.push({ type: 'focus', handler: focusHandler });
+            
+            // Telegram WebApp events
+            if (window.Telegram?.WebApp) {
+                Telegram.WebApp.onEvent('viewportChanged', (params) => {
+                    if (params.is_expanded === false) {
+                        // User appni yopdi/yashirdi
+                        console.log('Telegram WebApp yopildi');
+                        clickTracking.clicked = true;
+                    }
+                });
+            }
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                // Sahifa yashirildi (user boshqa tabga o'tdi)
+                console.log('Sahifa yashirildi - click bo\'lishi mumkin');
+                if (clickTracking.startTime) {
+                    clickTracking.clicked = true;
                 }
+            } else {
+                // Sahifa ko'rsatildi (user qaytdi)
+                console.log('Sahifa ko\'rsatildi - user qaytdi');
+                if (clickTracking.clicked) {
+                    setTimeout(checkAndGiveBonus, 1000);
+                }
+            }
+        }
+
+        function handlePageHide() {
+            console.log('Page hide - user sahifani tark etdi');
+            if (clickTracking.startTime) {
+                clickTracking.clicked = true;
+            }
+        }
+
+        function handlePageShow() {
+            console.log('Page show - user qaytdi');
+            if (clickTracking.clicked) {
+                setTimeout(checkAndGiveBonus, 1000);
+            }
+        }
+
+        function handleWindowBlur() {
+            console.log('Window blur - fokus yo\'qoldi');
+            if (clickTracking.startTime) {
+                clickTracking.clicked = true;
+            }
+        }
+
+        function handleWindowFocus() {
+            console.log('Window focus - fokus qaytdi');
+            if (clickTracking.clicked) {
+                setTimeout(checkAndGiveBonus, 1000);
+            }
+        }
+
+        // Bonus tekshirish va berish
+        async function checkAndGiveBonus() {
+            if (!clickTracking.startTime || !clickTracking.clicked) {
+                console.log('Click aniqlanmadi');
+                return;
+            }
+            
+            const spentTime = Date.now() - clickTracking.startTime;
+            console.log(`Sarflangan vaqt: ${spentTime}ms`);
+            
+            const statusDiv = document.getElementById('ad-status');
+            const btn = document.getElementById('watch-ad-btn');
+            
+            // Vaqt tekshiruvi (3 soniya)
+            if (spentTime < clickTracking.minTimeForBonus) {
+                console.log('Vaqt yetarli emas:', spentTime, 'ms');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-red-400 font-bold mb-2">Vaqt yetarli emas!</p>
+                        <p class="text-sm text-white/70">Iltimos, reklamani to'liq ko'ring va tashqi sahifada kamida 3 soniya bo'ling</p>
+                        <p class="text-xs text-white/50 mt-2">Sarflangan vaqt: ${Math.round(spentTime/1000)}s</p>
+                    </div>
+                `;
+                resetWatchButton();
+                return;
+            }
+            
+            if (spentTime > clickTracking.maxTimeForBonus) {
+                console.log('Vaqt juda ko\'p:', spentTime, 'ms');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-yellow-400 font-bold mb-2">Vaqt chegarasidan oshib ketdi</p>
+                        <p class="text-sm text-white/70">Keyingi reklamada tezroq qayting</p>
+                        <p class="text-xs text-white/50 mt-2">Sarflangan vaqt: ${Math.round(spentTime/1000)}s (limit: 30s)</p>
+                    </div>
+                `;
+                resetWatchButton();
+                return;
+            }
+            
+            // ✅ BONUS BERISH
+            console.log('Bonus beriladi! Sarflangan vaqt:', spentTime, 'ms');
+            
+            try {
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Click aniqlandi, bonus berilmoqda...</p>';
+                
+                // Firebase yangilash
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+
+                const ads_by_day = userData.ads_by_day || {};
+                const newDayCount = (ads_by_day[localKey] || 0) + 1;
+                const newOverall = (userData.ads_watched || 0) + 1;
+                const totalClicks = (userData.total_clicks || 0) + 1;
+                
+                // Click history
+                const clickHistory = userData.click_history || [];
+                clickHistory.push({
+                    time: new Date().toISOString(),
+                    duration: spentTime,
+                    rewarded: true,
+                    type: 'click'
+                });
+                // Faqat oxirgi 10 ta clickni saqlash
+                const limitedHistory = clickHistory.slice(-10);
+
+                // update firebase
+                const updates = { 
+                    ads_watched: newOverall, 
+                    [`ads_by_day/${localKey}`]: newDayCount, 
+                    last_ad_time: new Date().toISOString(),
+                    last_click_time: new Date().toISOString(),
+                    click_duration: spentTime,
+                    total_clicks: totalClicks,
+                    click_history: limitedHistory,
+                    avg_click_duration: ((userData.avg_click_duration || 0) * (totalClicks - 1) + spentTime) / totalClicks
+                };
+                const ok = await updateUserData(updates);
+                if (!ok) throw new Error('Firebase yangilashida xatolik');
+
+                // Bot balansiga qo'shish
+                try { 
+                    await addToBotBalance(REWARD_AMOUNT); 
+                } catch(e){ 
+                    console.warn('Bot add failed', e); 
+                }
+
+                // Re-sync quickly
+                renderLeaderboardsMain();
+                await fetchBotBalance();
+
+                // Muhim: Success UI
+                statusDiv.innerHTML = `
+                    <div class="text-center slide-up">
+                        <div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div>
+                        <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
+                        <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
+                        <p class="text-sm text-white/70 mb-2">Click uchun bonus berildi</p>
+                        <p class="text-xs text-white/50">Sarflangan vaqt: ${Math.round(spentTime/1000)} soniya</p>
+                    </div>
+                `;
+                
+                // Button reset
+                resetWatchButton();
+                
+            } catch (err) {
+                console.error('Bonus berishda xatolik', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
+                resetWatchButton();
+            }
+        }
+
+        // Trackerni tozalash
+        function clearTracking() {
+            if (clickTracking.timer) {
+                clearInterval(clickTracking.timer);
+                clickTracking.timer = null;
+            }
+            
+            // Event listenerlarni olib tashlash
+            clickTracking.eventListeners.forEach(item => {
+                if (item.type === 'visibilitychange') {
+                    document.removeEventListener('visibilitychange', item.handler);
+                } else {
+                    window.removeEventListener(item.type, item.handler);
+                }
+            });
+            clickTracking.eventListeners = [];
+        }
+
+        // Buttonni reset qilish
+        function resetWatchButton() {
+            const btn = document.getElementById('watch-ad-btn');
+            isWatchingAd = false;
+            btn.disabled = false;
+            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+            
+            // Trackerni tozalash
+            clickTracking.startTime = null;
+            clickTracking.clicked = false;
+        }
+
+        // Bonus olish huquqini tekshirish
+        async function canReceiveBonus(userId) {
+            try {
+                const userRef = ref(db, 'users/' + userId);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                
+                const now = new Date();
+                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
+                
+                // 1. 30 soniyadan keyin qayta ruxsat
+                if (lastClick && (now - lastClick) < 30000) {
+                    return false;
+                }
+                
+                // 2. Kunlik cheklov (masalan, 50 ta)
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+                const todayClicks = (userData.ads_by_day || {})[localKey] || 0;
+                if (todayClicks >= 50) {
+                    return false;
+                }
+                
+                return true;
+            } catch (err) {
+                console.error('Bonus tekshirish xatosi:', err);
+                return true; // Xatolikda ruxsat ber
             }
         }
 
@@ -815,10 +874,19 @@
             if (!currentUser) throw new Error('No user');
             const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
             const controller = new AbortController();
-            const timeoutId = setTimeout(()=>controller.abort(), 10000);
-            const resp = await fetch(BOT_API_ADD_URL, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: body.toString(), signal: controller.signal });
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const resp = await fetch(BOT_API_ADD_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                body: body.toString(), 
+                signal: controller.signal 
+            });
             clearTimeout(timeoutId);
-            if (!resp.ok) { const txt = await resp.text().catch(()=>null); console.warn('addToBotBalance non-OK', resp.status, txt); return { success:false, message:'HTTP '+resp.status }; }
+            if (!resp.ok) { 
+                const txt = await resp.text().catch(() => null); 
+                console.warn('addToBotBalance non-OK', resp.status, txt); 
+                return { success: false, message: 'HTTP ' + resp.status }; 
+            }
             return await resp.json();
         }
 
@@ -829,10 +897,17 @@
                 url.searchParams.set('key', BOT_API_KEY);
                 url.searchParams.set('user_id', currentUser.user_id);
                 const controller = new AbortController();
-                const timeoutId = setTimeout(()=>controller.abort(), 8000);
-                const resp = await fetch(url.toString(), { method:'GET', headers:{ 'Accept':'application/json' }, signal: controller.signal });
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const resp = await fetch(url.toString(), { 
+                    method: 'GET', 
+                    headers: { 'Accept': 'application/json' }, 
+                    signal: controller.signal 
+                });
                 clearTimeout(timeoutId);
-                if (!resp.ok) { console.warn('fetchBotBalance non-OK', resp.status); return; }
+                if (!resp.ok) { 
+                    console.warn('fetchBotBalance non-OK', resp.status); 
+                    return; 
+                }
                 const json = await resp.json();
                 if (json && json.success) {
                     botBalance = parseInt(json.balance || 0) || 0;
@@ -847,21 +922,7 @@
 
         // UI bindings (menu + leaderboard tabs)
         function bindUI() {
-            // Reklama tugmasi - faollikni yangilash
-            document.getElementById('watch-ad-btn')?.addEventListener('click', () => {
-                updateUserActivity();
-                watchAd();
-            });
-
-            // Har bir menu bosilganda faollikni yangilash
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', updateUserActivity);
-            });
-
-            // Har bir leaderboard tab bosilganda faollikni yangilash
-            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
-                tab.addEventListener('click', updateUserActivity);
-            });
+            document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
 
             // bottom menu
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
@@ -910,7 +971,6 @@
         // App init
         async function initializeAppMain() {
             initTelegram();
-            initAdServices();
             bindUI();
 
             const user = await loadOrCreateUser();
@@ -920,21 +980,13 @@
 
                 subscribeToUsers();
 
-                if (isAdmin) {
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                }
+                if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
             }
 
             if (currentUser) {
                 await fetchBotBalance();
                 setInterval(fetchBotBalance, 30000);
             }
-
-            // Online sonini har 30 soniyada yangilash
-            setInterval(updateOnlineCount, 30000);
-
-            // Har 10 soniyada faollikni yangilash (sessionni saqlash uchun)
-            setInterval(updateUserActivity, 10000);
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
@@ -944,5 +996,8 @@
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
         else initializeAppMain();
     </script>
+
+    <!-- Sonar reklama skripti qo'shildi -->
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
 </body>
 </html>
