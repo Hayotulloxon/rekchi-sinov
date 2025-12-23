@@ -238,6 +238,74 @@
         let isWatchingAd = false;
         let adsgramController = null;
 
+        // YANGI: ONLINE/OFFLINE TRACKING SISTEMASI
+        let connectionTracking = {
+            startTime: null,
+            connectionLost: false,
+            connectionRestored: false,
+            lastOnlineStatus: navigator.onLine,
+            checkInterval: null,
+            
+            startTracking: function() {
+                this.startTime = Date.now();
+                this.connectionLost = false;
+                this.connectionRestored = false;
+                this.lastOnlineStatus = navigator.onLine;
+                
+                // Online/offline eventlarini kuzatish
+                window.addEventListener('online', this.handleOnline.bind(this));
+                window.addEventListener('offline', this.handleOffline.bind(this));
+                
+                // 1 soniyada bir tekshirish
+                this.checkInterval = setInterval(() => {
+                    const currentOnline = navigator.onLine;
+                    if (this.lastOnlineStatus && !currentOnline) {
+                        this.connectionLost = true;
+                        console.log('Connection lost detected');
+                    }
+                    if (!this.lastOnlineStatus && currentOnline) {
+                        this.connectionRestored = true;
+                        console.log('Connection restored detected');
+                    }
+                    this.lastOnlineStatus = currentOnline;
+                }, 1000);
+            },
+            
+            stopTracking: function() {
+                if (this.checkInterval) {
+                    clearInterval(this.checkInterval);
+                    this.checkInterval = null;
+                }
+                window.removeEventListener('online', this.handleOnline);
+                window.removeEventListener('offline', this.handleOffline);
+            },
+            
+            handleOnline: function() {
+                this.connectionRestored = true;
+                console.log('Online event triggered');
+            },
+            
+            handleOffline: function() {
+                this.connectionLost = true;
+                console.log('Offline event triggered');
+            },
+            
+            getConnectionData: function() {
+                return {
+                    spentTime: Date.now() - this.startTime,
+                    connectionLost: this.connectionLost,
+                    connectionRestored: this.connectionRestored,
+                    isOnline: navigator.onLine
+                };
+            },
+            
+            isValidClick: function() {
+                const data = this.getConnectionData();
+                // Agar connection yo'qolib, qayta tiklanganda - bu haqiqiy click
+                return data.connectionLost && data.connectionRestored && data.spentTime >= 3000;
+            }
+        };
+
         // REKLAMA NAVBATI
         let adQueue = {
             currentProvider: 'sonar',
@@ -253,17 +321,6 @@
             getCurrentProvider: function() {
                 return this.currentProvider;
             }
-        };
-
-        // CLICK TRACKING
-        let clickTracking = {
-            startTime: null,
-            timer: null,
-            externalClickDetected: false,
-            adClosedManually: false,
-            minTimeForBonus: 8000,
-            maxTimeForBonus: 60000,
-            eventListeners: []
         };
 
         // Helpers
@@ -363,7 +420,10 @@
                         avg_click_duration: 0,
                         external_clicks: 0,
                         sonar_ads: 0,
-                        adsgram_ads: 0
+                        adsgram_ads: 0,
+                        // YANGI: Connection tracking stats
+                        connection_clicks: 0,
+                        connection_lost_count: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -395,7 +455,9 @@
                             avg_click_duration: userData.avg_click_duration || 0,
                             external_clicks: userData.external_clicks || 0,
                             sonar_ads: userData.sonar_ads || 0,
-                            adsgram_ads: userData.adsgram_ads || 0
+                            adsgram_ads: userData.adsgram_ads || 0,
+                            connection_clicks: userData.connection_clicks || 0,
+                            connection_lost_count: userData.connection_lost_count || 0
                         });
                     }
                     return userData;
@@ -516,117 +578,15 @@
                 `).join('');
         }
 
-        // CLICK DETEKTSIYA
-        function setupAdvancedClickDetection() {
-            console.log('Click detection ishga tushdi');
-            
-            // BEFOREUNLOAD
-            const beforeUnloadHandler = (e) => {
-                console.log('Beforeunload - User sahifani tark etmoqchi');
-                clickTracking.externalClickDetected = true;
-                e.preventDefault();
-                e.returnValue = '';
-                return '';
-            };
-            window.addEventListener('beforeunload', beforeUnloadHandler);
-            clickTracking.eventListeners.push({ type: 'beforeunload', handler: beforeUnloadHandler });
-            
-            // PAGEHIDE
-            const pageHideHandler = () => {
-                console.log('Pagehide - Sahifa yashirildi');
-                clickTracking.externalClickDetected = true;
-            };
-            window.addEventListener('pagehide', pageHideHandler);
-            clickTracking.eventListeners.push({ type: 'pagehide', handler: pageHideHandler });
-            
-            // VISIBILITY CHANGE
-            const visibilityHandler = () => {
-                if (document.hidden) {
-                    console.log('Visibility hidden - User boshqa tabga o\'tdi');
-                    setTimeout(() => {
-                        if (document.hidden && !clickTracking.adClosedManually) {
-                            clickTracking.externalClickDetected = true;
-                        }
-                    }, 300);
-                }
-            };
-            document.addEventListener('visibilitychange', visibilityHandler);
-            clickTracking.eventListeners.push({ type: 'visibilitychange', handler: visibilityHandler });
-            
-            // WINDOW BLUR
-            const blurHandler = () => {
-                console.log('Window blur - Fokus yo\'qoldi');
-                setTimeout(() => {
-                    if (!document.hasFocus() && !clickTracking.adClosedManually) {
-                        clickTracking.externalClickDetected = true;
-                    }
-                }, 500);
-            };
-            window.addEventListener('blur', blurHandler);
-            clickTracking.eventListeners.push({ type: 'blur', handler: blurHandler });
-            
-            // TELEGRAM WEBAPP
-            if (window.Telegram?.WebApp) {
-                Telegram.WebApp.onEvent('viewportChanged', (params) => {
-                    if (params.is_expanded === false) {
-                        console.log('Telegram WebApp yopildi');
-                        clickTracking.externalClickDetected = true;
-                    }
-                });
-            }
-        }
-
-        function clearTracking() {
-            if (clickTracking.timer) {
-                clearInterval(clickTracking.timer);
-                clickTracking.timer = null;
-            }
-            
-            clickTracking.eventListeners.forEach(item => {
-                try {
-                    if (item.type === 'visibilitychange' || item.type === 'beforeunload') {
-                        document.removeEventListener(item.type, item.handler);
-                    } else {
-                        window.removeEventListener(item.type, item.handler);
-                    }
-                } catch (e) {
-                    console.log('Event listener olib tashlashda xatolik:', e);
-                }
-            });
-            clickTracking.eventListeners = [];
-            
-            if (window.Telegram?.WebApp) {
-                try {
-                    Telegram.WebApp.offEvent('viewportChanged');
-                } catch (e) {
-                    console.log('Telegram events cleanup error:', e);
-                }
-            }
-        }
-
-        // REKLAMA NAVBATI
+        // YANGI: ONLINE/OFFLINE TRACKING ASOSIDA REKLAMA
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
-            
-            const canBonus = await canReceiveBonus(currentUser.user_id);
-            if (!canBonus) {
-                const cooldown = await getRemainingCooldown();
-                const statusDiv = document.getElementById('ad-status');
-                statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Kutish kerak!</p>';
-                setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
-                }, 3000);
-                return;
-            }
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
             
-            clearTracking();
-            
-            clickTracking.startTime = Date.now();
-            clickTracking.externalClickDetected = false;
-            clickTracking.adClosedManually = false;
+            // Connection trackingni boshlash
+            connectionTracking.startTracking();
             
             isWatchingAd = true;
             btn.disabled = true;
@@ -647,7 +607,7 @@
                 
             } catch (err) {
                 console.error('Xatolik:', err);
-                clearTracking();
+                connectionTracking.stopTracking();
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                 resetWatchButton();
                 setTimeout(() => { 
@@ -656,14 +616,12 @@
             }
         }
 
-        // SONAR REKLAMASI
+        // SONAR REKLAMASI - ONLINE/OFFLINE TRACKING BILAN
         async function showSonarAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
                 
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
-                
-                setupAdvancedClickDetection();
                 
                 window.Sonar.show({
                     adUnit: "rekchiai",
@@ -681,7 +639,7 @@
                     
                     onError: (error) => {
                         console.error('Reklama xatosi:', error);
-                        clearTracking();
+                        connectionTracking.stopTracking();
                         statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi.</p>';
                         resetWatchButton();
                         reject(error);
@@ -690,30 +648,23 @@
                     onClose: () => {
                         console.log('Reklama yopildi');
                         
-                        if (!clickTracking.externalClickDetected) {
-                            clickTracking.adClosedManually = true;
-                            statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
-                            resetWatchButton();
-                            setTimeout(() => { 
-                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                            }, 2000);
-                            return;
-                        }
-                        
-                        if (clickTracking.externalClickDetected) {
-                            setTimeout(() => {
-                                checkAndGiveBonus();
-                            }, 1000);
-                        }
+                        // Connection tracking natijalarini tekshirish
+                        setTimeout(() => {
+                            checkConnectionForBonus();
+                        }, 1000);
                     },
 
                     onReward: async () => {
                         console.log('Reklama to\'liq ko\'rildi');
+                        // Connection tracking natijalarini tekshirish
+                        setTimeout(() => {
+                            checkConnectionForBonus();
+                        }, 1000);
                     },
                 }).then((result) => {
                     console.log('Sonar natijasi:', result);
                     if (result.status === 'error') {
-                        clearTracking();
+                        connectionTracking.stopTracking();
                         statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                         resetWatchButton();
                         reject(result);
@@ -722,7 +673,7 @@
             });
         }
 
-        // ADSGRAM REKLAMASI
+        // ADSGRAM REKLAMASI - ONLINE/OFFLINE TRACKING BILAN
         async function showAdsgramAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
@@ -739,29 +690,18 @@
                 
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
                 
-                setupAdvancedClickDetection();
-                
                 adsgramController.show().then((result) => {
                     console.log('AdsGram natijasi:', result);
-                    clearTracking();
+                    connectionTracking.stopTracking();
                     
-                    if (clickTracking.externalClickDetected) {
-                        const spentTime = Date.now() - clickTracking.startTime;
-                        if (spentTime >= 8000 && spentTime <= 60000) {
-                            giveBonusToUser(spentTime, 'adsgram').then(resolve).catch(reject);
-                        } else {
-                            statusDiv.innerHTML = '<p class="text-red-400">Vaqt shartiga mos emas.</p>';
-                            resetWatchButton();
-                            reject(new Error('Invalid click duration'));
-                        }
-                    } else {
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
-                        resetWatchButton();
-                        reject(new Error('No external click detected'));
-                    }
+                    // Connection tracking natijalarini tekshirish
+                    setTimeout(() => {
+                        checkConnectionForBonus();
+                    }, 1000);
+                    
                 }).catch((errorResult) => {
                     console.error('AdsGram xatosi:', errorResult);
-                    clearTracking();
+                    connectionTracking.stopTracking();
                     statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
                     resetWatchButton();
                     reject(new Error('Ad error'));
@@ -769,37 +709,28 @@
             });
         }
 
-        // BONUS TEKSHIRISH
-        async function checkAndGiveBonus() {
-            if (!clickTracking.startTime || !clickTracking.externalClickDetected) {
-                console.log('Click aniqlanmadi');
-                const statusDiv = document.getElementById('ad-status');
-                statusDiv.innerHTML = '<p class="text-red-400">Click aniqlanmadi!</p>';
-                resetWatchButton();
-                return;
-            }
-            
-            const spentTime = Date.now() - clickTracking.startTime;
-            console.log(`Sarflangan vaqt: ${spentTime}ms`);
+        // YANGI: CONNECTION ASOSIDA BONUS TEKSHIRISH
+        async function checkConnectionForBonus() {
+            const connectionData = connectionTracking.getConnectionData();
+            console.log('Connection data:', connectionData);
             
             const statusDiv = document.getElementById('ad-status');
             
-            if (spentTime < clickTracking.minTimeForBonus) {
-                console.log('Juda tez:', spentTime, 'ms');
-                statusDiv.innerHTML = '<p class="text-red-400">Juda tez!</p>';
-                resetWatchButton();
-                return;
-            }
+            // Connection trackingni to'xtatish
+            connectionTracking.stopTracking();
             
-            if (spentTime > clickTracking.maxTimeForBonus) {
-                console.log('Juda uzoq:', spentTime, 'ms');
-                statusDiv.innerHTML = '<p class="text-yellow-400">Vaqt chegarasidan oshdi.</p>';
+            // Agar connection yo'qolib, qayta tiklanganda - bu haqiqiy click
+            if (connectionTracking.isValidClick()) {
+                console.log('✅ Online/offline click aniqlandi! Bonus beriladi...');
+                await giveBonusToUser(connectionData.spentTime, adQueue.currentProvider === 'sonar' ? 'adsgram' : 'sonar');
+            } else {
+                console.log('❌ Online/offline click aniqlanmadi');
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
                 resetWatchButton();
-                return;
+                setTimeout(() => { 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                }, 3000);
             }
-            
-            console.log('✅ Click aniqlandi! Bonus beriladi...');
-            await giveBonusToUser(spentTime, adQueue.lastUsedProvider || 'sonar');
         }
 
         // BONUS BERISH
@@ -822,15 +753,19 @@
                 const newOverall = (userData.ads_watched || 0) + 1;
                 const totalClicks = (userData.total_clicks || 0) + 1;
                 const verifiedClicks = (userData.verified_clicks || 0) + 1;
+                const connectionClicks = (userData.connection_clicks || 0) + 1;
+                const connectionLostCount = (userData.connection_lost_count || 0) + 1;
                 
                 const clickHistory = userData.click_history || [];
                 clickHistory.push({
                     time: new Date().toISOString(),
                     duration: spentTime,
                     rewarded: true,
-                    type: 'verified_external_click',
+                    type: 'connection_click',
                     verified: true,
-                    provider: provider
+                    provider: provider,
+                    connection_lost: true,
+                    connection_restored: true
                 });
                 const limitedHistory = clickHistory.slice(-20);
 
@@ -843,6 +778,8 @@
                     click_duration: spentTime,
                     total_clicks: totalClicks,
                     verified_clicks: verifiedClicks,
+                    connection_clicks: connectionClicks,
+                    connection_lost_count: connectionLostCount,
                     click_history: limitedHistory,
                     avg_click_duration: ((userData.avg_click_duration || 0) * (verifiedClicks - 1) + spentTime) / verifiedClicks,
                     external_clicks: (userData.external_clicks || 0) + 1,
@@ -891,53 +828,8 @@
             btn.disabled = false;
             btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
             
-            clickTracking.startTime = null;
-            clickTracking.externalClickDetected = false;
-            clickTracking.adClosedManually = false;
-            
-            clearTracking();
-        }
-
-        async function canReceiveBonus(userId) {
-            try {
-                const userRef = ref(db, 'users/' + userId);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
-                
-                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
-                if (lastClick && (new Date() - lastClick) < 30000) {
-                    return false;
-                }
-                
-                const tzOffset = new Date().getTimezoneOffset() * 60000;
-                const localKey = new Date(new Date() - tzOffset).toISOString().slice(0,10);
-                const todayClicks = (userData.ads_by_day || {})[localKey] || 0;
-                if (todayClicks >= 100) {
-                    return false;
-                }
-                
-                return true;
-            } catch (err) {
-                console.error('Bonus tekshirish xatosi:', err);
-                return true;
-            }
-        }
-
-        async function getRemainingCooldown() {
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
-                
-                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
-                if (!lastClick) return 0;
-                
-                const now = new Date();
-                const diff = Math.max(0, 30000 - (now - lastClick));
-                return Math.ceil(diff / 1000);
-            } catch (err) {
-                return 0;
-            }
+            // Connection trackingni to'liq tozalash
+            connectionTracking.stopTracking();
         }
 
         // Server bot API calls
