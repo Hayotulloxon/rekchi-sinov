@@ -7,6 +7,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
+    <!-- Sonar reklama skripti -->
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
+    <!-- AdsGram reklama skripti -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -202,10 +206,6 @@
         </div>
     </div>
 
-    <!-- REKLAMA SKRIPTLARI -->
-    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
     <!-- Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -238,198 +238,147 @@
         let isWatchingAd = false;
         let adsgramController = null;
 
-        // YANGI: MINI APP CHIQISH/KIRISH TRACKING SISTEMASI
-        let appTracking = {
+        // 🔥 YANGI VA MUHIM: CLICK DETEKTION SISTEMASI
+        let clickDetection = {
             startTime: null,
             appClosed: false,
             appReopened: false,
-            lastAppState: true, // true = app ochiq, false = app yopilgan
-            checkInterval: null,
-            pageVisibility: true,
+            isTracking: false,
             
+            // TELEGRAM MINI APP HOLATINI KUZATISH
             startTracking: function() {
                 this.startTime = Date.now();
                 this.appClosed = false;
                 this.appReopened = false;
-                this.lastAppState = true;
-                this.pageVisibility = !document.hidden;
+                this.isTracking = true;
                 
-                console.log('App tracking boshlandi');
+                console.log('🔍 Click tracking boshlandi');
                 
-                // 1. TELEGRAM MINI APP EVENTS
+                // 1. PAGE VISIBILITY API - ENG ISHONCHLI
+                document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+                
+                // 2. TELEGRAM WEBAPP EVENTS
                 if (window.Telegram?.WebApp) {
                     // Viewport o'zgarishi - app yopilganda
-                    Telegram.WebApp.onEvent('viewportChanged', (params) => {
-                        console.log('Telegram viewportChanged:', params);
+                    window.Telegram.WebApp.onEvent('viewportChanged', (params) => {
+                        console.log('📱 Telegram viewportChanged:', params);
                         if (params.is_expanded === false) {
                             this.appClosed = true;
-                            console.log('Telegram Mini App yopildi');
+                            console.log('✅ Telegram Mini App yopildi (click qilindi)');
                         }
-                    });
-                    
-                    // App background/foreground ga o'tganda
-                    Telegram.WebApp.onEvent('themeChanged', () => {
-                        console.log('Telegram themeChanged - app holati o\'zgardi');
-                        setTimeout(() => {
-                            if (this.appClosed) {
-                                this.appReopened = true;
-                                console.log('Telegram Mini App qayta ochildi');
-                            }
-                        }, 500);
                     });
                 }
                 
-                // 2. PAGE VISIBILITY API
-                const handleVisibilityChange = () => {
-                    console.log('Page visibility changed:', document.hidden ? 'hidden' : 'visible');
-                    
-                    if (document.hidden) {
-                        // Sahifa yashirildi - user appdan chiqdi
-                        this.appClosed = true;
-                        this.pageVisibility = false;
-                        console.log('User appdan chiqdi (page hidden)');
-                    } else {
-                        // Sahifa ko'rsatildi - user appga qaytdi
-                        if (this.appClosed) {
-                            this.appReopened = true;
-                            console.log('User appga qaytdi (page visible)');
-                        }
-                        this.pageVisibility = true;
-                    }
-                };
+                // 3. BEFOREUNLOAD - User brauzerdan chiqayotganda
+                window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
                 
-                document.addEventListener('visibilitychange', handleVisibilityChange);
-                this.visibilityHandler = handleVisibilityChange;
+                // 4. PAGEHIDE - Safari va boshqa brauzerlar uchun
+                window.addEventListener('pagehide', this.handlePageHide.bind(this));
                 
-                // 3. PAGEHIDE/PAGESHOW EVENTS
-                const handlePageHide = () => {
-                    console.log('Pagehide event - app yopilmoqda');
-                    this.appClosed = true;
-                };
-                
-                const handlePageShow = () => {
-                    console.log('Pageshow event - app ochilmoqda');
-                    if (this.appClosed) {
-                        this.appReopened = true;
-                    }
-                };
-                
-                window.addEventListener('pagehide', handlePageHide);
-                window.addEventListener('pageshow', handlePageShow);
-                this.pageHideHandler = handlePageHide;
-                this.pageShowHandler = handlePageShow;
-                
-                // 4. INTERVAL TEKSHIRISH
-                this.checkInterval = setInterval(() => {
-                    const currentVisibility = !document.hidden;
-                    
-                    if (this.pageVisibility && !currentVisibility) {
-                        // App yopildi
-                        this.appClosed = true;
-                        this.pageVisibility = false;
-                        console.log('Interval: App yopildi detected');
-                    }
-                    
-                    if (!this.pageVisibility && currentVisibility) {
-                        // App ochildi
-                        if (this.appClosed) {
-                            this.appReopened = true;
-                            console.log('Interval: App qayta ochildi detected');
-                        }
-                        this.pageVisibility = true;
-                    }
-                }, 500);
+                // 5. BLUR/FOCUS - Fokus o'zgarishi
+                window.addEventListener('blur', this.handleBlur.bind(this));
+                window.addEventListener('focus', this.handleFocus.bind(this));
             },
             
             stopTracking: function() {
-                console.log('App tracking to\'xtatildi');
+                this.isTracking = false;
+                document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+                window.removeEventListener('beforeunload', this.handleBeforeUnload);
+                window.removeEventListener('pagehide', this.handlePageHide);
+                window.removeEventListener('blur', this.handleBlur);
+                window.removeEventListener('focus', this.handleFocus);
                 
-                if (this.checkInterval) {
-                    clearInterval(this.checkInterval);
-                    this.checkInterval = null;
-                }
-                
-                if (this.visibilityHandler) {
-                    document.removeEventListener('visibilitychange', this.visibilityHandler);
-                }
-                
-                if (this.pageHideHandler) {
-                    window.removeEventListener('pagehide', this.pageHideHandler);
-                }
-                
-                if (this.pageShowHandler) {
-                    window.removeEventListener('pageshow', this.pageShowHandler);
-                }
-                
-                // Telegram events
                 if (window.Telegram?.WebApp) {
                     try {
-                        Telegram.WebApp.offEvent('viewportChanged');
-                        Telegram.WebApp.offEvent('themeChanged');
-                    } catch (e) {
-                        console.log('Telegram events cleanup error:', e);
+                        window.Telegram.WebApp.offEvent('viewportChanged');
+                    } catch (e) {}
+                }
+            },
+            
+            handleVisibilityChange: function() {
+                if (document.hidden) {
+                    // App yashirildi - user chiqdi
+                    this.appClosed = true;
+                    console.log('👁️ Page hidden - user appdan chiqdi');
+                } else {
+                    // App ko'rsatildi - user qaytdi
+                    if (this.appClosed && !this.appReopened) {
+                        this.appReopened = true;
+                        console.log('👁️ Page visible - user appga qaytdi');
                     }
                 }
             },
             
-            getTrackingData: function() {
-                return {
-                    spentTime: Date.now() - this.startTime,
-                    appClosed: this.appClosed,
-                    appReopened: this.appReopened,
-                    currentVisibility: !document.hidden,
-                    isValid: this.isValidClick()
-                };
+            handleBeforeUnload: function(e) {
+                console.log('🚪 Beforeunload - user sahifani tark etmoqchi');
+                this.appClosed = true;
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            },
+            
+            handlePageHide: function() {
+                console.log('📴 Pagehide - sahifa yashirilmoqda');
+                this.appClosed = true;
+            },
+            
+            handleBlur: function() {
+                console.log('🔘 Window blur - fokus yo\'qoldi');
+                setTimeout(() => {
+                    if (!document.hasFocus()) {
+                        this.appClosed = true;
+                    }
+                }, 100);
+            },
+            
+            handleFocus: function() {
+                console.log('🔘 Window focus - fokus qaytdi');
+                if (this.appClosed && !this.appReopened) {
+                    this.appReopened = true;
+                }
             },
             
             isValidClick: function() {
-                // App yopilib, keyin qayta ochilganda - bu haqiqiy click
-                const minTime = 3000; // 3 soniya
-                const spentTime = Date.now() - this.startTime;
+                if (!this.isTracking) return false;
                 
-                const isValid = this.appClosed && this.appReopened && spentTime >= minTime;
-                console.log('Click validation:', {
+                const spentTime = Date.now() - this.startTime;
+                const isValid = this.appClosed && this.appReopened && spentTime >= 2000;
+                
+                console.log('📊 Click validation:', {
                     appClosed: this.appClosed,
                     appReopened: this.appReopened,
-                    spentTime: spentTime,
-                    minTime: minTime,
+                    spentTime: spentTime + 'ms',
                     isValid: isValid
                 });
                 
                 return isValid;
+            },
+            
+            getClickData: function() {
+                return {
+                    spentTime: Date.now() - this.startTime,
+                    appClosed: this.appClosed,
+                    appReopened: this.appReopened,
+                    isValid: this.isValidClick()
+                };
             }
         };
 
-        // REKLAMA NAVBATI - KETMA-KET
+        // REKLAMA NAVBATI
         let adQueue = {
-            currentProvider: 'sonar', // Birinchi Sonar bilan boshlaydi
-            providerHistory: [],
+            currentProvider: 'sonar',
             
             getNextProvider: function() {
-                // Ketma-ket almashish: Sonar → AdsGram → Sonar → AdsGram
                 if (this.currentProvider === 'sonar') {
                     this.currentProvider = 'adsgram';
                 } else {
                     this.currentProvider = 'sonar';
                 }
-                
-                this.providerHistory.push(this.currentProvider);
-                if (this.providerHistory.length > 10) {
-                    this.providerHistory.shift();
-                }
-                
-                console.log(`Navbat: ${this.currentProvider}, History: ${this.providerHistory.join(' → ')}`);
                 return this.currentProvider;
             },
             
             getCurrentProvider: function() {
                 return this.currentProvider;
-            },
-            
-            getProviderStats: function() {
-                const sonarCount = this.providerHistory.filter(p => p === 'sonar').length;
-                const adsgramCount = this.providerHistory.filter(p => p === 'adsgram').length;
-                return { sonar: sonarCount, adsgram: adsgramCount };
             }
         };
 
@@ -531,7 +480,6 @@
                         external_clicks: 0,
                         sonar_ads: 0,
                         adsgram_ads: 0,
-                        // YANGI: App tracking stats
                         app_clicks: 0,
                         app_closed_count: 0
                     };
@@ -688,24 +636,25 @@
                 `).join('');
         }
 
-        // YANGI: MINI APP CHIQISH/KIRISH TRACKING ASOSIDA REKLAMA
+        // 🔥 YANGI: TO'G'RI CLICK TEKSHIRISH BILAN REKLAMA
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
             
-            // App trackingni boshlash
-            appTracking.startTracking();
+            // Click trackingni boshlash
+            clickDetection.startTracking();
             
             isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
                 const provider = adQueue.getCurrentProvider();
-                console.log(`Boshlash: ${provider}`);
-                statusDiv.innerHTML = `<p class="text-green-400 font-bold">${provider === 'sonar' ? 'Sonar' : 'AdsGram'} reklamasi yuklanmoqda...</p>`;
+                console.log(`🎬 Boshlash: ${provider}`);
+                statusDiv.innerHTML = `<p class="text-green-400 font-bold">${provider === 'sonar' ? 'Sonar' : 'AdsGram'} reklamasi ochilmoqda...</p>`;
                 
                 if (provider === 'sonar') {
                     await showSonarAd();
@@ -713,12 +662,12 @@
                     await showAdsgramAd();
                 }
                 
-                // Navbatni yangilash - keyingi reklama uchun
+                // Navbatni yangilash
                 adQueue.getNextProvider();
                 
             } catch (err) {
-                console.error('Xatolik:', err);
-                appTracking.stopTracking();
+                console.error('❌ Xatolik:', err);
+                clickDetection.stopTracking();
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                 resetWatchButton();
                 setTimeout(() => { 
@@ -727,53 +676,54 @@
             }
         }
 
-        // SONAR REKLAMASI - APP TRACKING BILAN
+        // SONAR REKLAMASI - TO'G'RI CLICK TEKSHIRISH BILAN
         async function showSonarAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
                 
+                // Sonar reklamasini ko'rsatish
                 window.Sonar.show({
                     adUnit: "rekchiai",
                     loader: true,
                     
                     onStart: () => {
-                        console.log('Sonar reklama yuklanishi boshlandi');
+                        console.log('📦 Sonar reklama yuklanishi boshlandi');
                         statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Sonar reklamasi yuklanmoqda...</p>';
                     },
                     
                     onShow: () => {
-                        console.log('Sonar reklama ko\'rsatildi');
-                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">Sonar reklamasi ko\'rsatilmoqda...</p>';
+                        console.log('🎯 Sonar reklama ko\'rsatildi');
+                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">🎯 Reklama ochildi! Tashqi sahifaga o\'ting...</p>';
                     },
                     
                     onError: (error) => {
-                        console.error('Sonar reklama xatosi:', error);
-                        appTracking.stopTracking();
+                        console.error('❌ Sonar reklama xatosi:', error);
+                        clickDetection.stopTracking();
                         statusDiv.innerHTML = '<p class="text-red-400">Sonar reklama yuklanmadi.</p>';
                         resetWatchButton();
                         reject(error);
                     },
 
                     onClose: () => {
-                        console.log('Sonar reklama yopildi');
+                        console.log('🔴 Sonar reklama yopildi');
                         
-                        // App tracking natijalarini tekshirish
+                        // Click tekshirish
                         setTimeout(() => {
-                            checkAppForBonus();
+                            checkForClickAndGiveBonus();
                         }, 1000);
                     },
 
                     onReward: async () => {
-                        console.log('Sonar reklama to\'liq ko\'rildi');
-                        // App tracking natijalarini tekshirish
+                        console.log('💰 Sonar reklama to\'liq ko\'rildi');
+                        // Click tekshirish
                         setTimeout(() => {
-                            checkAppForBonus();
+                            checkForClickAndGiveBonus();
                         }, 1000);
                     },
                 }).then((result) => {
-                    console.log('Sonar natijasi:', result);
+                    console.log('📊 Sonar natijasi:', result);
                     if (result.status === 'error') {
-                        appTracking.stopTracking();
+                        clickDetection.stopTracking();
                         statusDiv.innerHTML = '<p class="text-red-400">Sonar reklama ochishda xatolik.</p>';
                         resetWatchButton();
                         reject(result);
@@ -782,7 +732,7 @@
             });
         }
 
-        // ADSGRAM REKLAMASI - APP TRACKING BILAN
+        // ADSGRAM REKLAMASI
         async function showAdsgramAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
@@ -791,29 +741,29 @@
                 if (!adsgramController) {
                     try {
                         adsgramController = window.Adsgram.init({ blockId: "19784" });
-                        console.log('AdsGram controller ishga tushirildi');
+                        console.log('✅ AdsGram controller ishga tushirildi');
                     } catch (e) {
-                        console.error('AdsGram init xatosi:', e);
-                        appTracking.stopTracking();
+                        console.error('❌ AdsGram init xatosi:', e);
+                        clickDetection.stopTracking();
                         reject(e);
                         return;
                     }
                 }
                 
-                console.log('AdsGram reklama ko\'rsatilmoqda...');
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">AdsGram reklamasi yuklanmoqda...</p>';
+                console.log('🎬 AdsGram reklama ko\'rsatilmoqda...');
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">🎯 Reklama ochildi! Tashqi sahifaga o\'ting...</p>';
                 
                 adsgramController.show().then((result) => {
-                    console.log('AdsGram natijasi:', result);
+                    console.log('📊 AdsGram natijasi:', result);
                     
-                    // App tracking natijalarini tekshirish
+                    // Click tekshirish
                     setTimeout(() => {
-                        checkAppForBonus();
+                        checkForClickAndGiveBonus();
                     }, 1000);
                     
                 }).catch((errorResult) => {
-                    console.error('AdsGram xatosi:', errorResult);
-                    appTracking.stopTracking();
+                    console.error('❌ AdsGram xatosi:', errorResult);
+                    clickDetection.stopTracking();
                     statusDiv.innerHTML = '<p class="text-red-400">AdsGram reklama xatosi.</p>';
                     resetWatchButton();
                     reject(new Error('Ad error'));
@@ -821,27 +771,41 @@
             });
         }
 
-        // YANGI: APP CHIQISH/KIRISH ASOSIDA BONUS TEKSHIRISH
-        async function checkAppForBonus() {
-            const trackingData = appTracking.getTrackingData();
-            console.log('App tracking data:', trackingData);
+        // 🔥 MUHIM: CLICK TEKSHIRISH VA BONUS BERISH
+        async function checkForClickAndGiveBonus() {
+            const clickData = clickDetection.getClickData();
+            console.log('🔍 Click ma\'lumotlari:', clickData);
             
             const statusDiv = document.getElementById('ad-status');
             
-            // App trackingni to'xtatish
-            appTracking.stopTracking();
+            // Click trackingni to'xtatish
+            clickDetection.stopTracking();
             
-            // Agar app yopilib, keyin qayta ochilganda - bu haqiqiy click
-            if (appTracking.isValidClick()) {
-                console.log('✅ Mini App chiqib kirish aniqlandi! Bonus beriladi...');
-                await giveBonusToUser(trackingData.spentTime, adQueue.currentProvider);
+            // Agar click to'g'ri bo'lsa - bonus berish
+            if (clickDetection.isValidClick()) {
+                console.log('✅ TO\'G\'RI CLICK ANIQLANDI! Bonus beriladi...');
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">✅ Click aniqlandi! Bonus berilmoqda...</p>';
+                await giveBonusToUser(clickData.spentTime, adQueue.currentProvider);
             } else {
-                console.log('❌ Mini App chiqib kirish aniqlanmadi');
-                statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
+                console.log('❌ CLICK ANIQLANMADI Yoki vaqt yetarli emas');
+                
+                // Agar app yopilgan, lekin tez qaytgan bo'lsa
+                if (clickData.appClosed && !clickData.appReopened) {
+                    statusDiv.innerHTML = '<p class="text-red-400">❌ Reklamani yopdingiz. Click qilmadingiz!</p>';
+                } 
+                // Agar app yopilmagan bo'lsa
+                else if (!clickData.appClosed) {
+                    statusDiv.innerHTML = '<p class="text-red-400">❌ Click qilmadingiz! Reklamani bosing.</p>';
+                }
+                // Agar juda tez qaytgan bo'lsa
+                else if (clickData.spentTime < 2000) {
+                    statusDiv.innerHTML = '<p class="text-red-400">❌ Juda tez qaytib keldingiz! Kamida 2 soniya tashqarida bo\'ling.</p>';
+                }
+                
                 resetWatchButton();
                 setTimeout(() => { 
                     statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                }, 3000);
+                }, 4000);
             }
         }
 
@@ -850,8 +814,6 @@
             const statusDiv = document.getElementById('ad-status');
             
             try {
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Bonus hisoblanmoqda...</p>';
-                
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val() || {};
@@ -917,7 +879,8 @@
                         <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
                         <div class="my-4">
                             <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
-                            <p class="text-sm text-white/60">${provider === 'sonar' ? 'Sonar' : 'AdsGram'} reklamasi uchun</p>
+                            <p class="text-sm text-white/60">✅ Click uchun bonus</p>
+                            <p class="text-xs text-white/40 mt-1">Vaqt: ${Math.round(spentTime/1000)}s</p>
                         </div>
                     </div>
                 `;
@@ -941,8 +904,8 @@
             btn.disabled = false;
             btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
             
-            // App trackingni to'liq tozalash
-            appTracking.stopTracking();
+            // Click trackingni to'liq tozalash
+            clickDetection.stopTracking();
         }
 
         // Server bot API calls
