@@ -7,18 +7,14 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
-    <!-- Faqat Sonar reklama skripti -->
-    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
-    <!-- AdsGram O'CHIRILDI -->
     <style>
+        /* Base styles */
         body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3),0 0 40px rgba(0,150,255,.1)} 50%{box-shadow:0 0 30px rgba(0,150,255,.5),0 0 60px rgba(0,150,255,.2)} }
         @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
         @keyframes celebrate { 0%,100%{transform:scale(1) rotate(0)} 25%{transform:scale(1.15) rotate(-3deg)} 75%{transform:scale(1.15) rotate(3deg)} }
-        .float-animation{animation:float 3s ease-in-out infinite} 
-        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} 
-        .slide-up{animation:slideUp .4s ease-out}
+        .float-animation{animation:float 3s ease-in-out infinite} .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} .slide-up{animation:slideUp .4s ease-out}
 
         .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
         .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
@@ -49,6 +45,7 @@
         .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
         @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
+        /* Leaderboard styles for standalone menu */
         .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
         .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
         .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
@@ -64,14 +61,11 @@
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
 
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
-        
-        /* Click progress bar */
-        .click-progress { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 12px; }
-        .click-progress-fill { height: 100%; background: linear-gradient(90deg, #0096ff, #00ff88); transition: width 0.3s; width: 0%; }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
     <div id="app" class="min-h-full w-full">
+        <!-- Loading -->
         <div id="loading" class="flex items-center justify-center min-h-screen p-4">
             <div class="text-center slide-up">
                 <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
@@ -81,7 +75,9 @@
             </div>
         </div>
 
+        <!-- Content -->
         <div id="content" class="hidden">
+            <!-- Top bar -->
             <div class="sticky top-0 z-50 top-bar border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
                     <div class="flex items-center justify-between">
@@ -89,7 +85,7 @@
                             <div class="text-3xl diamond-icon">💎</div>
                             <div>
                                 <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Reklama bosib, olmos oling</p>
+                                <p class="text-xs text-white/60">Reklama ko'ring, olmos bot balansiga qo'shiladi</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
@@ -101,7 +97,9 @@
             </div>
 
             <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
+                <!-- Earn Section -->
                 <div id="earn-section" class="content-section active">
+                    <!-- User card -->
                     <div class="app-card p-5 slide-up">
                         <div class="flex items-center space-x-4">
                             <div id="user-avatar" class="avatar-container user-avatar"></div>
@@ -113,13 +111,14 @@
                         </div>
                     </div>
 
+                    <!-- Ad watch card -->
                     <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
                                 <div class="text-3xl">💎</div>
                                 <div>
-                                    <h2 class="text-xl font-bold text-white/90">Reklamani bosish</h2>
-                                    <p class="text-white/60 text-sm">Reklamani bosing va tashqi saytga o'ting</p>
+                                    <h2 class="text-xl font-bold text-white/90">Reklamani bosing</h2>
+                                    <p class="text-white/60 text-sm">Click qiling va 5-60 soniya ichida qayting</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
@@ -131,23 +130,27 @@
                             <p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>
                         </div>
 
-                        <div id="click-progress" class="click-progress" style="display: none;">
-                            <div id="click-progress-fill" class="click-progress-fill"></div>
-                        </div>
-
                         <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">▶️</span>
                             <span>Reklamani boshlash</span>
                         </button>
 
-                        <div class="mt-4 text-center text-sm text-white/50">
-                            <p>💡 <strong>Qoidalar:</strong> Reklamani bosing, tashqi saytda kamida <strong>5 soniya</strong> vaqt o'tkazing, so'ng qayting va bonusni oling.</p>
+                        <!-- Click instruction -->
+                        <div class="mt-4 p-3 bg-blue-900/20 border border-blue-700/30 rounded-xl">
+                            <p class="text-sm text-blue-300 font-medium">💡 Qanday ishlaydi:</p>
+                            <ol class="text-xs text-white/70 mt-1 list-decimal list-inside space-y-1">
+                                <li>"Reklamani boshlash" tugmasini bosing</li>
+                                <li>Ochilgan reklamani BOSING (click)</li>
+                                <li>Tashqi sahifaga o'ting</li>
+                                <li>5-60 soniya ichida qayting</li>
+                                <li>Bonus avtomatik beriladi!</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
 
+                <!-- Leaderboard Section (standalone menu) -->
                 <div id="leaderboard-section" class="content-section">
-                    <!-- Leaderboard section o'zgarishsiz qoldi -->
                     <div class="leaderboard-wrapper slide-up">
                         <div class="leaderboard-card">
                             <div class="flex items-center justify-between mb-4">
@@ -168,12 +171,43 @@
                     </div>
                 </div>
 
-                <!-- Admin panel o'zgarishsiz qoldi -->
+                <!-- Admin panel (kept) -->
                 <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay:0.3s;">
-                    <!-- Admin panel content -->
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="text-3xl">👑</div>
+                        <h2 class="text-xl font-bold text-white/90">Admin Panel</h2>
+                    </div>
+
+                    <div class="admin-card rounded-2xl p-5 mb-6">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <div class="text-xl">📈</div>
+                            <h3 class="font-bold text-white/90">Umumiy statistika</h3>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-users">0</p>
+                                <p class="text-xs text-white/60 mt-1">Foydalanuvchi</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-ads">0</p>
+                                <p class="text-xs text-white/60 mt-1">Reklamalar</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
+                                <p class="text-xs text-white/60 mt-1">Olmoslar</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="text-xl">👥</div>
+                        <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
+                    </div>
+                    <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
                 </div>
             </div>
 
+            <!-- Bottom menu: Olmos ishlash + Reytinglar -->
             <div class="menu-container">
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section" id="menu-earn">
@@ -194,6 +228,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
             authDomain: "rekchi-2dc2f.firebaseapp.com",
@@ -207,16 +242,16 @@
         const firebaseApp = initializeApp(firebaseConfig);
         const db = getDatabase(firebaseApp);
 
+        // Constants
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const REWARD_AMOUNT = 1;
+        const MIN_CLICK_TIME = 5;   // 5 seconds minimum
+        const MAX_CLICK_TIME = 60;  // 60 seconds maximum
+
+        // Server endpoints
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
         const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
-        
-        // CLICK ALGORITMI UCHUN SOZLAMALAR
-        const MIN_CLICK_TIME = 5000; // 5 soniya (5000 ms)
-        const MAX_CLICK_TIME = 30000; // 30 soniya
-        const CLICK_CHECK_INTERVAL = 1000; // Har sekunda tekshirish
 
         let currentUser = null;
         let allUsers = [];
@@ -224,206 +259,83 @@
         let botBalance = 0;
         let currentLeaderboard = 'daily';
         let isWatchingAd = false;
-        
-        // 🔥 YANGI: CLICK TEKSHIRISH SISTEMASI
-        let clickDetection = {
-            startTime: null,
-            appClosed: false,
-            appReopened: false,
-            isTracking: false,
-            progressInterval: null,
-            
-            // CLICK TEKSHIRISHNI BOSHLASH
-            startTracking: function() {
-                console.log('🔍 Click tracking boshlandi');
-                
-                this.startTime = Date.now();
-                this.appClosed = false;
-                this.appReopened = false;
-                this.isTracking = true;
-                
-                // Progress barni ko'rsatish
-                document.getElementById('click-progress').style.display = 'block';
-                document.getElementById('click-progress-fill').style.width = '0%';
-                
-                // Progress bar yangilash
-                this.progressInterval = setInterval(() => {
-                    if (this.isTracking) {
-                        const spentTime = Date.now() - this.startTime;
-                        const progressPercent = Math.min((spentTime / MIN_CLICK_TIME) * 100, 100);
-                        document.getElementById('click-progress-fill').style.width = progressPercent + '%';
-                    }
-                }, 500);
-                
-                // 1. TELEGRAM MINI APP HOLATI
-                if (window.Telegram?.WebApp) {
-                    // Viewport o'zgarishi - app yopilganda
-                    window.Telegram.WebApp.onEvent('viewportChanged', (params) => {
-                        console.log('📱 Telegram viewportChanged:', params);
-                        if (params.is_expanded === false) {
-                            this.appClosed = true;
-                            console.log('✅ Telegram Mini App yopildi (CLICK ANIQLANDI)');
-                        }
-                    });
-                }
-                
-                // 2. PAGE VISIBILITY API - ASOSIY USUL
-                document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-                
-                // 3. BLUR/FOCUS - Fokus o'zgarishi
-                window.addEventListener('blur', this.handleBlur.bind(this));
-                window.addEventListener('focus', this.handleFocus.bind(this));
-                
-                // 4. MUHIM: HAR SEKUNDA HOLATNI TEKSHIRISH
-                this.checkClickStatus();
-            },
-            
-            // CLICK TEKSHIRISHNI TO'XTATISH
-            stopTracking: function() {
-                this.isTracking = false;
-                
-                if (this.progressInterval) {
-                    clearInterval(this.progressInterval);
-                    this.progressInterval = null;
-                }
-                
-                document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-                window.removeEventListener('blur', this.handleBlur);
-                window.removeEventListener('focus', this.handleFocus);
-                
-                if (window.Telegram?.WebApp) {
-                    try {
-                        window.Telegram.WebApp.offEvent('viewportChanged');
-                    } catch (e) {}
-                }
-                
-                // Progress barni yashirish
-                setTimeout(() => {
-                    document.getElementById('click-progress').style.display = 'none';
-                }, 1000);
-                
-                console.log('🔍 Click tracking to\'xtatildi');
-            },
-            
-            // VISIBILITY CHANGE HANDLER
-            handleVisibilityChange: function() {
-                if (document.hidden) {
-                    // App yashirildi - user chiqdi (CLICK!)
-                    this.appClosed = true;
-                    console.log('👁️ Page hidden - user appdan chiqdi (CLICK!)');
-                } else {
-                    // App ko'rsatildi - user qaytdi
-                    if (this.appClosed && !this.appReopened) {
-                        this.appReopened = true;
-                        console.log('👁️ Page visible - user appga qaytdi');
-                    }
-                }
-            },
-            
-            // BLUR HANDLER (App fokusini yo'qotish)
-            handleBlur: function() {
-                console.log('🔘 Window blur - fokus yo\'qoldi (CLICK!)');
-                setTimeout(() => {
-                    if (!document.hasFocus()) {
-                        this.appClosed = true;
-                    }
-                }, 100);
-            },
-            
-            // FOCUS HANDLER (App fokusini qaytarish)
-            handleFocus: function() {
-                console.log('🔘 Window focus - fokus qaytdi');
-                if (this.appClosed && !this.appReopened) {
-                    this.appReopened = true;
-                }
-            },
-            
-            // HAR SEKUNDA CLICK HOLATINI TEKSHIRISH
-            checkClickStatus: function() {
-                if (!this.isTracking) return;
-                
-                const spentTime = Date.now() - this.startTime;
-                const statusDiv = document.getElementById('ad-status');
-                
-                // Agar app yopilgan va qaytgan bo'lsa
-                if (this.appClosed && this.appReopened) {
-                    console.log('✅ App yopildi va qaytdi - spent time:', spentTime + 'ms');
-                    
-                    // Vaqt tekshiruvi
-                    if (spentTime >= MIN_CLICK_TIME && spentTime <= MAX_CLICK_TIME) {
-                        console.log('🎉 TO\'G\'RI CLICK! Bonus beriladi');
-                        this.stopTracking();
-                        giveBonusToUser(spentTime);
-                    } else if (spentTime < MIN_CLICK_TIME) {
-                        console.log('❌ Vaqt yetarli emas:', spentTime + 'ms');
-                        statusDiv.innerHTML = `
-                            <div class="text-center">
-                                <p class="text-red-400 font-bold">❌ Juda tez qaytib keldingiz!</p>
-                                <p class="text-white/60 text-sm mt-2">Kamida ${MIN_CLICK_TIME/1000} soniya tashqarida bo'ling</p>
-                                <p class="text-white/40 text-xs mt-1">Sizning vaqtingiz: ${(spentTime/1000).toFixed(1)}s</p>
-                            </div>
-                        `;
-                        this.stopTracking();
-                        resetWatchButton();
-                        setTimeout(() => { 
-                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                        }, 4000);
-                    } else {
-                        console.log('❌ Juda uzoq vaqt:', spentTime + 'ms');
-                        statusDiv.innerHTML = `
-                            <div class="text-center">
-                                <p class="text-yellow-400 font-bold">⏱ Juda uzoq vaqt</p>
-                                <p class="text-white/60 text-sm mt-2">Iltimos, keyingi safar tezroq qayting</p>
-                            </div>
-                        `;
-                        this.stopTracking();
-                        resetWatchButton();
-                        setTimeout(() => { 
-                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                        }, 4000);
-                    }
-                }
-                // Agar app hali yopilmagan bo'lsa va vaqt o'tib ketsa
-                else if (!this.appClosed && spentTime > MAX_CLICK_TIME) {
-                    console.log('❌ User hech narsa qilmadi');
-                    statusDiv.innerHTML = `
-                        <div class="text-center">
-                            <p class="text-red-400 font-bold">❌ Reklamani bosmadingiz!</p>
-                            <p class="text-white/60 text-sm mt-2">Reklama tugmasini bosing va tashqi sahifaga o'ting</p>
-                        </div>
-                    `;
-                    this.stopTracking();
-                    resetWatchButton();
-                    setTimeout(() => { 
-                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                    }, 4000);
-                }
-                // Agar tracking davom etayotgan bo'lsa
-                else {
-                    setTimeout(() => this.checkClickStatus(), CLICK_CHECK_INTERVAL);
-                }
-            },
-            
-            // CLICK TO'G'RILIGINI TEKSHIRISH
-            isValidClick: function() {
-                if (!this.isTracking) return false;
-                
-                const spentTime = Date.now() - this.startTime;
-                const isValid = this.appClosed && this.appReopened && spentTime >= MIN_CLICK_TIME && spentTime <= MAX_CLICK_TIME;
-                
-                console.log('📊 Click validation:', {
-                    appClosed: this.appClosed,
-                    appReopened: this.appReopened,
-                    spentTime: spentTime + 'ms',
-                    minRequired: MIN_CLICK_TIME + 'ms',
-                    isValid: isValid
-                });
-                
-                return isValid;
-            }
-        };
+        let clickStartTime = null;
+        let clickRewardGiven = false;
 
-        // Helper funksiyalar (o'zgarishsiz)
+        // ████████ HELPER FUNCTIONS ████████
+
+        function startClickTimer() {
+            clickStartTime = new Date().getTime();
+            clickRewardGiven = false;
+            console.log('Click timer started:', clickStartTime);
+        }
+
+        function checkClickAndReward() {
+            if (!clickStartTime || clickRewardGiven) {
+                console.log('No active click timer or already rewarded');
+                return false;
+            }
+
+            const now = new Date().getTime();
+            const timeSpent = Math.floor((now - clickStartTime) / 1000);
+
+            console.log('Time spent outside app:', timeSpent, 'seconds');
+
+            // Check if time is within valid range
+            if (timeSpent >= MIN_CLICK_TIME && timeSpent <= MAX_CLICK_TIME) {
+                console.log('Valid click detected! Time:', timeSpent, 'seconds');
+                clickRewardGiven = true;
+                return true;
+            } else {
+                console.log('Invalid click time:', timeSpent, 'seconds');
+                return false;
+            }
+        }
+
+        function setupVisibilityListener() {
+            // Listen for page visibility changes
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && clickStartTime && !clickRewardGiven) {
+                    console.log('User returned to app, checking click...');
+                    
+                    // Small delay to ensure ad is fully closed
+                    setTimeout(() => {
+                        const isValidClick = checkClickAndReward();
+                        if (isValidClick) {
+                            grantReward();
+                        } else if (clickStartTime) {
+                            // Show message if time was too short
+                            const now = new Date().getTime();
+                            const timeSpent = Math.floor((now - clickStartTime) / 1000);
+                            if (timeSpent < MIN_CLICK_TIME) {
+                                const statusDiv = document.getElementById('ad-status');
+                                statusDiv.innerHTML = `<p class="text-red-400">⏱ Vaqt yetmadi! ${MIN_CLICK_TIME} soniya kutishingiz kerak.</p>`;
+                                
+                                setTimeout(() => {
+                                    resetAdButton();
+                                }, 3000);
+                            }
+                        }
+                    }, 1000);
+                }
+            });
+
+            // Telegram Mini App specific events
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.onEvent('viewportChanged', function(e) {
+                    console.log('Viewport changed:', e);
+                    if (clickStartTime && !clickRewardGiven) {
+                        setTimeout(() => {
+                            const isValidClick = checkClickAndReward();
+                            if (isValidClick) {
+                                grantReward();
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+        }
+
         async function getTelegramProfilePhoto(userId, username) {
             try {
                 const tg = window.Telegram?.WebApp;
@@ -434,9 +346,15 @@
                 return createFullGradientAvatar(userId);
             }
         }
-        
+
         function createFullGradientAvatar(userId) {
-            const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
+            const gradients = [
+                ['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],
+                ['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],
+                ['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],
+                ['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],
+                ['#667eea','#764ba2'],['#f093fb','#f5576c']
+            ];
             const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
             const [c1,c2] = gradients[idx];
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
@@ -448,7 +366,18 @@
             return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
         }
 
-        // Init Telegram (o'zgarishsiz)
+        function resetAdButton() {
+            const btn = document.getElementById('watch-ad-btn');
+            const statusDiv = document.getElementById('ad-status');
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
+            isWatchingAd = false;
+        }
+
+        // ████████ TELEGRAM INIT ████████
+
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -489,7 +418,8 @@
             }
         }
 
-        // Load/create user (o'zgarishsiz)
+        // ████████ FIREBASE FUNCTIONS ████████
+
         async function loadOrCreateUser() {
             if (!currentUser) return null;
             try {
@@ -507,14 +437,10 @@
                         ads_by_day: {},
                         diamonds: 0,
                         ads_watched: 0,
-                        click_history: [],
+                        withdraw_history: [],
                         last_ad_time: new Date().toISOString(),
                         created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                        total_clicks: 0,
-                        verified_clicks: 0,
-                        avg_click_duration: 0,
-                        last_click_time: null
+                        updated_at: new Date().toISOString()
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -531,6 +457,10 @@
                         await update(userRef, updates);
                         userData = { ...userData, ...updates };
                     }
+                    if (!userData.ads_by_day) {
+                        await update(userRef, { ads_by_day: {} });
+                        userData.ads_by_day = {};
+                    }
                     return userData;
                 }
             } catch (err) {
@@ -538,7 +468,7 @@
                 return null;
             }
         }
-        
+
         async function updateUserData(updates) {
             if (!currentUser) return false;
             try {
@@ -551,7 +481,6 @@
             }
         }
 
-        // Subscribe to users (o'zgarishsiz)
         function subscribeToUsers() {
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
@@ -565,184 +494,20 @@
             }, (err) => console.error('subscribeToUsers error', err));
         }
 
-        // Render leaderboards (o'zgarishsiz)
-        function renderLeaderboardsMain() {
-            const listEl = document.getElementById('leaderboard-list');
-            if (!listEl) return;
-            const now = new Date();
-            const tzOffset = now.getTimezoneOffset() * 60000;
-            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+        // ████████ REWARD FUNCTIONS ████████
 
-            const mapped = allUsers.map(u => {
-                const ads_by_day = u.ads_by_day || {};
-                return {
-                    id: u.user_id,
-                    name: u.first_name || 'Foydalanuvchi',
-                    username: u.username || '',
-                    photo_url: u.photo_url || '',
-                    todayCount: parseInt(ads_by_day[localKey] || 0),
-                    overallCount: parseInt(u.ads_watched || 0),
-                    verified_clicks: u.verified_clicks || 0
-                };
-            });
+        async function grantReward() {
+            if (!currentUser) return;
 
-            let sorted;
-            if (currentLeaderboard === 'daily') {
-                sorted = mapped.sort((a,b) => b.todayCount - a.todayCount || b.verified_clicks - a.verified_clicks);
-            } else {
-                sorted = mapped.sort((a,b) => b.overallCount - a.overallCount || b.verified_clicks - a.verified_clicks);
-            }
-
-            const top = sorted.slice(0,10);
-            if (top.length === 0) {
-                listEl.innerHTML = `<div class="text-white/60 text-sm">Hozircha ma'lumot yo'q.</div>`;
-                return;
-            }
-
-            listEl.innerHTML = top.map((u,i) => `
-                <div class="leaderboard-item">
-                    <div class="leader-rank">${i+1}</div>
-                    <div class="leader-avatar">
-                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
-                    </div>
-                    <div class="leader-meta">
-                        <div class="leader-name">${escapeHtml(u.name)}</div>
-                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
-                    </div>
-                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
-                </div>
-            `).join('');
-        }
-
-        // Admin panel (o'zgarishsiz)
-        function updateAdminPanel() {
-            const totalUsers = allUsers.length;
-            const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
-            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds||0), 0);
-            document.getElementById('admin-total-users').textContent = totalUsers;
-            document.getElementById('admin-total-ads').textContent = totalAds;
-            document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
-
-            const usersList = document.getElementById('users-list');
-            if (!usersList) return;
-            usersList.innerHTML = allUsers
-                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
-                .slice(0,20)
-                .map(u => `
-                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar-container">
-                                    ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
-                                </div>
-                                <div>
-                                    <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
-                                    <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
-                                <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-        }
-
-        // 🔥 YANGI: CLICK-ASOSLI REKLAMA BOSISH
-        async function watchAd() {
-            if (!currentUser || isWatchingAd) return;
-            
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
             
-            isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
-            
+            statusDiv.innerHTML = '<p class="text-green-400 font-bold">✅ Click aniqlandi! Bonus berilmoqda...</p>';
+
             try {
-                console.log('🎬 Sonar reklama ochilmoqda');
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Sonar reklamasi ochilmoqda...</p>';
-                
-                await showSonarAd();
-                
-            } catch (err) {
-                console.error('❌ Xatolik:', err);
-                clickDetection.stopTracking();
-                statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
-                resetWatchButton();
-                setTimeout(() => { 
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
-                }, 3000);
-            }
-        }
-
-        // SONAR REKLAMASI - CLICK TEKSHIRISH BILAN
-        async function showSonarAd() {
-            return new Promise((resolve, reject) => {
-                const statusDiv = document.getElementById('ad-status');
-                
-                // Sonar reklamasini ko'rsatish
-                window.Sonar.show({
-                    adUnit: "rekchiai",
-                    loader: true,
-                    
-                    onStart: () => {
-                        console.log('📦 Sonar reklama yuklanishi boshlandi');
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Sonar reklamasi yuklanmoqda...</p>';
-                    },
-                    
-                    onShow: () => {
-                        console.log('🎯 Sonar reklama ko\'rsatildi');
-                        statusDiv.innerHTML = `
-                            <div class="text-center">
-                                <p class="text-green-400 font-bold">🎯 Reklama ochildi!</p>
-                                <p class="text-white/60 text-sm mt-2">Reklamani bosing va tashqi sahifaga o'ting</p>
-                                <p class="text-white/40 text-xs mt-3">⚠️ Kamida ${MIN_CLICK_TIME/1000} soniya tashqarida bo'ling</p>
-                            </div>
-                        `;
-                        
-                        // 🔥 CLICK TEKSHIRISHNI BOSHLASH
-                        setTimeout(() => {
-                            clickDetection.startTracking();
-                        }, 500);
-                    },
-                    
-                    onError: (error) => {
-                        console.error('❌ Sonar reklama xatosi:', error);
-                        clickDetection.stopTracking();
-                        statusDiv.innerHTML = '<p class="text-red-400">Sonar reklama yuklanmadi.</p>';
-                        resetWatchButton();
-                        reject(error);
-                    },
-
-                    onClose: () => {
-                        console.log('🔴 Sonar reklama yopildi');
-                        // Click tekshirish davom etadi
-                    },
-
-                    onReward: async () => {
-                        console.log('💰 Sonar reklama to\'liq ko\'rildi');
-                        // Click tekshirish davom etadi
-                    },
-                }).then((result) => {
-                    console.log('📊 Sonar natijasi:', result);
-                    if (result.status === 'error') {
-                        clickDetection.stopTracking();
-                        statusDiv.innerHTML = '<p class="text-red-400">Sonar reklama ochishda xatolik.</p>';
-                        resetWatchButton();
-                        reject(result);
-                    }
-                });
-            });
-        }
-
-        // 🔥 MUHIM: CLICK UCHUN BONUS BERISH
-        async function giveBonusToUser(spentTime) {
-            const statusDiv = document.getElementById('ad-status');
-            
-            try {
+                // Firebase update
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val() || {};
@@ -754,83 +519,134 @@
                 const ads_by_day = userData.ads_by_day || {};
                 const newDayCount = (ads_by_day[localKey] || 0) + 1;
                 const newOverall = (userData.ads_watched || 0) + 1;
-                const totalClicks = (userData.total_clicks || 0) + 1;
-                const verifiedClicks = (userData.verified_clicks || 0) + 1;
-                
-                const clickHistory = userData.click_history || [];
-                clickHistory.push({
-                    time: new Date().toISOString(),
-                    duration: spentTime,
-                    rewarded: true,
-                    type: 'click_reward',
-                    verified: true
-                });
-                const limitedHistory = clickHistory.slice(-20);
 
+                // Update firebase
                 const updates = { 
                     ads_watched: newOverall, 
                     [`ads_by_day/${localKey}`]: newDayCount, 
-                    last_ad_time: new Date().toISOString(),
-                    last_click_time: new Date().toISOString(),
-                    total_clicks: totalClicks,
-                    verified_clicks: verifiedClicks,
-                    click_history: limitedHistory,
-                    avg_click_duration: ((userData.avg_click_duration || 0) * (verifiedClicks - 1) + spentTime) / verifiedClicks
+                    last_ad_time: new Date().toISOString() 
                 };
-                
                 const ok = await updateUserData(updates);
-                if (!ok) throw new Error('Firebase yangilashida xatolik');
+                if (!ok) throw new Error('Firebase update error');
 
-                // Bot balansiga qo'shish
+                // Add to bot balance
                 try { 
-                    await addToBotBalance(REWARD_AMOUNT);
+                    await addToBotBalance(REWARD_AMOUNT); 
                 } catch(e){ 
                     console.warn('Bot add failed', e); 
                 }
 
+                // Update UI
                 renderLeaderboardsMain();
                 await fetchBotBalance();
 
+                // Show success message
                 statusDiv.innerHTML = `
                     <div class="text-center slide-up">
-                        <div class="text-6xl mb-3" style="animation:celebrate .8s;">🎉</div>
-                        <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
-                        <div class="my-4">
-                            <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
-                            <p class="text-sm text-white/60">✅ Click uchun bonus</p>
-                            <p class="text-xs text-white/40 mt-1">Vaqt: ${(spentTime/1000).toFixed(1)}s</p>
-                        </div>
-                        <p class="text-xs text-white/50">Sizning umumiy ballaringiz: ${newOverall}</p>
+                        <div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div>
+                        <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
+                        <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
+                        <p class="text-sm text-white/60">Reklama bosildi va olmos qo'shildi!</p>
                     </div>
                 `;
-                
-                resetWatchButton();
-                
-                setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
-                }, 4000);
-                
+
             } catch (err) {
                 console.error('Bonus berishda xatolik', err);
-                statusDiv.innerHTML = '<p class="text-red-400">Xatolik yuz berdi!</p>';
-                resetWatchButton();
+                statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
+            } finally {
+                // Reset after delay
+                setTimeout(() => {
+                    resetAdButton();
+                    clickStartTime = null;
+                    clickRewardGiven = false;
+                }, 3000);
+            }
+        }
+
+        async function watchAd() {
+            if (!currentUser || isWatchingAd) return;
+            
+            const btn = document.getElementById('watch-ad-btn');
+            const statusDiv = document.getElementById('ad-status');
+            isWatchingAd = true;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+
+            try {
+                // Start click timer
+                startClickTimer();
+
+                // Show Sonar ad
+                window.Sonar.show({
+                    adUnit: "rekchiai",
+                    loader: true,
+                    
+                    onStart: () => {
+                        console.log('Reklama yuklanishi boshlandi');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+                    },
+                    
+                    onShow: () => {
+                        console.log('Reklama ko\'rsatildi - click kutilyapti');
+                        statusDiv.innerHTML = `
+                            <p class="text-green-400 font-bold mb-2">Reklama ochildi! 🎯</p>
+                            <p class="text-sm text-white/70">Iltimos, reklamani BOSING va 5-60 soniya ichida qayting</p>
+                            <p class="text-xs text-yellow-400 mt-2">⏱ Bonus: ${MIN_CLICK_TIME}-${MAX_CLICK_TIME} soniya oralig'ida</p>
+                        `;
+                    },
+                    
+                    onError: (error) => {
+                        console.error('Reklama xatosi:', error);
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
+                        clickStartTime = null;
+                        resetAdButton();
+                        
+                        setTimeout(() => { 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    },
+
+                    onClose: () => {
+                        console.log('Reklama yopildi - click tekshirilmoqda');
+                        // Click will be checked via visibility change
+                    },
+
+                    onReward: () => {
+                        // We don't use this for click-based rewards
+                        console.log('onReward triggered (not used for click)');
+                    },
+                }).then((result) => {
+                    console.log('Sonar result:', result);
+                    if (result.status === 'error') {
+                        console.error('Ad failed to show:', result.message);
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
+                        clickStartTime = null;
+                        resetAdButton();
+                    }
+                });
+
+            } catch (err) {
+                console.error('Reklama ochishda xatolik', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik yuz berdi.</p>';
+                clickStartTime = null;
+                resetAdButton();
+                
                 setTimeout(() => { 
                     statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
                 }, 3000);
             }
         }
 
-        function resetWatchButton() {
-            const btn = document.getElementById('watch-ad-btn');
-            isWatchingAd = false;
-            btn.disabled = false;
-            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-        }
+        // ████████ BOT API FUNCTIONS ████████
 
-        // Server bot API calls (o'zgarishsiz)
         async function addToBotBalance(amount) {
             if (!currentUser) throw new Error('No user');
-            const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
+            const body = new URLSearchParams({ 
+                key: BOT_API_KEY, 
+                user_id: currentUser.user_id, 
+                amount: amount 
+            });
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
             const resp = await fetch(BOT_API_ADD_URL, { 
@@ -878,7 +694,95 @@
             }
         }
 
-        // UI bindings (o'zgarishsiz)
+        // ████████ UI FUNCTIONS ████████
+
+        function renderLeaderboardsMain() {
+            const listEl = document.getElementById('leaderboard-list');
+            if (!listEl) return;
+            const now = new Date();
+            const tzOffset = now.getTimezoneOffset() * 60000;
+            const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+
+            const mapped = allUsers.map(u => {
+                const ads_by_day = u.ads_by_day || {};
+                return {
+                    id: u.user_id,
+                    name: u.first_name || 'Foydalanuvchi',
+                    username: u.username || '',
+                    photo_url: u.photo_url || '',
+                    todayCount: parseInt(ads_by_day[localKey] || 0),
+                    overallCount: parseInt(u.ads_watched || 0)
+                };
+            });
+
+            let sorted;
+            if (currentLeaderboard === 'daily') {
+                sorted = mapped.sort((a,b) => b.todayCount - a.todayCount || b.overallCount - a.overallCount);
+            } else {
+                sorted = mapped.sort((a,b) => b.overallCount - a.overallCount || b.todayCount - a.todayCount);
+            }
+
+            const top = sorted.slice(0,10);
+            if (top.length === 0) {
+                listEl.innerHTML = `<div class="text-white/60 text-sm">Hozircha ma'lumot yo'q.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = top.map((u,i) => `
+                <div class="leaderboard-item">
+                    <div class="leader-rank">${i+1}</div>
+                    <div class="leader-avatar">
+                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
+                    </div>
+                    <div class="leader-meta">
+                        <div class="leader-name">${escapeHtml(u.name)}</div>
+                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
+                    </div>
+                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
+                </div>
+            `).join('');
+        }
+
+        function updateAdminPanel() {
+            const totalUsers = allUsers.length;
+            const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
+            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds||0), 0);
+            
+            const adminTotalUsers = document.getElementById('admin-total-users');
+            const adminTotalAds = document.getElementById('admin-total-ads');
+            const adminTotalDiamonds = document.getElementById('admin-total-diamonds');
+            
+            if (adminTotalUsers) adminTotalUsers.textContent = totalUsers;
+            if (adminTotalAds) adminTotalAds.textContent = totalAds;
+            if (adminTotalDiamonds) adminTotalDiamonds.textContent = totalDiamonds;
+
+            const usersList = document.getElementById('users-list');
+            if (!usersList) return;
+            
+            usersList.innerHTML = allUsers
+                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
+                .slice(0,20)
+                .map(u => `
+                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="avatar-container">
+                                    ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
+                                    <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
+                                <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
         function bindUI() {
             document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
 
@@ -906,10 +810,12 @@
             document.getElementById(sectionId).classList.add('active');
             document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
             if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
-            if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
+            
+            if (sectionId === 'leaderboard-section') {
+                renderLeaderboardsMain();
+            }
         }
 
-        // Update user UI (o'zgarishsiz)
         function updateUI(user) {
             if (!user) return;
             const avatarDiv = document.getElementById('user-avatar');
@@ -921,22 +827,31 @@
             document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            
             document.getElementById('diamond-count').textContent = `${botBalance}`;
         }
 
-        // App init
+        // ████████ INITIALIZE APP ████████
+
         async function initializeAppMain() {
             initTelegram();
             bindUI();
+            
+            // Setup click tracking listener
+            setupVisibilityListener();
 
             const user = await loadOrCreateUser();
             if (user) {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
-                onValue(userRef, (snap) => { if (snap.exists()) updateUI(snap.val()); });
+                onValue(userRef, (snap) => { 
+                    if (snap.exists()) updateUI(snap.val()); 
+                });
 
                 subscribeToUsers();
 
-                if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
+                if (isAdmin) {
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                }
             }
 
             if (currentUser) {
@@ -948,9 +863,15 @@
             document.getElementById('content').classList.remove('hidden');
         }
 
-        // start
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
-        else initializeAppMain();
+        // Start app
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAppMain);
+        } else {
+            initializeAppMain();
+        }
     </script>
+
+    <!-- Sonar reklama skripti -->
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
 </body>
 </html>
