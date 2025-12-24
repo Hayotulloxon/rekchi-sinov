@@ -6,7 +6,6 @@
     <title>RekchiAi olmoslari</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script> <!-- AdsGram SDK -->
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
         /* Base styles */
@@ -63,49 +62,9 @@
 
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
         
-        /* Info box styles */
-        .info-box {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0;
-        }
-        .warning-box {
-            background: rgba(255, 165, 0, 0.1);
-            border: 1px solid rgba(255, 165, 0, 0.2);
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0;
-        }
-        .instruction-box {
-            background: rgba(0, 150, 255, 0.1);
-            border: 1px solid rgba(0, 150, 255, 0.2);
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0;
-        }
-        
-        /* Platform indicator */
-        .platform-indicator {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-        .sonar-indicator {
-            background: rgba(0, 150, 255, 0.2);
-            color: #0096ff;
-            border: 1px solid rgba(0, 150, 255, 0.4);
-        }
-        .adsgram-indicator {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.4);
-        }
+        /* Click tracking styles */
+        .click-timer { font-size: 14px; font-weight: bold; color: #00ff88; background: rgba(0, 255, 136, 0.1); padding: 2px 8px; border-radius: 10px; }
+        .click-info { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 5px; }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
@@ -153,47 +112,14 @@
                                 <p id="user-id" class="text-white/50 text-sm">ID: Loading...</p>
                                 <p id="user-username" class="text-white/60 text-xs mt-1">@username</p>
                             </div>
-                            <div id="next-ad-indicator" class="text-xs font-bold px-3 py-1 rounded-full sonar-indicator">
-                                Keyingi: Sonar
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Information boxes -->
-                    <div class="info-box slide-up">
-                        <div class="flex items-start space-x-3">
-                            <div class="text-2xl text-yellow-400">💎</div>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-yellow-400 mb-1">Cheksiz olmos yeg'ing!</h3>
-                                <p class="text-sm text-white/90">Bu yerda siz reklama ko'rib va bosib cheksiz olmoslar yeg'ishingiz mumkun.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="warning-box slide-up" style="animation-delay: 0.1s;">
-                        <div class="flex items-start space-x-3">
-                            <div class="text-2xl text-orange-400">⚠️</div>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-orange-400 mb-1">Diqqat!</h3>
-                                <p class="text-sm text-white/90">Har 3 ta olmos yeg'ganingizda bitta klik qiling. Yani reklama qilayotgan joyga kirib qo'ying. (2-3 sekund vaqt ketishi mumkun)</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="instruction-box slide-up" style="animation-delay: 0.2s;">
-                        <div class="flex items-start space-x-3">
-                            <div class="text-2xl text-blue-400">📹</div>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-blue-400 mb-1">Video qo'llanma</h3>
-                                <p class="text-sm text-white/90">Botdagi <span class="font-bold">"Videoqo'llanma"</span> tugmasini bosib, olmos yeg'ish haqidagi videoni ko'ring!</p>
-                            </div>
                         </div>
                     </div>
 
                     <!-- Ad watch card -->
-                    <div class="app-card p-6 slide-up" style="animation-delay:0.3s;">
+                    <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
+                                <!-- Icon changed to diamond as requested -->
                                 <div class="text-3xl">💎</div>
                                 <div>
                                     <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
@@ -211,14 +137,12 @@
 
                         <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">▶️</span>
-                            <span id="btn-text">Reklamani boshlash</span>
-                            <span id="platform-badge" class="platform-indicator sonar-indicator">Sonar</span>
+                            <span>Reklamani boshlash</span>
                         </button>
                         
                         <!-- Click instructions -->
                         <div class="mt-4 text-center">
-                            <p class="text-xs text-white/50">💡 <strong>Navbatli tizim:</strong> Sonar → AdsGram → Sonar → AdsGram...</p>
-                            <p class="text-xs text-white/50 mt-1">Har bir reklamani oxirigacha ko'ring → bonusni avtomatik oling!</p>
+                            <p class="text-xs text-white/50">💡 <strong>Qanday ishlaydi:</strong> Reklamani oching → tashqi sahifaga o'ting → 5-30 soniya ichida qayting → bonus oling!</p>
                         </div>
                     </div>
                 </div>
@@ -320,20 +244,27 @@
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const REWARD_AMOUNT = 1;
 
-        // Server endpoints
+        // Server endpoints (host add_balance.php & get_balance.php)
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
+        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga'; // ideally keep on server
 
-        // Global variables
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let botBalance = 0;
-        let currentLeaderboard = 'daily';
-        let isWatchingAd = false;
-        let currentAdPlatform = 'sonar'; // 'sonar' yoki 'adsgram'
-        let adsGramController = null;
+        let currentLeaderboard = 'daily'; // 'daily' | 'overall'
+        let isWatchingAd = false; // Reklama ko'rilayotganligini kuzatish
+
+        // 🔥 CLICK TRACKING SYSTEM
+        let clickTracking = {
+            startTime: null,
+            timer: null,
+            clicked: false,
+            minTimeForBonus: 5000, // 5 soniya minimum
+            maxTimeForBonus: 30000, // 30 soniya maksimum
+            eventListeners: []
+        };
 
         // Helpers
         async function getTelegramProfilePhoto(userId, username) {
@@ -346,7 +277,6 @@
                 return createFullGradientAvatar(userId);
             }
         }
-        
         function createFullGradientAvatar(userId) {
             const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
             const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
@@ -397,13 +327,18 @@
                         last_name: currentUser.last_name || '',
                         photo_url: profilePhoto,
                         language_code: currentUser.language_code || 'uz',
-                        ads_by_day: {},
+                        ads_by_day: {}, // counts per YYYY-MM-DD
                         diamonds: 0,
                         ads_watched: 0,
                         withdraw_history: [],
                         last_ad_time: new Date().toISOString(),
                         created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
+                        updated_at: new Date().toISOString(),
+                        // 🔥 Click tracking ma'lumotlari
+                        total_clicks: 0,
+                        click_history: [],
+                        last_click_time: null,
+                        avg_click_duration: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -418,6 +353,15 @@
                     if (!userData.ads_by_day) {
                         await update(userRef, { ads_by_day: {} });
                         userData.ads_by_day = {};
+                    }
+                    // 🔥 Click tracking ma'lumotlarini tekshirish
+                    if (!userData.total_clicks) {
+                        await update(userRef, { 
+                            total_clicks: 0,
+                            click_history: [],
+                            last_click_time: null,
+                            avg_click_duration: 0
+                        });
                     }
                     return userData;
                 }
@@ -453,7 +397,7 @@
             }, (err) => console.error('subscribeToUsers error', err));
         }
 
-        // Render leaderboards
+        // Render leaderboards into the standalone leaderboard section
         function renderLeaderboardsMain() {
             const listEl = document.getElementById('leaderboard-list');
             if (!listEl) return;
@@ -503,7 +447,7 @@
 
         function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
 
-        // Admin panel render
+        // Admin panel render (avatars same style)
         function updateAdminPanel() {
             const totalUsers = allUsers.length;
             const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
@@ -532,31 +476,14 @@
                             <div class="text-right">
                                 <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
                                 <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
+                                ${u.total_clicks ? `<p class="text-xs text-green-400">${u.total_clicks} click</p>` : ''}
                             </div>
                         </div>
                     </div>
                 `).join('');
         }
 
-        // Update platform indicator
-        function updatePlatformIndicator() {
-            const badge = document.getElementById('platform-badge');
-            const indicator = document.getElementById('next-ad-indicator');
-            
-            if (currentAdPlatform === 'sonar') {
-                badge.textContent = 'Sonar';
-                badge.className = 'platform-indicator sonar-indicator';
-                indicator.textContent = 'Keyingi: Sonar';
-                indicator.className = 'text-xs font-bold px-3 py-1 rounded-full sonar-indicator';
-            } else {
-                badge.textContent = 'AdsGram';
-                badge.className = 'platform-indicator adsgram-indicator';
-                indicator.textContent = 'Keyingi: AdsGram';
-                indicator.className = 'text-xs font-bold px-3 py-1 rounded-full adsgram-indicator';
-            }
-        }
-
-        // 🔥 NAVBATLI REKLAMA TIZIMI
+        // 🔥 CLICK-ASOSLI REKLAMA TIZIMI
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -581,139 +508,236 @@
             isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
             
-            // Navbatni aniqlash va mos reklama platformasini ishga tushirish
-            let success = false;
-            if (currentAdPlatform === 'sonar') {
-                statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Sonar: Reklama yuklanmoqda...</p>';
-                success = await showSonarAd(statusDiv);
-                currentAdPlatform = 'adsgram'; // Keyingi navbat AdsGram ga
-            } else {
-                statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">AdsGram: Reklama yuklanmoqda...</p>';
-                success = await showAdsGramAd(statusDiv);
-                currentAdPlatform = 'sonar'; // Keyingi navbat Sonar ga
-            }
+            // Click tracking ni boshlash
+            clickTracking.startTime = Date.now();
+            clickTracking.clicked = false;
+            
+            // Sahifa fokusini yo'qotish/ortga qaytishni kuzatish
+            setupPageVisibilityTracking();
 
-            // Platform indikatorini yangilash
-            updatePlatformIndicator();
-            
-            // Reklama tugagach, tugmani qayta tiklash
-            resetWatchButton();
-            
-            // Agar reklama muvaffaqiyatli ko'rilgan bo'lsa, 2 soniya kutib keyin asosiy holatga qaytish
-            if (success) {
-                setTimeout(() => {
-                    if (!isWatchingAd) {
-                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
-                    }
-                }, 2000);
-            }
-        }
-
-        // 1. Sonar reklamasini ko'rsatish funksiyasi
-        async function showSonarAd(statusDiv) {
-            return new Promise((resolve) => {
+            try {
+                // Sonar Rewarded Ad ni ko'rsatish
                 window.Sonar.show({
                     adUnit: "rekchiai",
                     loader: true,
-                    onStart: () => {
-                        console.log('Sonar reklamasi yuklanishi boshlandi');
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Sonar: Reklama yuklanmoqda...</p>';
-                    },
-                    onShow: () => {
-                        console.log('Sonar reklamasi ko\'rsatildi');
-                        statusDiv.innerHTML = `
-                            <div class="text-center">
-                                <p class="text-green-400 font-bold mb-2">Sonar: Reklama ko'rsatilmoqda!</p>
-                                <p class="text-sm text-white/70">Reklamani oxirigacha ko'ring va bonus oling</p>
-                                <p class="text-xs text-white/50 mt-2">Keyingi navbat: AdsGram</p>
-                            </div>
-                        `;
-                    },
-                    onError: (error) => {
-                        console.error('Sonar xatosi:', error);
-                        statusDiv.innerHTML = `
-                            <div class="text-center">
-                                <p class="text-red-400 font-bold mb-2">Sonar: Reklama yuklanmadi</p>
-                                <p class="text-sm text-white/70">Iltimos, qayta urinib ko'ring yoki keyingi reklamaga o'ting</p>
-                            </div>
-                        `;
-                        resolve(false); // Xatolik bo'lsa false qaytar
-                    },
-                    onClose: () => {
-                        console.log('Sonar reklamasi yopildi');
-                        statusDiv.innerHTML = '<p class="text-yellow-400">Sonar: Reklama yopildi. Keyingi reklama tayyor.</p>';
-                        resolve(false); // Reklama yopilgan bo'lsa false
-                    },
-                    onReward: async () => {
-                        console.log('Sonar reklamasi to\'liq ko\'rildi, bonus berilmoqda...');
-                        // ✅ BONUS BERISH
-                        await giveBonus();
-                        statusDiv.innerHTML = `
-                            <div class="text-center slide-up">
-                                <div class="text-5xl mb-3" style="animation:celebrate .6s;">🎉</div>
-                                <p class="text-green-400 font-bold text-lg mb-1">Sonar: Tabriklaymiz!</p>
-                                <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
-                                <p class="text-sm text-white/70 mb-2">Reklamani to'liq ko'rganingiz uchun rahmat!</p>
-                                <p class="text-xs text-white/50">Keyingi navbat: AdsGram</p>
-                            </div>
-                        `;
-                        resolve(true); // Muvaffaqiyatli ko'rilgan bo'lsa true
-                    }
-                });
-            });
-        }
-
-        // 2. AdsGram reklamasini ko'rsatish funksiyasi
-        async function showAdsGramAd(statusDiv) {
-            return new Promise((resolve) => {
-                if (!adsGramController) {
-                    console.error('AdsGram controller ishga tushmagan');
-                    statusDiv.innerHTML = '<p class="text-red-400">AdsGram: Kontroller ishga tushmagan</p>';
-                    resolve(false);
-                    return;
-                }
-                
-                adsGramController.show().then((result) => {
-                    console.log('AdsGram reklamasi natijasi:', result);
                     
-                    // result.done = true bo'lsa, foydalanuvchi reklamani oxirigacha ko'rgan
-                    if (result.done) {
-                        console.log('AdsGram reklamasi to\'liq ko\'rildi, bonus berilmoqda...');
-                        // ✅ BONUS BERISH
-                        giveBonus().then(() => {
-                            statusDiv.innerHTML = `
-                                <div class="text-center slide-up">
-                                    <div class="text-5xl mb-3" style="animation:celebrate .6s;">🎉</div>
-                                    <p class="text-green-400 font-bold text-lg mb-1">AdsGram: Tabriklaymiz!</p>
-                                    <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
-                                    <p class="text-sm text-white/70 mb-2">Reklamani to'liq ko'rganingiz uchun rahmat!</p>
-                                    <p class="text-xs text-white/50">Keyingi navbat: Sonar</p>
+                    onStart: () => {
+                        console.log('Reklama yuklanishi boshlandi');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+                    },
+                    
+                    onShow: () => {
+                        console.log('Reklama ko\'rsatildi');
+                        statusDiv.innerHTML = `
+                            <div class="text-center">
+                                <p class="text-green-400 font-bold mb-3">Reklama ochildi!</p>
+                                <p class="text-sm text-white/70 mb-2">👆 Reklamani BOSING va tashqi sahifaga o'ting</p>
+                                <p class="text-xs text-white/50">Bonus olish uchun kamida 5 soniya tashqi sahifada bo'ling</p>
+                                <div class="mt-4">
+                                    <span class="click-timer">⏳ Vaqt: <span id="click-timer">0</span>s</span>
+                                    <p class="click-info">Tashqi sahifaga o'tishni kutyapmiz...</p>
                                 </div>
-                            `;
-                            resolve(true); // Muvaffaqiyatli ko'rilgan
-                        });
-                    } else {
-                        // Reklama yopilgan (faqat Interstitial formatda mumkin)
-                        statusDiv.innerHTML = '<p class="text-yellow-400">AdsGram: Reklama yopildi. Keyingi reklama tayyor.</p>';
-                        resolve(false); // To'liq ko'rilmagan
+                            </div>
+                        `;
+                        
+                        // Timer boshlash
+                        let seconds = 0;
+                        clickTracking.timer = setInterval(() => {
+                            seconds++;
+                            const timerEl = document.getElementById('click-timer');
+                            if (timerEl) timerEl.textContent = seconds;
+                        }, 1000);
+                    },
+                    
+                    onError: (error) => {
+                        console.error('Reklama xatosi:', error);
+                        clearTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi. Qayta urinib ko\'ring.</p>';
+                        resetWatchButton();
+                        setTimeout(() => { 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    },
+
+                    onClose: () => {
+                        console.log('Reklama yopildi');
+                        clearTracking();
+                        // Click aniqlanganmi tekshirish
+                        setTimeout(() => {
+                            if (clickTracking.clicked) {
+                                checkAndGiveBonus();
+                            } else {
+                                statusDiv.innerHTML = `
+                                    <div class="text-center">
+                                        <p class="text-yellow-400 font-bold mb-2">Reklama yopildi</p>
+                                        <p class="text-sm text-white/70">Agar tashqi sahifaga o'tgan bo'lsangiz, bir necha soniyada bonus olasiz</p>
+                                    </div>
+                                `;
+                                resetWatchButton();
+                                
+                                setTimeout(() => { 
+                                    if (!statusDiv.innerHTML.includes('Tabriklaymiz')) {
+                                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                                    }
+                                }, 3000);
+                            }
+                        }, 1000);
+                    },
+
+                    onReward: async () => {
+                        console.log('Reklama to\'liq ko\'rildi, click tekshiruvi kutilmoqda...');
+                        // Click tracking natijasiga qarab bonus beriladi
+                    },
+                }).then((result) => {
+                    console.log('Sonar result:', result);
+                    if (result.status === 'error') {
+                        console.error('Ad failed to show:', result.message);
+                        clearTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
+                        resetWatchButton();
                     }
-                }).catch((error) => {
-                    console.error('AdsGram xatosi:', error);
-                    statusDiv.innerHTML = `
-                        <div class="text-center">
-                            <p class="text-red-400 font-bold mb-2">AdsGram: Reklama yuklanmadi</p>
-                            <p class="text-sm text-white/70">Iltimos, qayta urinib ko'ring yoki keyingi reklamaga o'ting</p>
-                        </div>
-                    `;
-                    resolve(false); // Xatolik
                 });
-            });
+
+            } catch (err) {
+                console.error('Reklama ochishda xatolik', err);
+                clearTracking();
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik yuz berdi.</p>';
+                resetWatchButton();
+                setTimeout(() => { 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                }, 3000);
+            }
         }
 
-        // Bonus berish funksiyasi (umumiy)
-        async function giveBonus() {
+        // 📌 YANGI FUNKSIYALAR:
+
+        // Sahifa fokusini kuzatish
+        function setupPageVisibilityTracking() {
+            // Document visibility change
+            const visibilityHandler = () => handleVisibilityChange();
+            document.addEventListener('visibilitychange', visibilityHandler);
+            clickTracking.eventListeners.push({ type: 'visibilitychange', handler: visibilityHandler });
+            
+            // Pagehide va pageshow
+            const pageHideHandler = () => handlePageHide();
+            const pageShowHandler = () => handlePageShow();
+            window.addEventListener('pagehide', pageHideHandler);
+            window.addEventListener('pageshow', pageShowHandler);
+            clickTracking.eventListeners.push({ type: 'pagehide', handler: pageHideHandler });
+            clickTracking.eventListeners.push({ type: 'pageshow', handler: pageShowHandler });
+            
+            // Blur va focus (fallback)
+            const blurHandler = () => handleWindowBlur();
+            const focusHandler = () => handleWindowFocus();
+            window.addEventListener('blur', blurHandler);
+            window.addEventListener('focus', focusHandler);
+            clickTracking.eventListeners.push({ type: 'blur', handler: blurHandler });
+            clickTracking.eventListeners.push({ type: 'focus', handler: focusHandler });
+            
+            // Telegram WebApp events
+            if (window.Telegram?.WebApp) {
+                Telegram.WebApp.onEvent('viewportChanged', (params) => {
+                    if (params.is_expanded === false) {
+                        // User appni yopdi/yashirdi
+                        console.log('Telegram WebApp yopildi');
+                        clickTracking.clicked = true;
+                    }
+                });
+            }
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                // Sahifa yashirildi (user boshqa tabga o'tdi)
+                console.log('Sahifa yashirildi - click bo\'lishi mumkin');
+                if (clickTracking.startTime) {
+                    clickTracking.clicked = true;
+                }
+            } else {
+                // Sahifa ko'rsatildi (user qaytdi)
+                console.log('Sahifa ko\'rsatildi - user qaytdi');
+                if (clickTracking.clicked) {
+                    setTimeout(checkAndGiveBonus, 1000);
+                }
+            }
+        }
+
+        function handlePageHide() {
+            console.log('Page hide - user sahifani tark etdi');
+            if (clickTracking.startTime) {
+                clickTracking.clicked = true;
+            }
+        }
+
+        function handlePageShow() {
+            console.log('Page show - user qaytdi');
+            if (clickTracking.clicked) {
+                setTimeout(checkAndGiveBonus, 1000);
+            }
+        }
+
+        function handleWindowBlur() {
+            console.log('Window blur - fokus yo\'qoldi');
+            if (clickTracking.startTime) {
+                clickTracking.clicked = true;
+            }
+        }
+
+        function handleWindowFocus() {
+            console.log('Window focus - fokus qaytdi');
+            if (clickTracking.clicked) {
+                setTimeout(checkAndGiveBonus, 1000);
+            }
+        }
+
+        // Bonus tekshirish va berish
+        async function checkAndGiveBonus() {
+            if (!clickTracking.startTime || !clickTracking.clicked) {
+                console.log('Click aniqlanmadi');
+                return;
+            }
+            
+            const spentTime = Date.now() - clickTracking.startTime;
+            console.log(`Sarflangan vaqt: ${spentTime}ms`);
+            
+            const statusDiv = document.getElementById('ad-status');
+            const btn = document.getElementById('watch-ad-btn');
+            
+            // Vaqt tekshiruvi
+            if (spentTime < clickTracking.minTimeForBonus) {
+                console.log('Vaqt yetarli emas:', spentTime, 'ms');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-red-400 font-bold mb-2">Vaqt yetarli emas!</p>
+                        <p class="text-sm text-white/70">Iltimos, reklamani to'liq ko'ring va tashqi sahifada kamida 5 soniya bo'ling</p>
+                        <p class="text-xs text-white/50 mt-2">Sarflangan vaqt: ${Math.round(spentTime/1000)}s</p>
+                    </div>
+                `;
+                resetWatchButton();
+                return;
+            }
+            
+            if (spentTime > clickTracking.maxTimeForBonus) {
+                console.log('Vaqt juda ko\'p:', spentTime, 'ms');
+                statusDiv.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-yellow-400 font-bold mb-2">Vaqt chegarasidan oshib ketdi</p>
+                        <p class="text-sm text-white/70">Keyingi reklamada tezroq qayting</p>
+                        <p class="text-xs text-white/50 mt-2">Sarflangan vaqt: ${Math.round(spentTime/1000)}s (limit: 30s)</p>
+                    </div>
+                `;
+                resetWatchButton();
+                return;
+            }
+            
+            // ✅ BONUS BERISH
+            console.log('Bonus beriladi! Sarflangan vaqt:', spentTime, 'ms');
+            
             try {
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">💎 Click aniqlandi, bonus berilmoqda...</p>';
+                
                 // Firebase yangilash
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
@@ -726,12 +750,29 @@
                 const ads_by_day = userData.ads_by_day || {};
                 const newDayCount = (ads_by_day[localKey] || 0) + 1;
                 const newOverall = (userData.ads_watched || 0) + 1;
+                const totalClicks = (userData.total_clicks || 0) + 1;
+                
+                // Click history
+                const clickHistory = userData.click_history || [];
+                clickHistory.push({
+                    time: new Date().toISOString(),
+                    duration: spentTime,
+                    rewarded: true,
+                    type: 'click'
+                });
+                // Faqat oxirgi 10 ta clickni saqlash
+                const limitedHistory = clickHistory.slice(-10);
 
                 // update firebase
                 const updates = { 
                     ads_watched: newOverall, 
                     [`ads_by_day/${localKey}`]: newDayCount, 
-                    last_ad_time: new Date().toISOString()
+                    last_ad_time: new Date().toISOString(),
+                    last_click_time: new Date().toISOString(),
+                    click_duration: spentTime,
+                    total_clicks: totalClicks,
+                    click_history: limitedHistory,
+                    avg_click_duration: ((userData.avg_click_duration || 0) * (totalClicks - 1) + spentTime) / totalClicks
                 };
                 const ok = await updateUserData(updates);
                 if (!ok) throw new Error('Firebase yangilashida xatolik');
@@ -747,11 +788,43 @@
                 renderLeaderboardsMain();
                 await fetchBotBalance();
 
-                return true;
+                // Muhim: Success UI
+                statusDiv.innerHTML = `
+                    <div class="text-center slide-up">
+                        <div class="text-6xl mb-3" style="animation:celebrate .6s;">🎉</div>
+                        <p class="text-green-400 font-bold text-lg mb-1">Tabriklaymiz!</p>
+                        <p class="text-2xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</p>
+                        <p class="text-sm text-white/70 mb-2">Click uchun bonus berildi</p>
+                        <p class="text-xs text-white/50">Sarflangan vaqt: ${Math.round(spentTime/1000)} soniya</p>
+                    </div>
+                `;
+                
+                // Button reset
+                resetWatchButton();
+                
             } catch (err) {
                 console.error('Bonus berishda xatolik', err);
-                return false;
+                statusDiv.innerHTML = '<p class="text-red-400">Bonus berishda xatolik yuz berdi.</p>';
+                resetWatchButton();
             }
+        }
+
+        // Trackerni tozalash
+        function clearTracking() {
+            if (clickTracking.timer) {
+                clearInterval(clickTracking.timer);
+                clickTracking.timer = null;
+            }
+            
+            // Event listenerlarni olib tashlash
+            clickTracking.eventListeners.forEach(item => {
+                if (item.type === 'visibilitychange') {
+                    document.removeEventListener('visibilitychange', item.handler);
+                } else {
+                    window.removeEventListener(item.type, item.handler);
+                }
+            });
+            clickTracking.eventListeners = [];
         }
 
         // Buttonni reset qilish
@@ -759,13 +832,11 @@
             const btn = document.getElementById('watch-ad-btn');
             isWatchingAd = false;
             btn.disabled = false;
-            btn.innerHTML = `
-                <span class="text-2xl">▶️</span>
-                <span id="btn-text">Reklamani boshlash</span>
-                <span id="platform-badge" class="platform-indicator ${currentAdPlatform === 'sonar' ? 'sonar-indicator' : 'adsgram-indicator'}">
-                    ${currentAdPlatform === 'sonar' ? 'Sonar' : 'AdsGram'}
-                </span>
-            `;
+            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+            
+            // Trackerni tozalash
+            clickTracking.startTime = null;
+            clickTracking.clicked = false;
         }
 
         // Bonus olish huquqini tekshirish
@@ -776,25 +847,25 @@
                 const userData = snapshot.val() || {};
                 
                 const now = new Date();
-                const lastAd = userData.last_ad_time ? new Date(userData.last_ad_time) : null;
+                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
                 
                 // 1. 30 soniyadan keyin qayta ruxsat
-                if (lastAd && (now - lastAd) < 30000) {
+                if (lastClick && (now - lastClick) < 30000) {
                     return false;
                 }
                 
                 // 2. Kunlik cheklov (masalan, 50 ta)
                 const tzOffset = now.getTimezoneOffset() * 60000;
                 const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-                const todayAds = (userData.ads_by_day || {})[localKey] || 0;
-                if (todayAds >= 50) {
+                const todayClicks = (userData.ads_by_day || {})[localKey] || 0;
+                if (todayClicks >= 50) {
                     return false;
                 }
                 
                 return true;
             } catch (err) {
                 console.error('Bonus tekshirish xatosi:', err);
-                return true;
+                return true; // Xatolikda ruxsat ber
             }
         }
 
@@ -849,7 +920,7 @@
             }
         }
 
-        // UI bindings
+        // UI bindings (menu + leaderboard tabs)
         function bindUI() {
             document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
 
@@ -877,10 +948,11 @@
             document.getElementById(sectionId).classList.add('active');
             document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
             if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
+            // if leaderboard opened, render it
             if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
         }
 
-        // Update user UI
+        // Update user UI (avatar, name)
         function updateUI(user) {
             if (!user) return;
             const avatarDiv = document.getElementById('user-avatar');
@@ -892,6 +964,7 @@
             document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            // update bot balance display
             document.getElementById('diamond-count').textContent = `${botBalance}`;
         }
 
@@ -899,14 +972,6 @@
         async function initializeAppMain() {
             initTelegram();
             bindUI();
-
-            // AdsGram ni ishga tushirish
-            try {
-                adsGramController = window.Adsgram.init({ blockId: "19784" });
-                console.log('AdsGram muvaffaqiyatli ishga tushirildi');
-            } catch (error) {
-                console.error('AdsGram ni ishga tushirishda xatolik:', error);
-            }
 
             const user = await loadOrCreateUser();
             if (user) {
@@ -923,9 +988,6 @@
                 setInterval(fetchBotBalance, 30000);
             }
 
-            // Platform indikatorini yangilash
-            updatePlatformIndicator();
-
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
         }
@@ -935,7 +997,7 @@
         else initializeAppMain();
     </script>
 
-    <!-- Sonar reklama skripti -->
+    <!-- Sonar reklama skripti qo'shildi -->
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
 </body>
 </html>
