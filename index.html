@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>RekchiAi - Click Bonus</title>
+    <title>RekchiAi olmoslari</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
@@ -62,17 +62,17 @@
 
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
         
-        /* New styles for click tracking */
-        .click-status {
-            padding: 10px;
+        .click-timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
             border-radius: 10px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: bold;
+            font-size: 12px;
+            z-index: 1000;
         }
-        .click-verified { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #22c55e; }
-        .click-fake { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; }
-        .click-pending { background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.3); color: #facc15; }
     </style>
 </head>
 <body class="h-full gradient-bg text-white overflow-auto">
@@ -81,7 +81,7 @@
             <div class="text-center slide-up">
                 <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
                 <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
-                <p class="text-xl font-semibold text-white/90">RekchiAi Click Bonus</p>
+                <p class="text-xl font-semibold text-white/90">RekchiAi olmoslari</p>
                 <p class="text-white/60 mt-2">Yuklanmoqda...</p>
             </div>
         </div>
@@ -93,8 +93,8 @@
                         <div class="flex items-center space-x-3">
                             <div class="text-3xl diamond-icon">💎</div>
                             <div>
-                                <h1 class="text-xl font-bold text-white/90">RekchiAi Click Bonus</h1>
-                                <p class="text-xs text-white/60">Reklamani bosib, bonus oling!</p>
+                                <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
+                                <p class="text-xs text-white/60">Reklamani bosing, olmos bot balansiga qo'shiladi</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
@@ -123,8 +123,8 @@
                             <div class="flex items-center space-x-3">
                                 <div class="text-3xl">💎</div>
                                 <div>
-                                    <h2 class="text-xl font-bold text-white/90">Click qilib bonus olish</h2>
-                                    <p class="text-white/60 text-sm">Reklamani bosib, tashqi sahifaga o'ting</p>
+                                    <h2 class="text-xl font-bold text-white/90">Reklama bosing</h2>
+                                    <p class="text-white/60 text-sm">Reklamani bosib tashqi saytga o'ting va qayting</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
@@ -132,31 +132,26 @@
                             </div>
                         </div>
 
-                        <div id="click-status" class="click-status click-pending">
-                            <p>Tugmani bosishga tayyor!</p>
+                        <div id="ad-status" class="status-card rounded-2xl p-6 mb-5 text-center min-h-[100px] flex items-center justify-center">
+                            <p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>
                         </div>
 
-                        <div id="stats-info" class="text-center mb-4 text-sm text-white/60">
-                            <p>Bugungi clicklar: <span id="today-clicks">0</span> / <span id="daily-limit">100</span></p>
-                            <p>So'ngi click: <span id="last-click-time">Hozircha yo'q</span></p>
+                        <div id="timer-display" class="text-center mb-4 text-yellow-400 hidden">
+                            <p class="text-sm">Qaytish kutilmoqda: <span id="timer-count">0</span>s</p>
+                            <p class="text-xs text-white/50 mt-1">Reklamani bosib, 5-60 soniya ichida qayting</p>
                         </div>
 
-                        <button id="start-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
+                        <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">▶️</span>
-                            <span>Click qilishni boshlash</span>
+                            <span>Reklamani boshlash</span>
                         </button>
-                    </div>
-
-                    <div class="app-card p-5 slide-up" style="animation-delay:0.2s;">
-                        <h3 class="font-bold text-lg mb-3">Qoidalar:</h3>
-                        <ul class="space-y-2 text-sm text-white/70">
-                            <li>✅ 1. Reklamani bosib, tashqi sahifaga o'ting</li>
-                            <li>✅ 2. Telegramga qayting (avtomatik)</li>
-                            <li>✅ 3. Bonus avtomatik hisobga qo'shiladi</li>
-                            <li>❌ Click qilmaganlar bonus OLMAYDI</li>
-                            <li>⚠️ Kuniga maksimal 100 ta click</li>
-                            <li>⏱️ Clicklar orasida 30 soniya kutish</li>
-                        </ul>
+                        
+                        <div class="mt-4 text-center text-xs text-white/50">
+                            <p>💡 Bonus olish uchun:</p>
+                            <p>1. Reklamani boshing</p>
+                            <p>2. Tashqi sahifaga o'ting (5-60 soniya)</p>
+                            <p>3. Qaytib kelganingizda bonus avtomatik beriladi</p>
+                        </div>
                     </div>
                 </div>
 
@@ -165,7 +160,7 @@
                         <div class="leaderboard-card">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 class="text-lg font-bold">Click Reytinglari</h3>
+                                    <h3 class="text-lg font-bold">Reytinglar</h3>
                                     <p class="text-xs text-white/60">Kunlik va umumiy top 10</p>
                                 </div>
                                 <div class="leaderboard-tabs" role="tablist" aria-label="Reyting turlari">
@@ -199,7 +194,7 @@
                             </div>
                             <div>
                                 <p class="text-2xl font-bold text-yellow-400" id="admin-total-ads">0</p>
-                                <p class="text-xs text-white/60 mt-1">Clicklar</p>
+                                <p class="text-xs text-white/60 mt-1">Reklamalar</p>
                             </div>
                             <div>
                                 <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
@@ -220,7 +215,7 @@
                 <nav class="menu-nav">
                     <button class="menu-item active" data-section="earn-section" id="menu-earn">
                         <span class="menu-icon">💎</span>
-                        <span class="menu-label">Click qilish</span>
+                        <span class="menu-label">Olmos ishlash</span>
                     </button>
                     <button class="menu-item" data-section="leaderboard-section" id="menu-leaderboard">
                         <span class="menu-icon">🏆</span>
@@ -231,7 +226,8 @@
         </div>
     </div>
 
-    <!-- ADSGRAM only (Click uchun eng yaxshi) -->
+    <!-- REKLAMA SKRIPTLARI -->
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <!-- Script -->
@@ -258,33 +254,71 @@
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
         const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
 
-        // Click detection settings
-        const CLICK_SETTINGS = {
-            MIN_TIME_FOR_BONUS: 3000,     // 3 soniya (tashqi sahifada bo'lish uchun minimal vaqt)
-            MAX_TIME_FOR_BONUS: 60000,    // 1 daqiqa (maksimal)
-            COOLDOWN_BETWEEN_CLICKS: 30000, // 30 soniya
-            DAILY_CLICK_LIMIT: 100,
-            VERIFICATION_WINDOW: 15000    // 15 soniya ichida qaytishi kerak
-        };
-
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let botBalance = 0;
         let currentLeaderboard = 'daily';
-        let isProcessingClick = false;
+        let isWatchingAd = false;
         let adsgramController = null;
-        
-        // Click tracking state
-        let clickState = {
-            startTime: null,
-            isExternalWindowOpen: false,
-            verificationTimer: null,
-            lastVisibilityState: null,
-            clickInProgress: false
+        let timerInterval = null;
+        let clickStartTime = null;
+        let userReturned = false;
+
+        // REKLAMA NAVBATI
+        let adQueue = {
+            currentProvider: 'adsgram', // AdsGram asosiy provider
+            getNextProvider: function() {
+                if (this.currentProvider === 'sonar') {
+                    this.currentProvider = 'adsgram';
+                } else {
+                    this.currentProvider = 'sonar';
+                }
+                return this.currentProvider;
+            },
+            getCurrentProvider: function() {
+                return this.currentProvider;
+            }
         };
 
-        // Telegram initialization
+        // CLICK TRACKING - YANGI LOGIKA
+        let clickTracking = {
+            startTime: null,
+            externalClickDetected: false,
+            minTimeForBonus: 5000,    // 5 soniya MINIMUM
+            maxTimeForBonus: 60000,   // 60 soniya MAXIMUM
+            eventListeners: [],
+            isWaitingForReturn: false,
+            returnTime: null,
+            timerDisplay: null
+        };
+
+        // Helpers
+        async function getTelegramProfilePhoto(userId, username) {
+            try {
+                const tg = window.Telegram?.WebApp;
+                if (tg?.initDataUnsafe?.user?.photo_url) return tg.initDataUnsafe.user.photo_url;
+                if (username) return `https://t.me/i/userpic/320/${username}.jpg`;
+                return createFullGradientAvatar(userId);
+            } catch (e) {
+                return createFullGradientAvatar(userId);
+            }
+        }
+        
+        function createFullGradientAvatar(userId) {
+            const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
+            const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
+            const [c1,c2] = gradients[idx];
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        function escapeHtml(str) { 
+            if (!str) return ''; 
+            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
+        }
+
+        // Init Telegram
         function initTelegram() {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -303,10 +337,17 @@
                         language_code: user.language_code || 'uz'
                     };
                     isAdmin = ADMIN_IDS.includes(currentUser.user_id);
+                } else {
+                    currentUser = { 
+                        user_id: 'web_' + Date.now(), 
+                        username: 'foydalanuvchi', 
+                        first_name: 'Foydalanuvchi', 
+                        last_name:'', 
+                        photo_url:null, 
+                        language_code:'uz' 
+                    };
                 }
-            }
-            
-            if (!currentUser) {
+            } else {
                 currentUser = { 
                     user_id: 'web_' + Date.now(), 
                     username: 'foydalanuvchi', 
@@ -318,13 +359,12 @@
             }
         }
 
-        // User management
+        // Load/create user in Firebase
         async function loadOrCreateUser() {
             if (!currentUser) return null;
             try {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
-                
                 if (!snapshot.exists()) {
                     const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
                     const newUser = {
@@ -334,23 +374,56 @@
                         last_name: currentUser.last_name || '',
                         photo_url: profilePhoto,
                         language_code: currentUser.language_code || 'uz',
-                        clicks_by_day: {},
+                        ads_by_day: {},
                         diamonds: 0,
-                        total_clicks: 0,
-                        verified_clicks: 0,
-                        last_click_time: null,
-                        last_bonus_time: null,
+                        ads_watched: 0,
+                        withdraw_history: [],
+                        last_ad_time: new Date().toISOString(),
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
-                        click_history: []
+                        total_clicks: 0,
+                        verified_clicks: 0,
+                        fake_clicks: 0,
+                        click_history: [],
+                        last_click_time: null,
+                        last_verified_click: null,
+                        avg_click_duration: 0,
+                        external_clicks: 0,
+                        sonar_ads: 0,
+                        adsgram_ads: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
                 } else {
                     let userData = snapshot.val();
-                    if (!userData.clicks_by_day) {
-                        await update(userRef, { clicks_by_day: {} });
-                        userData.clicks_by_day = {};
+                    if (!userData.photo_url) {
+                        const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
+                        const updates = { 
+                            photo_url: profilePhoto, 
+                            username: currentUser.username || userData.username, 
+                            first_name: currentUser.first_name || userData.first_name, 
+                            updated_at: new Date().toISOString() 
+                        };
+                        await update(userRef, updates);
+                        userData = { ...userData, ...updates };
+                    }
+                    if (!userData.ads_by_day) {
+                        await update(userRef, { ads_by_day: {} });
+                        userData.ads_by_day = {};
+                    }
+                    if (typeof userData.verified_clicks === 'undefined') {
+                        await update(userRef, { 
+                            total_clicks: userData.total_clicks || 0,
+                            verified_clicks: userData.verified_clicks || 0,
+                            fake_clicks: userData.fake_clicks || 0,
+                            click_history: userData.click_history || [],
+                            last_click_time: userData.last_click_time || null,
+                            last_verified_click: userData.last_verified_click || null,
+                            avg_click_duration: userData.avg_click_duration || 0,
+                            external_clicks: userData.external_clicks || 0,
+                            sonar_ads: userData.sonar_ads || 0,
+                            adsgram_ads: userData.adsgram_ads || 0
+                        });
                     }
                     return userData;
                 }
@@ -359,473 +432,50 @@
                 return null;
             }
         }
-
-        // Helper functions
-        async function getTelegramProfilePhoto(userId, username) {
-            try {
-                const tg = window.Telegram?.WebApp;
-                if (tg?.initDataUnsafe?.user?.photo_url) return tg.initDataUnsafe.user.photo_url;
-                if (username) return `https://t.me/i/userpic/320/${username}.jpg`;
-                return createFullGradientAvatar(userId);
-            } catch (e) {
-                return createFullGradientAvatar(userId);
-            }
-        }
-
-        function createFullGradientAvatar(userId) {
-            const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
-            const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
-            const [c1,c2] = gradients[idx];
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
-            return 'data:image/svg+xml;base64,' + btoa(svg);
-        }
-
-        function escapeHtml(str) { 
-            if (!str) return ''; 
-            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
-        }
-
-        // Click verification system
-        function setupClickVerification() {
-            console.log('Click verification system started');
-            
-            // Track visibility changes
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-            
-            // Track page hide/show
-            window.addEventListener('pagehide', handlePageHide);
-            window.addEventListener('pageshow', handlePageShow);
-            
-            // Track blur/focus (for browser tabs)
-            window.addEventListener('blur', handleWindowBlur);
-            window.addEventListener('focus', handleWindowFocus);
-            
-            // Telegram WebApp events
-            if (window.Telegram?.WebApp) {
-                Telegram.WebApp.onEvent('viewportChanged', handleViewportChange);
-            }
-        }
-
-        function handleVisibilityChange() {
-            if (!clickState.clickInProgress) return;
-            
-            if (document.hidden) {
-                console.log('📱 App yashirildi (tashqi sahifaga o\'tildi)');
-                clickState.isExternalWindowOpen = true;
-                clickState.lastVisibilityState = 'hidden';
-            } else {
-                console.log('📱 App ko\'rsatildi (qaytildi)');
-                
-                if (clickState.isExternalWindowOpen && clickState.startTime) {
-                    const spentTime = Date.now() - clickState.startTime;
-                    console.log(`⏱️ Tashqi sahifada bo'lgan vaqt: ${spentTime}ms`);
-                    
-                    if (spentTime >= CLICK_SETTINGS.MIN_TIME_FOR_BONUS && 
-                        spentTime <= CLICK_SETTINGS.MAX_TIME_FOR_BONUS) {
-                        console.log('✅ Click tasdiqlandi! Bonus beriladi...');
-                        processVerifiedClick(spentTime);
-                    } else {
-                        console.log('❌ Vaqt shartiga mos emas:', spentTime, 'ms');
-                        updateClickStatus('Vaqt shartiga mos emas', 'fake');
-                        resetClickState();
-                    }
-                }
-            }
-        }
-
-        function handlePageHide() {
-            if (clickState.clickInProgress) {
-                console.log('📄 Sahifa yashirildi');
-                clickState.isExternalWindowOpen = true;
-            }
-        }
-
-        function handlePageShow() {
-            if (clickState.clickInProgress && clickState.isExternalWindowOpen) {
-                console.log('📄 Sahifa ko\'rsatildi (qaytish)');
-                setTimeout(() => {
-                    if (clickState.startTime) {
-                        const spentTime = Date.now() - clickState.startTime;
-                        if (spentTime >= CLICK_SETTINGS.MIN_TIME_FOR_BONUS) {
-                            processVerifiedClick(spentTime);
-                        }
-                    }
-                }, 500);
-            }
-        }
-
-        function handleWindowBlur() {
-            if (clickState.clickInProgress) {
-                console.log('💻 Oyna fokusini yo\'qotdi');
-                clickState.isExternalWindowOpen = true;
-            }
-        }
-
-        function handleWindowFocus() {
-            if (clickState.clickInProgress && clickState.isExternalWindowOpen) {
-                console.log('💻 Oyna fokusini oldi (qaytish)');
-                setTimeout(() => {
-                    if (clickState.startTime) {
-                        const spentTime = Date.now() - clickState.startTime;
-                        if (spentTime >= CLICK_SETTINGS.MIN_TIME_FOR_BONUS) {
-                            processVerifiedClick(spentTime);
-                        }
-                    }
-                }, 500);
-            }
-        }
-
-        function handleViewportChange(params) {
-            if (clickState.clickInProgress && params.is_expanded === false) {
-                console.log('📱 Telegram WebApp yopildi');
-                clickState.isExternalWindowOpen = true;
-            }
-        }
-
-        // Start click process
-        async function startClickProcess() {
-            if (!currentUser || isProcessingClick) return;
-            
-            const canClick = await canUserClick();
-            if (!canClick.allowed) {
-                updateClickStatus(canClick.message, 'fake');
-                return;
-            }
-            
-            isProcessingClick = true;
-            clickState.clickInProgress = true;
-            clickState.startTime = Date.now();
-            clickState.isExternalWindowOpen = false;
-            
-            const btn = document.getElementById('start-ad-btn');
-            const statusDiv = document.getElementById('click-status');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-            updateClickStatus('Reklama ochilmoqda...', 'pending');
-            
-            try {
-                await showAdsGramAd();
-            } catch (error) {
-                console.error('Reklama ochishda xatolik:', error);
-                updateClickStatus('Reklama xatosi', 'fake');
-                resetClickState();
-            }
-        }
-
-        // Show AdsGram advertisement
-        async function showAdsGramAd() {
-            return new Promise((resolve, reject) => {
-                if (!adsgramController) {
-                    try {
-                        adsgramController = window.Adsgram.init({ blockId: "19784" });
-                    } catch (e) {
-                        reject(new Error('AdsGram init xatosi: ' + e.message));
-                        return;
-                    }
-                }
-                
-                updateClickStatus('Reklama ochildi! Click qiling...', 'pending');
-                
-                // Start verification timer
-                clickState.verificationTimer = setTimeout(() => {
-                    if (clickState.clickInProgress && !clickState.isExternalWindowOpen) {
-                        console.log('⏰ Vaqt tugadi, click qilinmadi');
-                        updateClickStatus('Click qilinmadi', 'fake');
-                        resetClickState();
-                    }
-                }, CLICK_SETTINGS.VERIFICATION_WINDOW);
-                
-                adsgramController.show().then((result) => {
-                    console.log('AdsGram natijasi:', result);
-                    clearTimeout(clickState.verificationTimer);
-                    
-                    if (clickState.isExternalWindowOpen) {
-                        console.log('✅ User tashqi sahifaga o\'tdi');
-                        // User tashqi sahifaga o'tdi, endi qaytishini kutyapmiz
-                    } else {
-                        console.log('❌ User tashqi sahifaga o'tmadi');
-                        updateClickStatus('Click qilinmadi', 'fake');
-                        resetClickState();
-                        reject(new Error('No click detected'));
-                    }
-                }).catch((error) => {
-                    console.error('AdsGram xatosi:', error);
-                    clearTimeout(clickState.verificationTimer);
-                    updateClickStatus('Reklama xatosi', 'fake');
-                    resetClickState();
-                    reject(error);
-                });
-            });
-        }
-
-        // Process verified click
-        async function processVerifiedClick(spentTime) {
-            if (!clickState.clickInProgress) return;
-            
-            clearTimeout(clickState.verificationTimer);
-            updateClickStatus('Click tasdiqlanmoqda...', 'pending');
-            
-            try {
-                // Save click to database
-                const now = new Date();
-                const tzOffset = now.getTimezoneOffset() * 60000;
-                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-                
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
-                
-                const clicks_by_day = userData.clicks_by_day || {};
-                const todayClicks = (clicks_by_day[localKey] || 0) + 1;
-                const totalClicks = (userData.total_clicks || 0) + 1;
-                const verifiedClicks = (userData.verified_clicks || 0) + 1;
-                
-                const clickHistory = userData.click_history || [];
-                clickHistory.push({
-                    time: new Date().toISOString(),
-                    duration: spentTime,
-                    verified: true,
-                    rewarded: true,
-                    type: 'external_click'
-                });
-                
-                const updates = {
-                    total_clicks: totalClicks,
-                    verified_clicks: verifiedClicks,
-                    last_click_time: new Date().toISOString(),
-                    last_bonus_time: new Date().toISOString(),
-                    [`clicks_by_day/${localKey}`]: todayClicks,
-                    click_history: clickHistory.slice(-50),
-                    updated_at: new Date().toISOString()
-                };
-                
-                await update(userRef, updates);
-                
-                // Add to bot balance
-                await addToBotBalance(REWARD_AMOUNT);
-                
-                // Update UI
-                await fetchBotBalance();
-                updateClickStatus('Bonus qo\'shildi! +1 💎', 'verified');
-                showCelebration();
-                
-                // Update stats
-                updateUserStats();
-                
-                // Update leaderboard
-                renderLeaderboardsMain();
-                
-            } catch (error) {
-                console.error('Bonus berishda xatolik:', error);
-                updateClickStatus('Xatolik yuz berdi', 'fake');
-            } finally {
-                resetClickState();
-                
-                // Reset status after 3 seconds
-                setTimeout(() => {
-                    updateClickStatus('Yana click qilish mumkin!', 'pending');
-                }, 3000);
-            }
-        }
-
-        // Reset click state
-        function resetClickState() {
-            const btn = document.getElementById('start-ad-btn');
-            btn.disabled = false;
-            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Click qilishni boshlash</span>';
-            
-            isProcessingClick = false;
-            clickState.clickInProgress = false;
-            clickState.startTime = null;
-            clickState.isExternalWindowOpen = false;
-            clickState.lastVisibilityState = null;
-            
-            clearTimeout(clickState.verificationTimer);
-        }
-
-        // Update click status display
-        function updateClickStatus(message, type) {
-            const statusDiv = document.getElementById('click-status');
-            statusDiv.textContent = message;
-            statusDiv.className = 'click-status';
-            
-            switch(type) {
-                case 'verified':
-                    statusDiv.classList.add('click-verified');
-                    break;
-                case 'fake':
-                    statusDiv.classList.add('click-fake');
-                    break;
-                case 'pending':
-                    statusDiv.classList.add('click-pending');
-                    break;
-            }
-        }
-
-        // Check if user can click
-        async function canUserClick() {
+        
+        async function updateUserData(updates) {
+            if (!currentUser) return false;
             try {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
-                
-                // Check cooldown
-                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
-                if (lastClick) {
-                    const timeSinceLastClick = Date.now() - lastClick.getTime();
-                    if (timeSinceLastClick < CLICK_SETTINGS.COOLDOWN_BETWEEN_CLICKS) {
-                        const secondsLeft = Math.ceil((CLICK_SETTINGS.COOLDOWN_BETWEEN_CLICKS - timeSinceLastClick) / 1000);
-                        return { allowed: false, message: `${secondsLeft} soniya kutish kerak` };
-                    }
-                }
-                
-                // Check daily limit
-                const now = new Date();
-                const tzOffset = now.getTimezoneOffset() * 60000;
-                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-                const todayClicks = (userData.clicks_by_day || {})[localKey] || 0;
-                
-                if (todayClicks >= CLICK_SETTINGS.DAILY_CLICK_LIMIT) {
-                    return { allowed: false, message: 'Kunlik limit tugadi' };
-                }
-                
-                return { allowed: true, message: 'Click qilish mumkin' };
-            } catch (error) {
-                console.error('canUserClick error:', error);
-                return { allowed: true, message: 'Click qilish mumkin' };
+                await update(userRef, { ...updates, updated_at: new Date().toISOString() });
+                return true;
+            } catch (err) {
+                console.error('updateUserData error', err);
+                return false;
             }
         }
 
-        // Update user stats display
-        function updateUserStats() {
-            if (!currentUser) return;
-            
-            const userRef = ref(db, 'users/' + currentUser.user_id);
-            get(userRef).then(snapshot => {
+        // Subscribe to all users for leaderboard + admin
+        function subscribeToUsers() {
+            const usersRef = ref(db, 'users');
+            onValue(usersRef, (snapshot) => {
+                allUsers = [];
                 if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    const now = new Date();
-                    const tzOffset = now.getTimezoneOffset() * 60000;
-                    const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
-                    
-                    const todayClicks = (userData.clicks_by_day || {})[localKey] || 0;
-                    document.getElementById('today-clicks').textContent = todayClicks;
-                    
-                    if (userData.last_click_time) {
-                        const lastClick = new Date(userData.last_click_time);
-                        const timeAgo = Math.floor((Date.now() - lastClick.getTime()) / 1000);
-                        
-                        if (timeAgo < 60) {
-                            document.getElementById('last-click-time').textContent = `${timeAgo} soniya oldin`;
-                        } else if (timeAgo < 3600) {
-                            document.getElementById('last-click-time').textContent = `${Math.floor(timeAgo/60)} daqiqa oldin`;
-                        } else {
-                            document.getElementById('last-click-time').textContent = lastClick.toLocaleTimeString('uz-UZ');
-                        }
-                    }
+                    const data = snapshot.val();
+                    Object.keys(data).forEach(k => allUsers.push(data[k]));
                 }
-            });
+                updateAdminPanel();
+                renderLeaderboardsMain();
+            }, (err) => console.error('subscribeToUsers error', err));
         }
 
-        // Celebration animation
-        function showCelebration() {
-            const statusDiv = document.getElementById('click-status');
-            const originalContent = statusDiv.innerHTML;
-            
-            statusDiv.innerHTML = `
-                <div class="text-center">
-                    <div class="text-4xl mb-2" style="animation: celebrate 0.8s;">🎉</div>
-                    <div class="text-green-400 font-bold">+1 💎</div>
-                    <div class="text-sm">Bonus qo'shildi!</div>
-                </div>
-            `;
-            
-            setTimeout(() => {
-                statusDiv.innerHTML = originalContent;
-            }, 2000);
-        }
-
-        // Bot balance functions
-        async function addToBotBalance(amount) {
-            if (!currentUser) throw new Error('No user');
-            const body = new URLSearchParams({ 
-                key: BOT_API_KEY, 
-                user_id: currentUser.user_id, 
-                amount: amount 
-            });
-            
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-                const resp = await fetch(BOT_API_ADD_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
-                    body: body.toString(), 
-                    signal: controller.signal 
-                });
-                clearTimeout(timeoutId);
-                
-                if (!resp.ok) { 
-                    console.warn('addToBotBalance non-OK', resp.status); 
-                    return { success: false, message: 'HTTP ' + resp.status }; 
-                }
-                return await resp.json();
-            } catch (error) {
-                console.warn('addToBotBalance error:', error);
-                return { success: false, message: error.message };
-            }
-        }
-
-        async function fetchBotBalance() {
-            if (!currentUser) return;
-            try {
-                const url = new URL(BOT_API_GET_URL);
-                url.searchParams.set('key', BOT_API_KEY);
-                url.searchParams.set('user_id', currentUser.user_id);
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                const resp = await fetch(url.toString(), { 
-                    method: 'GET', 
-                    headers: { 'Accept': 'application/json' }, 
-                    signal: controller.signal 
-                });
-                clearTimeout(timeoutId);
-                
-                if (!resp.ok) { 
-                    console.warn('fetchBotBalance non-OK', resp.status); 
-                    return; 
-                }
-                
-                const json = await resp.json();
-                if (json && json.success) {
-                    botBalance = parseInt(json.balance || 0) || 0;
-                    document.getElementById('diamond-count').textContent = `${botBalance}`;
-                }
-            } catch (error) {
-                console.warn('fetchBotBalance error:', error);
-            }
-        }
-
-        // Leaderboard functions
+        // Render leaderboards into the standalone leaderboard section
         function renderLeaderboardsMain() {
             const listEl = document.getElementById('leaderboard-list');
             if (!listEl) return;
-            
             const now = new Date();
             const tzOffset = now.getTimezoneOffset() * 60000;
             const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
 
             const mapped = allUsers.map(u => {
-                const clicks_by_day = u.clicks_by_day || {};
+                const ads_by_day = u.ads_by_day || {};
                 return {
                     id: u.user_id,
                     name: u.first_name || 'Foydalanuvchi',
                     username: u.username || '',
                     photo_url: u.photo_url || '',
-                    todayCount: parseInt(clicks_by_day[localKey] || 0),
-                    overallCount: parseInt(u.verified_clicks || 0),
+                    todayCount: parseInt(ads_by_day[localKey] || 0),
+                    overallCount: parseInt(u.ads_watched || 0),
                     verified_clicks: u.verified_clicks || 0
                 };
             });
@@ -858,37 +508,19 @@
             `).join('');
         }
 
-        // Subscribe to users
-        function subscribeToUsers() {
-            const usersRef = ref(db, 'users');
-            onValue(usersRef, (snapshot) => {
-                allUsers = [];
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    Object.keys(data).forEach(k => allUsers.push(data[k]));
-                }
-                updateAdminPanel();
-                renderLeaderboardsMain();
-            });
-        }
-
-        // Admin panel
+        // Admin panel render (avatars same style)
         function updateAdminPanel() {
-            if (!isAdmin) return;
-            
             const totalUsers = allUsers.length;
-            const totalAds = allUsers.reduce((s,u)=> s + (u.verified_clicks || 0), 0);
-            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds || 0), 0);
-            
+            const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
+            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds||0), 0);
             document.getElementById('admin-total-users').textContent = totalUsers;
             document.getElementById('admin-total-ads').textContent = totalAds;
             document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
 
             const usersList = document.getElementById('users-list');
             if (!usersList) return;
-            
             usersList.innerHTML = allUsers
-                .sort((a,b)=>(b.verified_clicks||0)-(a.verified_clicks||0))
+                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
                 .slice(0,20)
                 .map(u => `
                     <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
@@ -903,48 +535,485 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-lg font-bold text-yellow-400">${u.verified_clicks || 0} 💎</p>
-                                <p class="text-xs text-white/50">${u.total_clicks || 0} urinish</p>
+                                <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
+                                <p class="text-xs text-white/50">${u.ads_watched || 0} videolar</p>
                             </div>
                         </div>
                     </div>
                 `).join('');
         }
 
-        // UI functions
-        function updateUI(user) {
-            if (!user) return;
+        // YANGI CLICK DETEKTSIYA FUNKSIYALARI
+        function setupClickDetection() {
+            console.log('Click detection ishga tushdi');
             
-            const avatarDiv = document.getElementById('user-avatar');
-            if (user.photo_url) {
-                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
-            } else {
-                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+            // Sahifa yopilganda
+            const beforeUnloadHandler = (e) => {
+                console.log('User sahifani tark etmoqda');
+                if (clickTracking.isWaitingForReturn) {
+                    clickTracking.externalClickDetected = true;
+                }
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            };
+            window.addEventListener('beforeunload', beforeUnloadHandler);
+            clickTracking.eventListeners.push({ type: 'beforeunload', handler: beforeUnloadHandler });
+            
+            // Sahifa yashirilganda
+            const pageHideHandler = () => {
+                console.log('Sahifa yashirildi');
+                if (clickTracking.isWaitingForReturn) {
+                    clickTracking.externalClickDetected = true;
+                }
+            };
+            window.addEventListener('pagehide', pageHideHandler);
+            clickTracking.eventListeners.push({ type: 'pagehide', handler: pageHideHandler });
+            
+            // Visibility change - ENG MUHIM!
+            const visibilityHandler = () => {
+                if (document.hidden && clickTracking.isWaitingForReturn) {
+                    console.log('Sahifa yashirildi - user tashqi sahifaga o\'tdi');
+                    clickTracking.externalClickDetected = true;
+                    clickTracking.returnTime = Date.now();
+                } else if (!document.hidden && clickTracking.isWaitingForReturn && clickTracking.externalClickDetected) {
+                    console.log('Sahifa qayta ochildi - user qaytdi');
+                    checkClickAndGiveBonus();
+                }
+            };
+            document.addEventListener('visibilitychange', visibilityHandler);
+            clickTracking.eventListeners.push({ type: 'visibilitychange', handler: visibilityHandler });
+            
+            // Window blur
+            const blurHandler = () => {
+                console.log('Window blur');
+                setTimeout(() => {
+                    if (!document.hasFocus() && clickTracking.isWaitingForReturn) {
+                        clickTracking.externalClickDetected = true;
+                    }
+                }, 300);
+            };
+            window.addEventListener('blur', blurHandler);
+            clickTracking.eventListeners.push({ type: 'blur', handler: blurHandler });
+            
+            // Telegram WebApp events
+            if (window.Telegram?.WebApp) {
+                Telegram.WebApp.onEvent('viewportChanged', (params) => {
+                    if (params.is_expanded === false) {
+                        console.log('Telegram WebApp yopildi');
+                        if (clickTracking.isWaitingForReturn) {
+                            clickTracking.externalClickDetected = true;
+                        }
+                    }
+                });
             }
-            
-            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
-            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
-            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            document.getElementById('diamond-count').textContent = `${botBalance}`;
-            
-            updateUserStats();
         }
 
-        function bindUI() {
-            document.getElementById('start-ad-btn')?.addEventListener('click', startClickProcess);
+        function clearClickDetection() {
+            clickTracking.eventListeners.forEach(item => {
+                try {
+                    if (item.type === 'visibilitychange') {
+                        document.removeEventListener(item.type, item.handler);
+                    } else {
+                        window.removeEventListener(item.type, item.handler);
+                    }
+                } catch (e) {
+                    console.log('Event listener olib tashlashda xatolik:', e);
+                }
+            });
+            clickTracking.eventListeners = [];
+            
+            if (window.Telegram?.WebApp) {
+                try {
+                    Telegram.WebApp.offEvent('viewportChanged');
+                } catch (e) {
+                    console.log('Telegram events cleanup error:', e);
+                }
+            }
+        }
 
-            // Bottom menu
+        function startTimerDisplay() {
+            document.getElementById('timer-display').classList.remove('hidden');
+            let seconds = 0;
+            const timerEl = document.getElementById('timer-count');
+            
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                seconds++;
+                timerEl.textContent = seconds;
+                
+                // 60 soniyadan oshsa, to'xtat
+                if (seconds >= 60) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer-display').classList.add('hidden');
+                    resetWatchButton();
+                }
+            }, 1000);
+        }
+
+        function stopTimerDisplay() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            document.getElementById('timer-display').classList.add('hidden');
+        }
+
+        // YANGI REKLAMA OCHISH FUNKSIYASI
+        async function watchAd() {
+            if (!currentUser || isWatchingAd) return;
+            
+            const canBonus = await canReceiveBonus(currentUser.user_id);
+            if (!canBonus) {
+                const cooldown = await getRemainingCooldown();
+                const statusDiv = document.getElementById('ad-status');
+                statusDiv.innerHTML = `<p class="text-yellow-400 font-bold">Kutish kerak! ${cooldown}s</p>`;
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
+                }, 3000);
+                return;
+            }
+            
+            const btn = document.getElementById('watch-ad-btn');
+            const statusDiv = document.getElementById('ad-status');
+            
+            // Reset tracking
+            clearClickDetection();
+            clickTracking.startTime = Date.now();
+            clickTracking.externalClickDetected = false;
+            clickTracking.isWaitingForReturn = true;
+            userReturned = false;
+            
+            isWatchingAd = true;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama ochilmoqda...</p>';
+            
+            try {
+                // Faqat AdsGram ishlatamiz (click qilish uchun)
+                await showAdsgramAd();
+                
+            } catch (err) {
+                console.error('Reklama ochishda xatolik:', err);
+                clearClickDetection();
+                stopTimerDisplay();
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
+                resetWatchButton();
+                setTimeout(() => { 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>'; 
+                }, 3000);
+            }
+        }
+
+        // ADSGRAM REKLAMASI - YANGI VERSIYA
+        async function showAdsgramAd() {
+            return new Promise((resolve, reject) => {
+                const statusDiv = document.getElementById('ad-status');
+                
+                // AdsGram controller yaratish
+                if (!adsgramController) {
+                    try {
+                        adsgramController = window.Adsgram.init({ blockId: "19784" });
+                    } catch (e) {
+                        console.error('AdsGram init xatolik:', e);
+                        reject(e);
+                        return;
+                    }
+                }
+                
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi! Click qiling...</p>';
+                
+                // Click deteksiyani boshlash
+                setupClickDetection();
+                
+                // Timer boshlash
+                startTimerDisplay();
+                
+                // Reklamani ko'rsatish
+                adsgramController.show().then((result) => {
+                    console.log('AdsGram natijasi:', result);
+                    
+                    // User reklamani bosib yopgan bo'lsa
+                    if (!clickTracking.externalClickDetected) {
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi. Click qilmadingiz!</p>';
+                        clearClickDetection();
+                        stopTimerDisplay();
+                        resetWatchButton();
+                        reject(new Error('No click detected'));
+                        return;
+                    }
+                    
+                    // User click qilgan, lekin hali qaytmagan
+                    // Qaytishini kutyapmiz (visibilitychange orqali)
+                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Tashqi sahifadasiz. Qayting...</p>';
+                    
+                }).catch((errorResult) => {
+                    console.error('AdsGram xatosi:', errorResult);
+                    clearClickDetection();
+                    stopTimerDisplay();
+                    statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
+                    resetWatchButton();
+                    reject(new Error('Ad error'));
+                });
+            });
+        }
+
+        // CLICK TEKSHIRISH VA BONUS BERISH
+        async function checkClickAndGiveBonus() {
+            if (!clickTracking.startTime || !clickTracking.externalClickDetected) {
+                console.log('Click aniqlanmadi');
+                const statusDiv = document.getElementById('ad-status');
+                statusDiv.innerHTML = '<p class="text-red-400">Click aniqlanmadi!</p>';
+                stopTimerDisplay();
+                resetWatchButton();
+                return;
+            }
+            
+            const spentTime = Date.now() - clickTracking.startTime;
+            console.log(`Sarflangan vaqt: ${spentTime}ms`);
+            
+            const statusDiv = document.getElementById('ad-status');
+            
+            // Vaqt tekshiruvi
+            if (spentTime < clickTracking.minTimeForBonus) {
+                console.log('Juda tez qaytdi:', spentTime, 'ms');
+                statusDiv.innerHTML = '<p class="text-red-400">Vaqt yetarli emas (min 5s)!</p>';
+                stopTimerDisplay();
+                resetWatchButton();
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
+                }, 3000);
+                return;
+            }
+            
+            if (spentTime > clickTracking.maxTimeForBonus) {
+                console.log('Juda uzoq vaqt:', spentTime, 'ms');
+                statusDiv.innerHTML = '<p class="text-yellow-400">Vaqt chegarasidan oshdi.</p>';
+                stopTimerDisplay();
+                resetWatchButton();
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
+                }, 3000);
+                return;
+            }
+            
+            console.log('✅ Click aniqlandi! Bonus beriladi...');
+            await giveClickBonus(spentTime);
+        }
+
+        // CLICK BONUS BERISH
+        async function giveClickBonus(spentTime) {
+            const statusDiv = document.getElementById('ad-status');
+            
+            try {
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Bonus hisoblanmoqda...</p>';
+                
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+
+                const now = new Date();
+                const tzOffset = now.getTimezoneOffset() * 60000;
+                const localKey = new Date(now - tzOffset).toISOString().slice(0,10);
+
+                const ads_by_day = userData.ads_by_day || {};
+                const newDayCount = (ads_by_day[localKey] || 0) + 1;
+                const newOverall = (userData.ads_watched || 0) + 1;
+                const totalClicks = (userData.total_clicks || 0) + 1;
+                const verifiedClicks = (userData.verified_clicks || 0) + 1;
+                
+                const clickHistory = userData.click_history || [];
+                clickHistory.push({
+                    time: new Date().toISOString(),
+                    duration: spentTime,
+                    rewarded: true,
+                    type: 'verified_external_click',
+                    verified: true,
+                    provider: 'adsgram'
+                });
+                const limitedHistory = clickHistory.slice(-20);
+
+                const updates = { 
+                    ads_watched: newOverall, 
+                    [`ads_by_day/${localKey}`]: newDayCount, 
+                    last_ad_time: new Date().toISOString(),
+                    last_click_time: new Date().toISOString(),
+                    last_verified_click: new Date().toISOString(),
+                    click_duration: spentTime,
+                    total_clicks: totalClicks,
+                    verified_clicks: verifiedClicks,
+                    click_history: limitedHistory,
+                    avg_click_duration: ((userData.avg_click_duration || 0) * (verifiedClicks - 1) + spentTime) / verifiedClicks,
+                    external_clicks: (userData.external_clicks || 0) + 1,
+                    adsgram_ads: (userData.adsgram_ads || 0) + 1
+                };
+                
+                const ok = await updateUserData(updates);
+                if (!ok) throw new Error('Firebase yangilashida xatolik');
+
+                // Bot balansiga qo'shish
+                try { 
+                    await addToBotBalance(REWARD_AMOUNT);
+                } catch(e){ 
+                    console.warn('Bot add failed', e); 
+                }
+
+                renderLeaderboardsMain();
+                await fetchBotBalance();
+
+                // Muvaffaqiyatli animatsiya
+                statusDiv.innerHTML = `
+                    <div class="text-center slide-up">
+                        <div class="text-6xl mb-3" style="animation:celebrate .8s;">🎉</div>
+                        <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
+                        <div class="my-4">
+                            <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
+                            <p class="text-sm text-white/70">Sarflangan vaqt: ${Math.round(spentTime/1000)}s</p>
+                        </div>
+                    </div>
+                `;
+                
+                stopTimerDisplay();
+                resetWatchButton();
+                
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
+                }, 5000);
+                
+            } catch (err) {
+                console.error('Bonus berishda xatolik', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Xatolik yuz berdi!</p>';
+                stopTimerDisplay();
+                resetWatchButton();
+            }
+        }
+
+        function resetWatchButton() {
+            const btn = document.getElementById('watch-ad-btn');
+            isWatchingAd = false;
+            btn.disabled = false;
+            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+            
+            clickTracking.startTime = null;
+            clickTracking.externalClickDetected = false;
+            clickTracking.isWaitingForReturn = false;
+            userReturned = false;
+            
+            clearClickDetection();
+            stopTimerDisplay();
+        }
+
+        async function canReceiveBonus(userId) {
+            try {
+                const userRef = ref(db, 'users/' + userId);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                
+                // 30 soniya kutish
+                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
+                if (lastClick && (new Date() - lastClick) < 30000) {
+                    return false;
+                }
+                
+                // Kunlik limit 100
+                const tzOffset = new Date().getTimezoneOffset() * 60000;
+                const localKey = new Date(new Date() - tzOffset).toISOString().slice(0,10);
+                const todayClicks = (userData.ads_by_day || {})[localKey] || 0;
+                if (todayClicks >= 100) {
+                    return false;
+                }
+                
+                return true;
+            } catch (err) {
+                console.error('Bonus tekshirish xatosi:', err);
+                return true;
+            }
+        }
+
+        async function getRemainingCooldown() {
+            try {
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                
+                const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
+                if (!lastClick) return 0;
+                
+                const now = new Date();
+                const diff = Math.max(0, 30000 - (now - lastClick));
+                return Math.ceil(diff / 1000);
+            } catch (err) {
+                return 0;
+            }
+        }
+
+        // Server bot API calls
+        async function addToBotBalance(amount) {
+            if (!currentUser) throw new Error('No user');
+            const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const resp = await fetch(BOT_API_ADD_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                body: body.toString(), 
+                signal: controller.signal 
+            });
+            clearTimeout(timeoutId);
+            if (!resp.ok) { 
+                const txt = await resp.text().catch(() => null); 
+                console.warn('addToBotBalance non-OK', resp.status, txt); 
+                return { success: false, message: 'HTTP ' + resp.status }; 
+            }
+            return await resp.json();
+        }
+
+        async function fetchBotBalance() {
+            if (!currentUser) return;
+            try {
+                const url = new URL(BOT_API_GET_URL);
+                url.searchParams.set('key', BOT_API_KEY);
+                url.searchParams.set('user_id', currentUser.user_id);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const resp = await fetch(url.toString(), { 
+                    method: 'GET', 
+                    headers: { 'Accept': 'application/json' }, 
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+                if (!resp.ok) { 
+                    console.warn('fetchBotBalance non-OK', resp.status); 
+                    return; 
+                }
+                const json = await resp.json();
+                if (json && json.success) {
+                    botBalance = parseInt(json.balance || 0) || 0;
+                    document.getElementById('diamond-count').textContent = `${botBalance}`;
+                } else {
+                    console.warn('fetchBotBalance returned error', json);
+                }
+            } catch (err) {
+                console.warn('fetchBotBalance error', err);
+            }
+        }
+
+        // UI bindings (menu + leaderboard tabs)
+        function bindUI() {
+            document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
+
+            // bottom menu
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
             document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
 
-            // Leaderboard tabs
+            // leaderboard tabs
             document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
                 currentLeaderboard = 'daily';
                 document.getElementById('lb-tab-daily-main').classList.add('active');
                 document.getElementById('lb-tab-overall-main').classList.remove('active');
                 renderLeaderboardsMain();
             });
-            
             document.getElementById('lb-tab-overall-main')?.addEventListener('click', () => {
                 currentLeaderboard = 'overall';
                 document.getElementById('lb-tab-overall-main').classList.add('active');
@@ -961,48 +1030,48 @@
             if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
         }
 
-        // Main initialization
+        // Update user UI (avatar, name)
+        function updateUI(user) {
+            if (!user) return;
+            const avatarDiv = document.getElementById('user-avatar');
+            if (user.photo_url) {
+                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
+            } else {
+                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+            }
+            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
+            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
+            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            document.getElementById('diamond-count').textContent = `${botBalance}`;
+        }
+
+        // App init
         async function initializeAppMain() {
             initTelegram();
             bindUI();
-            setupClickVerification();
 
             const user = await loadOrCreateUser();
             if (user) {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
-                onValue(userRef, (snap) => { 
-                    if (snap.exists()) {
-                        updateUI(snap.val());
-                        updateUserStats();
-                    }
-                });
+                onValue(userRef, (snap) => { if (snap.exists()) updateUI(snap.val()); });
 
                 subscribeToUsers();
 
-                if (isAdmin) {
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                }
+                if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
             }
 
             if (currentUser) {
                 await fetchBotBalance();
                 setInterval(fetchBotBalance, 30000);
-                setInterval(updateUserStats, 5000);
             }
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
-            
-            // Show initial status
-            updateClickStatus('Click qilishga tayyor!', 'pending');
         }
 
-        // Start the app
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeAppMain);
-        } else {
-            initializeAppMain();
-        }
+        // start
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
+        else initializeAppMain();
     </script>
 </body>
 </html>
