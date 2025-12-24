@@ -61,17 +61,108 @@
         .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
 
         @media (max-width:420px) { .leaderboard-list{ max-height:300px } .leader-avatar{ width:40px; height:40px } }
-        
-        .click-timer {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-size: 12px;
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .modal-body {
+            padding: 24px;
+        }
+        .modal-footer {
+            padding: 16px 24px 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(0, 150, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .info-content h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: rgba(255,255,255,0.95);
+        }
+        .info-content p {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .highlight-text {
+            color: #0096ff;
+            font-weight: 600;
+        }
+        .warning-text {
+            color: #ffd54a;
+            font-weight: 600;
+        }
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0096ff;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            transition: all 0.3s;
+        }
+        .video-link:hover {
+            background: rgba(0, 150, 255, 0.2);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -86,6 +177,51 @@
             </div>
         </div>
 
+        <!-- Welcome Modal -->
+        <div id="welcome-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="text-6xl mb-4 float-animation diamond-icon">💎</div>
+                    <h2 class="text-2xl font-bold text-white/90 mb-2">RekchiAi olmoslari</h2>
+                    <p class="text-white/60">Mini-qq-dan xush kelibsiz!</p>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="space-y-4">
+                        <div class="info-item">
+                            <div class="info-icon">💎</div>
+                            <div class="info-content">
+                                <h4>Cheksiz olmoslar yeg'ishingiz mumkin!</h4>
+                                <p>Bu joyda siz reklama ko'rib va bosib <span class="highlight-text">cheksiz olmoslar</span> yeg'ishingiz mumkin.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">⚠️</div>
+                            <div class="info-content">
+                                <h4>Diqqat! Muhim qoida:</h4>
+                                <p>Har <span class="warning-text">3 ta olmos</span> yeg'ganingizda <span class="warning-text">bitta klik</span> qiling. Ya'ni reklama qilayotgan joyga kirib chiqing. (2-3 sekund vaqt ketishi mumkin).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">🎥</div>
+                            <div class="info-content">
+                                <h4>Tushunmagan bo'lsangiz:</h4>
+                                <p>Botdagi <span class="highlight-text">"Videoqo'llanma"</span> tugmasini bosib, olmos yeg'ish haqidagi videoni ko'ring!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="modal-ok-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-300">
+                        Tushundim, davom etish
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div id="content" class="hidden">
             <div class="sticky top-0 z-50 top-bar border-b border-white/5">
                 <div class="max-w-lg mx-auto px-4 py-4">
@@ -94,7 +230,7 @@
                             <div class="text-3xl diamond-icon">💎</div>
                             <div>
                                 <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Reklamani bosing, olmos bot balansiga qo'shiladi</p>
+                                <p class="text-xs text-white/60">Reklama ko'ring, olmos bot balansiga qo'shiladi</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
@@ -123,8 +259,8 @@
                             <div class="flex items-center space-x-3">
                                 <div class="text-3xl">💎</div>
                                 <div>
-                                    <h2 class="text-xl font-bold text-white/90">Reklama bosing</h2>
-                                    <p class="text-white/60 text-sm">Reklamani bosib tashqi saytga o'ting va qayting</p>
+                                    <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
+                                    <p class="text-white/60 text-sm">Olmos bot balansiga avtomatik qo'shiladi</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
@@ -133,25 +269,13 @@
                         </div>
 
                         <div id="ad-status" class="status-card rounded-2xl p-6 mb-5 text-center min-h-[100px] flex items-center justify-center">
-                            <p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>
-                        </div>
-
-                        <div id="timer-display" class="text-center mb-4 text-yellow-400 hidden">
-                            <p class="text-sm">Qaytish kutilmoqda: <span id="timer-count">0</span>s</p>
-                            <p class="text-xs text-white/50 mt-1">Reklamani bosib, 5-60 soniya ichida qayting</p>
+                            <p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>
                         </div>
 
                         <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">▶️</span>
                             <span>Reklamani boshlash</span>
                         </button>
-                        
-                        <div class="mt-4 text-center text-xs text-white/50">
-                            <p>💡 Bonus olish uchun:</p>
-                            <p>1. Reklamani boshing</p>
-                            <p>2. Tashqi sahifaga o'ting (5-60 soniya)</p>
-                            <p>3. Qaytib kelganingizda bonus avtomatik beriladi</p>
-                        </div>
                     </div>
                 </div>
 
@@ -261,13 +385,11 @@
         let currentLeaderboard = 'daily';
         let isWatchingAd = false;
         let adsgramController = null;
-        let timerInterval = null;
-        let clickStartTime = null;
-        let userReturned = false;
+        let hasShownWelcomeModal = false;
 
         // REKLAMA NAVBATI
         let adQueue = {
-            currentProvider: 'adsgram', // AdsGram asosiy provider
+            currentProvider: 'sonar',
             getNextProvider: function() {
                 if (this.currentProvider === 'sonar') {
                     this.currentProvider = 'adsgram';
@@ -276,21 +398,21 @@
                 }
                 return this.currentProvider;
             },
+            
             getCurrentProvider: function() {
                 return this.currentProvider;
             }
         };
 
-        // CLICK TRACKING - YANGI LOGIKA
+        // CLICK TRACKING
         let clickTracking = {
             startTime: null,
+            timer: null,
             externalClickDetected: false,
-            minTimeForBonus: 5000,    // 5 soniya MINIMUM
-            maxTimeForBonus: 60000,   // 60 soniya MAXIMUM
-            eventListeners: [],
-            isWaitingForReturn: false,
-            returnTime: null,
-            timerDisplay: null
+            adClosedManually: false,
+            minTimeForBonus: 8000,
+            maxTimeForBonus: 60000,
+            eventListeners: []
         };
 
         // Helpers
@@ -316,6 +438,30 @@
         function escapeHtml(str) { 
             if (!str) return ''; 
             return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
+        }
+
+        // Modal functions
+        function showWelcomeModal() {
+            if (hasShownWelcomeModal) return;
+            
+            const modal = document.getElementById('welcome-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Check if this is first visit
+            const firstVisit = localStorage.getItem('rekchiai_first_visit');
+            if (!firstVisit) {
+                hasShownWelcomeModal = true;
+            }
+        }
+
+        function hideWelcomeModal() {
+            const modal = document.getElementById('welcome-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Mark as visited
+            localStorage.setItem('rekchiai_first_visit', 'true');
         }
 
         // Init Telegram
@@ -543,16 +689,14 @@
                 `).join('');
         }
 
-        // YANGI CLICK DETEKTSIYA FUNKSIYALARI
-        function setupClickDetection() {
+        // CLICK DETEKTSIYA
+        function setupAdvancedClickDetection() {
             console.log('Click detection ishga tushdi');
             
-            // Sahifa yopilganda
+            // BEFOREUNLOAD
             const beforeUnloadHandler = (e) => {
-                console.log('User sahifani tark etmoqda');
-                if (clickTracking.isWaitingForReturn) {
-                    clickTracking.externalClickDetected = true;
-                }
+                console.log('Beforeunload - User sahifani tark etmoqchi');
+                clickTracking.externalClickDetected = true;
                 e.preventDefault();
                 e.returnValue = '';
                 return '';
@@ -560,59 +704,60 @@
             window.addEventListener('beforeunload', beforeUnloadHandler);
             clickTracking.eventListeners.push({ type: 'beforeunload', handler: beforeUnloadHandler });
             
-            // Sahifa yashirilganda
+            // PAGEHIDE
             const pageHideHandler = () => {
-                console.log('Sahifa yashirildi');
-                if (clickTracking.isWaitingForReturn) {
-                    clickTracking.externalClickDetected = true;
-                }
+                console.log('Pagehide - Sahifa yashirildi');
+                clickTracking.externalClickDetected = true;
             };
             window.addEventListener('pagehide', pageHideHandler);
             clickTracking.eventListeners.push({ type: 'pagehide', handler: pageHideHandler });
             
-            // Visibility change - ENG MUHIM!
+            // VISIBILITY CHANGE
             const visibilityHandler = () => {
-                if (document.hidden && clickTracking.isWaitingForReturn) {
-                    console.log('Sahifa yashirildi - user tashqi sahifaga o\'tdi');
-                    clickTracking.externalClickDetected = true;
-                    clickTracking.returnTime = Date.now();
-                } else if (!document.hidden && clickTracking.isWaitingForReturn && clickTracking.externalClickDetected) {
-                    console.log('Sahifa qayta ochildi - user qaytdi');
-                    checkClickAndGiveBonus();
+                if (document.hidden) {
+                    console.log('Visibility hidden - User boshqa tabga o\'tdi');
+                    setTimeout(() => {
+                        if (document.hidden && !clickTracking.adClosedManually) {
+                            clickTracking.externalClickDetected = true;
+                        }
+                    }, 300);
                 }
             };
             document.addEventListener('visibilitychange', visibilityHandler);
             clickTracking.eventListeners.push({ type: 'visibilitychange', handler: visibilityHandler });
             
-            // Window blur
+            // WINDOW BLUR
             const blurHandler = () => {
-                console.log('Window blur');
+                console.log('Window blur - Fokus yo\'qoldi');
                 setTimeout(() => {
-                    if (!document.hasFocus() && clickTracking.isWaitingForReturn) {
+                    if (!document.hasFocus() && !clickTracking.adClosedManually) {
                         clickTracking.externalClickDetected = true;
                     }
-                }, 300);
+                }, 500);
             };
             window.addEventListener('blur', blurHandler);
             clickTracking.eventListeners.push({ type: 'blur', handler: blurHandler });
             
-            // Telegram WebApp events
+            // TELEGRAM WEBAPP
             if (window.Telegram?.WebApp) {
                 Telegram.WebApp.onEvent('viewportChanged', (params) => {
                     if (params.is_expanded === false) {
                         console.log('Telegram WebApp yopildi');
-                        if (clickTracking.isWaitingForReturn) {
-                            clickTracking.externalClickDetected = true;
-                        }
+                        clickTracking.externalClickDetected = true;
                     }
                 });
             }
         }
 
-        function clearClickDetection() {
+        function clearTracking() {
+            if (clickTracking.timer) {
+                clearInterval(clickTracking.timer);
+                clickTracking.timer = null;
+            }
+            
             clickTracking.eventListeners.forEach(item => {
                 try {
-                    if (item.type === 'visibilitychange') {
+                    if (item.type === 'visibilitychange' || item.type === 'beforeunload') {
                         document.removeEventListener(item.type, item.handler);
                     } else {
                         window.removeEventListener(item.type, item.handler);
@@ -632,35 +777,7 @@
             }
         }
 
-        function startTimerDisplay() {
-            document.getElementById('timer-display').classList.remove('hidden');
-            let seconds = 0;
-            const timerEl = document.getElementById('timer-count');
-            
-            if (timerInterval) clearInterval(timerInterval);
-            
-            timerInterval = setInterval(() => {
-                seconds++;
-                timerEl.textContent = seconds;
-                
-                // 60 soniyadan oshsa, to'xtat
-                if (seconds >= 60) {
-                    clearInterval(timerInterval);
-                    document.getElementById('timer-display').classList.add('hidden');
-                    resetWatchButton();
-                }
-            }, 1000);
-        }
-
-        function stopTimerDisplay() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            document.getElementById('timer-display').classList.add('hidden');
-        }
-
-        // YANGI REKLAMA OCHISH FUNKSIYASI
+        // REKLAMA NAVBATI
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -668,9 +785,9 @@
             if (!canBonus) {
                 const cooldown = await getRemainingCooldown();
                 const statusDiv = document.getElementById('ad-status');
-                statusDiv.innerHTML = `<p class="text-yellow-400 font-bold">Kutish kerak! ${cooldown}s</p>`;
+                statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Kutish kerak!</p>';
                 setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
                 }, 3000);
                 return;
             }
@@ -678,80 +795,146 @@
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
             
-            // Reset tracking
-            clearClickDetection();
+            clearTracking();
+            
             clickTracking.startTime = Date.now();
             clickTracking.externalClickDetected = false;
-            clickTracking.isWaitingForReturn = true;
-            userReturned = false;
+            clickTracking.adClosedManually = false;
             
             isWatchingAd = true;
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama ochilmoqda...</p>';
+            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
-                // Faqat AdsGram ishlatamiz (click qilish uchun)
-                await showAdsgramAd();
+                const provider = adQueue.getCurrentProvider();
+                console.log(`Boshlash: ${provider}`);
+                
+                if (provider === 'sonar') {
+                    await showSonarAd();
+                } else {
+                    await showAdsgramAd();
+                }
+                
+                adQueue.getNextProvider();
                 
             } catch (err) {
-                console.error('Reklama ochishda xatolik:', err);
-                clearClickDetection();
-                stopTimerDisplay();
+                console.error('Xatolik:', err);
+                clearTracking();
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                 resetWatchButton();
                 setTimeout(() => { 
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>'; 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
                 }, 3000);
             }
         }
 
-        // ADSGRAM REKLAMASI - YANGI VERSIYA
+        // SONAR REKLAMASI
+        async function showSonarAd() {
+            return new Promise((resolve, reject) => {
+                const statusDiv = document.getElementById('ad-status');
+                
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
+                
+                setupAdvancedClickDetection();
+                
+                window.Sonar.show({
+                    adUnit: "rekchiai",
+                    loader: true,
+                    
+                    onStart: () => {
+                        console.log('Reklama yuklanishi boshlandi');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
+                    },
+                    
+                    onShow: () => {
+                        console.log('Reklama ko\'rsatildi');
+                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ko\'rsatilmoqda...</p>';
+                    },
+                    
+                    onError: (error) => {
+                        console.error('Reklama xatosi:', error);
+                        clearTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi.</p>';
+                        resetWatchButton();
+                        reject(error);
+                    },
+
+                    onClose: () => {
+                        console.log('Reklama yopildi');
+                        
+                        if (!clickTracking.externalClickDetected) {
+                            clickTracking.adClosedManually = true;
+                            statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
+                            resetWatchButton();
+                            setTimeout(() => { 
+                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                            }, 2000);
+                            return;
+                        }
+                        
+                        if (clickTracking.externalClickDetected) {
+                            setTimeout(() => {
+                                checkAndGiveBonus();
+                            }, 1000);
+                        }
+                    },
+
+                    onReward: async () => {
+                        console.log('Reklama to\'liq ko\'rildi');
+                    },
+                }).then((result) => {
+                    console.log('Sonar natijasi:', result);
+                    if (result.status === 'error') {
+                        clearTracking();
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
+                        resetWatchButton();
+                        reject(result);
+                    }
+                });
+            });
+        }
+
+        // ADSGRAM REKLAMASI
         async function showAdsgramAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
                 
-                // AdsGram controller yaratish
                 if (!adsgramController) {
                     try {
                         adsgramController = window.Adsgram.init({ blockId: "19784" });
                     } catch (e) {
-                        console.error('AdsGram init xatolik:', e);
+                        console.error('AdsGram init xatosi:', e);
                         reject(e);
                         return;
                     }
                 }
                 
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi! Click qiling...</p>';
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
                 
-                // Click deteksiyani boshlash
-                setupClickDetection();
+                setupAdvancedClickDetection();
                 
-                // Timer boshlash
-                startTimerDisplay();
-                
-                // Reklamani ko'rsatish
                 adsgramController.show().then((result) => {
                     console.log('AdsGram natijasi:', result);
+                    clearTracking();
                     
-                    // User reklamani bosib yopgan bo'lsa
-                    if (!clickTracking.externalClickDetected) {
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi. Click qilmadingiz!</p>';
-                        clearClickDetection();
-                        stopTimerDisplay();
+                    if (clickTracking.externalClickDetected) {
+                        const spentTime = Date.now() - clickTracking.startTime;
+                        if (spentTime >= 8000 && spentTime <= 60000) {
+                            giveBonusToUser(spentTime, 'adsgram').then(resolve).catch(reject);
+                        } else {
+                            statusDiv.innerHTML = '<p class="text-red-400">Vaqt shartiga mos emas.</p>';
+                            resetWatchButton();
+                            reject(new Error('Invalid click duration'));
+                        }
+                    } else {
+                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yopildi.</p>';
                         resetWatchButton();
-                        reject(new Error('No click detected'));
-                        return;
+                        reject(new Error('No external click detected'));
                     }
-                    
-                    // User click qilgan, lekin hali qaytmagan
-                    // Qaytishini kutyapmiz (visibilitychange orqali)
-                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Tashqi sahifadasiz. Qayting...</p>';
-                    
                 }).catch((errorResult) => {
                     console.error('AdsGram xatosi:', errorResult);
-                    clearClickDetection();
-                    stopTimerDisplay();
+                    clearTracking();
                     statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
                     resetWatchButton();
                     reject(new Error('Ad error'));
@@ -759,13 +942,12 @@
             });
         }
 
-        // CLICK TEKSHIRISH VA BONUS BERISH
-        async function checkClickAndGiveBonus() {
+        // BONUS TEKSHIRISH
+        async function checkAndGiveBonus() {
             if (!clickTracking.startTime || !clickTracking.externalClickDetected) {
                 console.log('Click aniqlanmadi');
                 const statusDiv = document.getElementById('ad-status');
                 statusDiv.innerHTML = '<p class="text-red-400">Click aniqlanmadi!</p>';
-                stopTimerDisplay();
                 resetWatchButton();
                 return;
             }
@@ -775,35 +957,26 @@
             
             const statusDiv = document.getElementById('ad-status');
             
-            // Vaqt tekshiruvi
             if (spentTime < clickTracking.minTimeForBonus) {
-                console.log('Juda tez qaytdi:', spentTime, 'ms');
-                statusDiv.innerHTML = '<p class="text-red-400">Vaqt yetarli emas (min 5s)!</p>';
-                stopTimerDisplay();
+                console.log('Juda tez:', spentTime, 'ms');
+                statusDiv.innerHTML = '<p class="text-red-400">Juda tez!</p>';
                 resetWatchButton();
-                setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
-                }, 3000);
                 return;
             }
             
             if (spentTime > clickTracking.maxTimeForBonus) {
-                console.log('Juda uzoq vaqt:', spentTime, 'ms');
+                console.log('Juda uzoq:', spentTime, 'ms');
                 statusDiv.innerHTML = '<p class="text-yellow-400">Vaqt chegarasidan oshdi.</p>';
-                stopTimerDisplay();
                 resetWatchButton();
-                setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
-                }, 3000);
                 return;
             }
             
             console.log('✅ Click aniqlandi! Bonus beriladi...');
-            await giveClickBonus(spentTime);
+            await giveBonusToUser(spentTime, adQueue.lastUsedProvider || 'sonar');
         }
 
-        // CLICK BONUS BERISH
-        async function giveClickBonus(spentTime) {
+        // BONUS BERISH
+        async function giveBonusToUser(spentTime, provider = 'sonar') {
             const statusDiv = document.getElementById('ad-status');
             
             try {
@@ -830,7 +1003,7 @@
                     rewarded: true,
                     type: 'verified_external_click',
                     verified: true,
-                    provider: 'adsgram'
+                    provider: provider
                 });
                 const limitedHistory = clickHistory.slice(-20);
 
@@ -846,7 +1019,7 @@
                     click_history: limitedHistory,
                     avg_click_duration: ((userData.avg_click_duration || 0) * (verifiedClicks - 1) + spentTime) / verifiedClicks,
                     external_clicks: (userData.external_clicks || 0) + 1,
-                    adsgram_ads: (userData.adsgram_ads || 0) + 1
+                    [`${provider}_ads`]: (userData[`${provider}_ads`] || 0) + 1
                 };
                 
                 const ok = await updateUserData(updates);
@@ -862,29 +1035,25 @@
                 renderLeaderboardsMain();
                 await fetchBotBalance();
 
-                // Muvaffaqiyatli animatsiya
                 statusDiv.innerHTML = `
                     <div class="text-center slide-up">
                         <div class="text-6xl mb-3" style="animation:celebrate .8s;">🎉</div>
                         <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
                         <div class="my-4">
                             <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
-                            <p class="text-sm text-white/70">Sarflangan vaqt: ${Math.round(spentTime/1000)}s</p>
                         </div>
                     </div>
                 `;
                 
-                stopTimerDisplay();
                 resetWatchButton();
                 
                 setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Boshlash tugmasini bosing! 🚀</p>';
-                }, 5000);
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
+                }, 4000);
                 
             } catch (err) {
                 console.error('Bonus berishda xatolik', err);
-                statusDiv.innerHTML = '<p class="text-red-400">Xatolik yuz berdi!</p>';
-                stopTimerDisplay();
+                statusDiv.innerHTML = '<p class="text-red-400">Xatolik!</p>';
                 resetWatchButton();
             }
         }
@@ -897,11 +1066,9 @@
             
             clickTracking.startTime = null;
             clickTracking.externalClickDetected = false;
-            clickTracking.isWaitingForReturn = false;
-            userReturned = false;
+            clickTracking.adClosedManually = false;
             
-            clearClickDetection();
-            stopTimerDisplay();
+            clearTracking();
         }
 
         async function canReceiveBonus(userId) {
@@ -910,13 +1077,11 @@
                 const snapshot = await get(userRef);
                 const userData = snapshot.val() || {};
                 
-                // 30 soniya kutish
                 const lastClick = userData.last_click_time ? new Date(userData.last_click_time) : null;
                 if (lastClick && (new Date() - lastClick) < 30000) {
                     return false;
                 }
                 
-                // Kunlik limit 100
                 const tzOffset = new Date().getTimezoneOffset() * 60000;
                 const localKey = new Date(new Date() - tzOffset).toISOString().slice(0,10);
                 const todayClicks = (userData.ads_by_day || {})[localKey] || 0;
@@ -1002,6 +1167,9 @@
         // UI bindings (menu + leaderboard tabs)
         function bindUI() {
             document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
+            
+            // Modal OK button
+            document.getElementById('modal-ok-btn')?.addEventListener('click', hideWelcomeModal);
 
             // bottom menu
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
@@ -1067,6 +1235,11 @@
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
+            
+            // Show welcome modal after a short delay
+            setTimeout(() => {
+                showWelcomeModal();
+            }, 500);
         }
 
         // start
