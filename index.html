@@ -469,16 +469,18 @@
         let isWatchingAd = false;
         let adsgramController = null;
         let hasShownWelcomeModal = false;
+        let bonusGivenForCurrentAd = false; // YANGI: joriy reklama uchun bonus berilganligini kuzatish
 
         // REKLAMA NAVBATI
         let adQueue = {
-            currentProvider: 'sonar',
+            currentProvider: 'sonar', // BIRINCHI SONAR DAN BOSHLANADI
             getNextProvider: function() {
                 if (this.currentProvider === 'sonar') {
                     this.currentProvider = 'adsgram';
                 } else {
                     this.currentProvider = 'sonar';
                 }
+                console.log('Keyingi provider:', this.currentProvider);
                 return this.currentProvider;
             },
             
@@ -761,12 +763,15 @@
                 `).join('');
         }
 
-        // REKLAMA NAVBATI - CLICK TEKSHIRISH O'CHIRILDI
+        // REKLAMA NAVBATI - MUKEMMAL VERSIYA
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
+            
+            // Reset bonus flag
+            bonusGivenForCurrentAd = false;
             
             isWatchingAd = true;
             btn.disabled = true;
@@ -775,7 +780,7 @@
             
             try {
                 const provider = adQueue.getCurrentProvider();
-                console.log(`Boshlash: ${provider}`);
+                console.log(`Joriy provider: ${provider}`);
                 
                 if (provider === 'sonar') {
                     await showSonarAd();
@@ -783,6 +788,7 @@
                     await showAdsgramAd();
                 }
                 
+                // Keyingi reklama uchun providerni o'zgartirish
                 adQueue.getNextProvider();
                 
             } catch (err) {
@@ -795,7 +801,7 @@
             }
         }
 
-        // SONAR REKLAMASI - CLICK TEKSHIRISH O'CHIRILDI
+        // SONAR REKLAMASI - MUKEMMAL VERSIYA
         async function showSonarAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
@@ -807,38 +813,47 @@
                     loader: true,
                     
                     onStart: () => {
-                        console.log('Reklama yuklanishi boshlandi');
+                        console.log('Sonar reklama yuklanishi boshlandi');
                         statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
                     },
                     
                     onShow: () => {
-                        console.log('Reklama ko\'rsatildi');
+                        console.log('Sonar reklama ko\'rsatildi');
                         statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ko\'rsatilmoqda...</p>';
                     },
                     
                     onError: (error) => {
-                        console.error('Reklama xatosi:', error);
+                        console.error('Sonar reklama xatosi:', error);
                         statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi.</p>';
                         resetWatchButton();
                         reject(error);
                     },
 
                     onClose: () => {
-                        console.log('Reklama yopildi');
+                        console.log('Sonar reklama yopildi');
                         
-                        // Reklama yopilganda bonus berish
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi...</p>';
-                        
-                        // Bir oz kutib, keyin bonus berish
-                        setTimeout(async () => {
-                            await giveBonusToUser('sonar');
-                        }, 1500);
+                        // Agar bonus berilmagan bo'lsa, berish
+                        if (!bonusGivenForCurrentAd) {
+                            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi...</p>';
+                            
+                            // Bir oz kutib, keyin bonus berish
+                            setTimeout(async () => {
+                                await giveBonusToUser('sonar');
+                                resolve();
+                            }, 1500);
+                        } else {
+                            resetWatchButton();
+                            resolve();
+                        }
                     },
 
                     onReward: async () => {
-                        console.log('Reklama to\'liq ko\'rildi - bonus beriladi');
-                        // Reklama to'liq ko'rilganda bonus berish
-                        await giveBonusToUser('sonar');
+                        console.log('Sonar reklama to\'liq ko\'rildi - bonus beriladi');
+                        // Bonus faqat bir marta berilishini tekshirish
+                        if (!bonusGivenForCurrentAd) {
+                            bonusGivenForCurrentAd = true;
+                            await giveBonusToUser('sonar');
+                        }
                     },
                 }).then((result) => {
                     console.log('Sonar natijasi:', result);
@@ -851,7 +866,7 @@
             });
         }
 
-        // ADSGRAM REKLAMASI - CLICK TEKSHIRISH O'CHIRILDI
+        // ADSGRAM REKLAMASI - MUKEMMAL VERSIYA
         async function showAdsgramAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
@@ -872,13 +887,18 @@
                     console.log('AdsGram natijasi:', result);
                     
                     // AdsGram reklamasi tugaganda bonus berish
-                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi...</p>';
-                    
-                    // Bir oz kutib, keyin bonus berish
-                    setTimeout(async () => {
-                        await giveBonusToUser('adsgram');
+                    if (!bonusGivenForCurrentAd) {
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi...</p>';
+                        bonusGivenForCurrentAd = true;
+                        
+                        // Bir oz kutib, keyin bonus berish
+                        setTimeout(async () => {
+                            await giveBonusToUser('adsgram');
+                            resolve(result);
+                        }, 1500);
+                    } else {
                         resolve(result);
-                    }, 1500);
+                    }
                     
                 }).catch((errorResult) => {
                     console.error('AdsGram xatosi:', errorResult);
@@ -889,8 +909,15 @@
             });
         }
 
-        // BONUS BERISH - CLICK TEKSHIRISIZ
+        // BONUS BERISH - FAQRAT BIR MARTALIK
         async function giveBonusToUser(provider = 'sonar') {
+            // Agar bonus allaqachon berilgan bo'lsa, qayta bermaslik
+            if (bonusGivenForCurrentAd) {
+                console.log('Bonus allaqachon berilgan');
+                return;
+            }
+            
+            bonusGivenForCurrentAd = true;
             const statusDiv = document.getElementById('ad-status');
             
             try {
