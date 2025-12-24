@@ -469,7 +469,6 @@
         let isWatchingAd = false;
         let adsgramController = null;
         let hasShownWelcomeModal = false;
-        let bonusGivenForCurrentAd = false; // YANGI: joriy reklama uchun bonus berilganligini kuzatish
 
         // REKLAMA NAVBATI
         let adQueue = {
@@ -763,15 +762,12 @@
                 `).join('');
         }
 
-        // REKLAMA NAVBATI - MUKEMMAL VERSIYA
+        // REKLAMA NAVBATI
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
-            
-            // Reset bonus flag
-            bonusGivenForCurrentAd = false;
             
             isWatchingAd = true;
             btn.disabled = true;
@@ -801,7 +797,7 @@
             }
         }
 
-        // SONAR REKLAMASI - MUKEMMAL VERSIYA
+        // SONAR REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
         async function showSonarAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
@@ -830,30 +826,19 @@
                     },
 
                     onClose: () => {
-                        console.log('Sonar reklama yopildi');
+                        console.log('Sonar reklama yopildi - REKLAMA TUGADI');
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
                         
-                        // Agar bonus berilmagan bo'lsa, berish
-                        if (!bonusGivenForCurrentAd) {
-                            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi...</p>';
-                            
-                            // Bir oz kutib, keyin bonus berish
-                            setTimeout(async () => {
-                                await giveBonusToUser('sonar');
-                                resolve();
-                            }, 1500);
-                        } else {
-                            resetWatchButton();
+                        // REKLAMA TUGAGANDA BONUS BERISH
+                        setTimeout(async () => {
+                            await giveBonusToUser('sonar');
                             resolve();
-                        }
+                        }, 1500);
                     },
 
                     onReward: async () => {
-                        console.log('Sonar reklama to\'liq ko\'rildi - bonus beriladi');
-                        // Bonus faqat bir marta berilishini tekshirish
-                        if (!bonusGivenForCurrentAd) {
-                            bonusGivenForCurrentAd = true;
-                            await giveBonusToUser('sonar');
-                        }
+                        console.log('Sonar reklama to\'liq ko\'rildi - BU HAM REKLAMA TUGAGAN DEKAN');
+                        // onReward ham reklama tugagan degani, lekin biz faqat onClose da bonus beramiz
                     },
                 }).then((result) => {
                     console.log('Sonar natijasi:', result);
@@ -866,7 +851,7 @@
             });
         }
 
-        // ADSGRAM REKLAMASI - MUKEMMAL VERSIYA
+        // ADSGRAM REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
         async function showAdsgramAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
@@ -886,19 +871,14 @@
                 adsgramController.show().then((result) => {
                     console.log('AdsGram natijasi:', result);
                     
-                    // AdsGram reklamasi tugaganda bonus berish
-                    if (!bonusGivenForCurrentAd) {
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi...</p>';
-                        bonusGivenForCurrentAd = true;
-                        
-                        // Bir oz kutib, keyin bonus berish
-                        setTimeout(async () => {
-                            await giveBonusToUser('adsgram');
-                            resolve(result);
-                        }, 1500);
-                    } else {
+                    // AdsGram reklamasi tugaganda bonus berish - REKLAMA TUGADI
+                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
+                    
+                    // REKLAMA TUGAGANDA BONUS BERISH
+                    setTimeout(async () => {
+                        await giveBonusToUser('adsgram');
                         resolve(result);
-                    }
+                    }, 1500);
                     
                 }).catch((errorResult) => {
                     console.error('AdsGram xatosi:', errorResult);
@@ -909,15 +889,8 @@
             });
         }
 
-        // BONUS BERISH - FAQRAT BIR MARTALIK
+        // BONUS BERISH - REKLAMA TUGAGANDA
         async function giveBonusToUser(provider = 'sonar') {
-            // Agar bonus allaqachon berilgan bo'lsa, qayta bermaslik
-            if (bonusGivenForCurrentAd) {
-                console.log('Bonus allaqachon berilgan');
-                return;
-            }
-            
-            bonusGivenForCurrentAd = true;
             const statusDiv = document.getElementById('ad-status');
             
             try {
@@ -934,8 +907,6 @@
                 const ads_by_day = userData.ads_by_day || {};
                 const newDayCount = (ads_by_day[localKey] || 0) + 1;
                 const newOverall = (userData.ads_watched || 0) + 1;
-                const totalClicks = (userData.total_clicks || 0) + 1;
-                const verifiedClicks = (userData.verified_clicks || 0) + 1;
                 
                 const clickHistory = userData.click_history || [];
                 clickHistory.push({
@@ -952,14 +923,6 @@
                     ads_watched: newOverall, 
                     [`ads_by_day/${localKey}`]: newDayCount, 
                     last_ad_time: new Date().toISOString(),
-                    last_click_time: new Date().toISOString(),
-                    last_verified_click: new Date().toISOString(),
-                    click_duration: 0,
-                    total_clicks: totalClicks,
-                    verified_clicks: verifiedClicks,
-                    click_history: limitedHistory,
-                    avg_click_duration: 0,
-                    external_clicks: (userData.external_clicks || 0) + 1,
                     [`${provider}_ads`]: (userData[`${provider}_ads`] || 0) + 1
                 };
                 
@@ -982,6 +945,7 @@
                         <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
                         <div class="my-4">
                             <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
+                            <p class="text-white/60 text-sm">Reklama to'liq ko'rildi</p>
                         </div>
                     </div>
                 `;
