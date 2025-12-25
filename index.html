@@ -433,7 +433,7 @@
         </div>
     </div>
 
-    <!-- REKLAMA SKRIPTLARI -->
+    <!-- REKLAMA SKRIPTLARI - FAQAT ADSGRAM -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <!-- Script -->
@@ -466,6 +466,7 @@
         let botBalance = 0;
         let currentLeaderboard = 'daily';
         let isWatchingAd = false;
+        let adsgramController = null;
         let hasShownWelcomeModal = false;
 
         // Helpers
@@ -588,7 +589,8 @@
                         last_verified_click: null,
                         avg_click_duration: 0,
                         external_clicks: 0,
-                        interstitial_ads: 0
+                        sonar_ads: 0,
+                        adsgram_ads: 0
                     };
                     await set(userRef, newUser);
                     return newUser;
@@ -619,7 +621,8 @@
                             last_verified_click: userData.last_verified_click || null,
                             avg_click_duration: userData.avg_click_duration || 0,
                             external_clicks: userData.external_clicks || 0,
-                            interstitial_ads: userData.interstitial_ads || 0
+                            sonar_ads: userData.sonar_ads || 0,
+                            adsgram_ads: userData.adsgram_ads || 0
                         });
                     }
                     return userData;
@@ -740,7 +743,7 @@
                 `).join('');
         }
 
-        // INTERSTITIAL REKLAMA (TO'LIQ EKRAN)
+        // REKLAMA KO'RISH - FAQAT ADSGRAM
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -753,29 +756,7 @@
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
-                // INTERSTITIAL REKLAMA CHIQARISH
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
-                
-                // Interstitial ad (to'liq ekran reklama)
-                // Block ID interstitsial formatda: 'int-xxx'
-                try {
-                    await window.Adsgram.init({ blockId: "int-19784" }).show();
-                    console.log('Interstitial reklama muvaffaqiyatli ko\'rsatildi');
-                } catch (adError) {
-                    // Agar reklama mavjud bo'lmasa yoki xatolik bo'lsa, lekin biz bonus beramiz
-                    console.log('Reklama mavjud emas yoki xatolik, lekin bonus beriladi:', adError);
-                }
-                
-                // REKLAMA TUGAGANDA BONUS BERISH
-                statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
-                await giveBonusToUser('interstitial');
-                
-                resetWatchButton();
-                
-                // Bonus ko'rsatilgandan so'ng asl holatga qaytarish
-                setTimeout(() => {
-                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
-                }, 3000);
+                await showAdsgramAd();
                 
             } catch (err) {
                 console.error('Xatolik:', err);
@@ -787,8 +768,46 @@
             }
         }
 
-        // BONUS BERISH - INTERSTITIAL REKLAMA TUGAGANDA
-        async function giveBonusToUser(provider = 'interstitial') {
+        // ADSGRAM REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
+        async function showAdsgramAd() {
+            return new Promise((resolve, reject) => {
+                const statusDiv = document.getElementById('ad-status');
+                
+                if (!adsgramController) {
+                    try {
+                        adsgramController = window.Adsgram.init({ blockId: "19784" });
+                    } catch (e) {
+                        console.error('AdsGram init xatosi:', e);
+                        reject(e);
+                        return;
+                    }
+                }
+                
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
+                
+                adsgramController.show().then((result) => {
+                    console.log('AdsGram natijasi:', result);
+                    
+                    // AdsGram reklamasi tugaganda bonus berish - REKLAMA TUGADI
+                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
+                    
+                    // REKLAMA TUGAGANDA BONUS BERISH
+                    setTimeout(async () => {
+                        await giveBonusToUser('adsgram');
+                        resolve(result);
+                    }, 1500);
+                    
+                }).catch((errorResult) => {
+                    console.error('AdsGram xatosi:', errorResult);
+                    statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
+                    resetWatchButton();
+                    reject(new Error('Ad error'));
+                });
+            });
+        }
+
+        // BONUS BERISH - REKLAMA TUGAGANDA
+        async function giveBonusToUser(provider = 'adsgram') {
             const statusDiv = document.getElementById('ad-status');
             
             try {
@@ -811,7 +830,7 @@
                     time: new Date().toISOString(),
                     duration: 0,
                     rewarded: true,
-                    type: 'interstitial_ad',
+                    type: 'ad_completed',
                     verified: true,
                     provider: provider
                 });
@@ -821,8 +840,7 @@
                     ads_watched: newOverall, 
                     [`ads_by_day/${localKey}`]: newDayCount, 
                     last_ad_time: new Date().toISOString(),
-                    [`${provider}_ads`]: (userData[`${provider}_ads`] || 0) + 1,
-                    click_history: limitedHistory
+                    [`${provider}_ads`]: (userData[`${provider}_ads`] || 0) + 1
                 };
                 
                 const ok = await updateUserData(updates);
@@ -849,9 +867,16 @@
                     </div>
                 `;
                 
+                resetWatchButton();
+                
+                setTimeout(() => {
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
+                }, 4000);
+                
             } catch (err) {
                 console.error('Bonus berishda xatolik', err);
                 statusDiv.innerHTML = '<p class="text-red-400">Xatolik!</p>';
+                resetWatchButton();
             }
         }
 
