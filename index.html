@@ -6,6 +6,7 @@
     <title>RekchiAi olmoslari</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
     <style>
         body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
@@ -433,9 +434,6 @@
         </div>
     </div>
 
-    <!-- REKLAMA SKRIPTLARI - FAQAT ADSGRAM -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
     <!-- Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -466,7 +464,6 @@
         let botBalance = 0;
         let currentLeaderboard = 'daily';
         let isWatchingAd = false;
-        let adsgramController = null;
         let hasShownWelcomeModal = false;
 
         // Helpers
@@ -589,7 +586,6 @@
                         last_verified_click: null,
                         avg_click_duration: 0,
                         external_clicks: 0,
-                        sonar_ads: 0,
                         adsgram_ads: 0
                     };
                     await set(userRef, newUser);
@@ -621,7 +617,6 @@
                             last_verified_click: userData.last_verified_click || null,
                             avg_click_duration: userData.avg_click_duration || 0,
                             external_clicks: userData.external_clicks || 0,
-                            sonar_ads: userData.sonar_ads || 0,
                             adsgram_ads: userData.adsgram_ads || 0
                         });
                     }
@@ -743,7 +738,7 @@
                 `).join('');
         }
 
-        // REKLAMA KO'RISH - FAQAT ADSGRAM
+        // 🎯 BITTALIK REKLAMA - FAQAT ADSGRAM INTERSTITIAL
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -756,10 +751,11 @@
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
-                await showAdsgramAd();
+                // BITTALIK INTERSTITIAL REKLAMA
+                await showSingleAdsgramInterstitial();
                 
             } catch (err) {
-                console.error('Xatolik:', err);
+                console.error('Reklama xatosi:', err);
                 statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
                 resetWatchButton();
                 setTimeout(() => { 
@@ -768,41 +764,68 @@
             }
         }
 
-        // ADSGRAM REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
-        async function showAdsgramAd() {
+        // BITTALIK INTERSTITIAL REKLAMA FUNKSIYASI
+        async function showSingleAdsgramInterstitial() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
                 
-                if (!adsgramController) {
-                    try {
-                        adsgramController = window.Adsgram.init({ blockId: "19784" });
-                    } catch (e) {
-                        console.error('AdsGram init xatosi:', e);
-                        reject(e);
-                        return;
-                    }
-                }
-                
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
-                
-                adsgramController.show().then((result) => {
-                    console.log('AdsGram natijasi:', result);
+                try {
+                    // ✅ REKLAMA BLOCK ID SI - "int-xxx" FORMATIDA BO'LISHI KERAK
+                    // Masalan: "int-19784" yoki "int-12345"
+                    // Bu ID ni AdsGram hisobingizdan olishingiz kerak
+                    const interstitialBlockId = 'int-19784'; // ⚠️ BU YERNI O'ZGARTIRING!
                     
-                    // AdsGram reklamasi tugaganda bonus berish - REKLAMA TUGADI
-                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
+                    // ADSGRAM NI INITSIALIZATSIYA QILISH
+                    const AdController = window.Adsgram.init({ blockId: interstitialBlockId });
                     
-                    // REKLAMA TUGAGANDA BONUS BERISH
-                    setTimeout(async () => {
-                        await giveBonusToUser('adsgram');
-                        resolve(result);
-                    }, 1500);
+                    // REKLAMANI KO'RSATISH
+                    AdController.show().then((result) => {
+                        console.log('AdsGram Interstitial natijasi:', result);
+                        
+                        // ✅ INTERSTITIAL: REKLAMA TO'LIQ KO'RILDI YOKI Foydalanuvchi YOPDI
+                        // result.done = true bo'lsa, reklama muvaffaqiyatli ko'rsatildi/yopildi
+                        
+                        if (result.done) {
+                            statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
+                            
+                            // BONUS BERISH
+                            setTimeout(async () => {
+                                try {
+                                    await giveBonusToUser('adsgram');
+                                    resolve(result);
+                                } catch (bonusErr) {
+                                    reject(bonusErr);
+                                }
+                            }, 1500);
+                        } else {
+                            // result.done = false bo'lsa, reklama to'liq ko'rilmagan yoki xatolik
+                            statusDiv.innerHTML = '<p class="text-orange-400">Reklama to\'liq ko\'rilmadi.</p>';
+                            resetWatchButton();
+                            setTimeout(() => { 
+                                statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                            }, 3000);
+                            reject(new Error('Reklama to\'liq ko\'rilmadi'));
+                        }
+                        
+                    }).catch((errorResult) => {
+                        console.error('AdsGram Interstitial xatosi:', errorResult);
+                        
+                        // REKLAMA MAVJUD BO'LMASA YOKI XATOLIK BO'LSA
+                        statusDiv.innerHTML = '<p class="text-red-400">Hozircha reklama mavjud emas.</p>';
+                        resetWatchButton();
+                        reject(new Error('No ad available'));
+                        
+                        setTimeout(() => { 
+                            statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                        }, 3000);
+                    });
                     
-                }).catch((errorResult) => {
-                    console.error('AdsGram xatosi:', errorResult);
-                    statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
+                } catch (initError) {
+                    console.error('AdsGram init xatosi:', initError);
+                    statusDiv.innerHTML = '<p class="text-red-400">Reklama tizimida xatolik.</p>';
                     resetWatchButton();
-                    reject(new Error('Ad error'));
-                });
+                    reject(initError);
+                }
             });
         }
 
