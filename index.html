@@ -743,7 +743,7 @@
                 `).join('');
         }
 
-        // REKLAMA KO'RISH - FAQAT ADSGRAM
+        // REKLAMA KO'RISH - INTERSTITIAL FORMAT
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -756,7 +756,7 @@
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
-                await showAdsgramAd();
+                await showAdsgramInterstitialAd();
                 
             } catch (err) {
                 console.error('Xatolik:', err);
@@ -768,14 +768,15 @@
             }
         }
 
-        // ADSGRAM REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
-        async function showAdsgramAd() {
+        // ADSGRAM INTERSTITIAL REKLAMASI
+        async function showAdsgramInterstitialAd() {
             return new Promise((resolve, reject) => {
                 const statusDiv = document.getElementById('ad-status');
                 
                 if (!adsgramController) {
                     try {
-                        adsgramController = window.Adsgram.init({ blockId: "19784" });
+                        // INTERSTITIAL UCHUN blockId 'int-' BILAN BOSHLANISHI KERAK
+                        adsgramController = window.Adsgram.init({ blockId: "int-19784" });
                     } catch (e) {
                         console.error('AdsGram init xatosi:', e);
                         reject(e);
@@ -786,28 +787,28 @@
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
                 
                 adsgramController.show().then((result) => {
-                    console.log('AdsGram natijasi:', result);
+                    console.log('AdsGram interstitial natijasi:', result);
                     
-                    // AdsGram reklamasi tugaganda bonus berish - REKLAMA TUGADI
+                    // Interstitial reklamasi yopilganda bonus berish
                     statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
                     
-                    // REKLAMA TUGAGANDA BONUS BERISH
+                    // REKLAMA YOPILGANDA BONUS BERISH
                     setTimeout(async () => {
-                        await giveBonusToUser('adsgram');
+                        await giveBonusToUser('adsgram_interstitial');
                         resolve(result);
                     }, 1500);
                     
                 }).catch((errorResult) => {
-                    console.error('AdsGram xatosi:', errorResult);
-                    statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi.</p>';
+                    console.error('AdsGram interstitial xatosi:', errorResult);
+                    statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi yoki reklama mavjud emas.</p>';
                     resetWatchButton();
                     reject(new Error('Ad error'));
                 });
             });
         }
 
-        // BONUS BERISH - REKLAMA TUGAGANDA
-        async function giveBonusToUser(provider = 'adsgram') {
+        // BONUS BERISH - REKLAMA YOPILGANDA
+        async function giveBonusToUser(provider = 'adsgram_interstitial') {
             const statusDiv = document.getElementById('ad-status');
             
             try {
@@ -830,7 +831,7 @@
                     time: new Date().toISOString(),
                     duration: 0,
                     rewarded: true,
-                    type: 'ad_completed',
+                    type: 'interstitial_closed',
                     verified: true,
                     provider: provider
                 });
