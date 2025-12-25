@@ -433,8 +433,7 @@
         </div>
     </div>
 
-    <!-- REKLAMA SKRIPTLARI -->
-    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
+    <!-- REKLAMA SKRIPTLARI - FAQAT ADSGRAM -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <!-- Script -->
@@ -469,24 +468,6 @@
         let isWatchingAd = false;
         let adsgramController = null;
         let hasShownWelcomeModal = false;
-
-        // REKLAMA NAVBATI
-        let adQueue = {
-            currentProvider: 'sonar', // BIRINCHI SONAR DAN BOSHLANADI
-            getNextProvider: function() {
-                if (this.currentProvider === 'sonar') {
-                    this.currentProvider = 'adsgram';
-                } else {
-                    this.currentProvider = 'sonar';
-                }
-                console.log('Keyingi provider:', this.currentProvider);
-                return this.currentProvider;
-            },
-            
-            getCurrentProvider: function() {
-                return this.currentProvider;
-            }
-        };
 
         // Helpers
         async function getTelegramProfilePhoto(userId, username) {
@@ -762,7 +743,7 @@
                 `).join('');
         }
 
-        // REKLAMA NAVBATI
+        // REKLAMA KO'RISH - FAQAT ADSGRAM
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
@@ -775,17 +756,7 @@
             statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama tayyorlanmoqda...</p>';
             
             try {
-                const provider = adQueue.getCurrentProvider();
-                console.log(`Joriy provider: ${provider}`);
-                
-                if (provider === 'sonar') {
-                    await showSonarAd();
-                } else {
-                    await showAdsgramAd();
-                }
-                
-                // Keyingi reklama uchun providerni o'zgartirish
-                adQueue.getNextProvider();
+                await showAdsgramAd();
                 
             } catch (err) {
                 console.error('Xatolik:', err);
@@ -795,60 +766,6 @@
                     statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
                 }, 3000);
             }
-        }
-
-        // SONAR REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
-        async function showSonarAd() {
-            return new Promise((resolve, reject) => {
-                const statusDiv = document.getElementById('ad-status');
-                
-                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ochildi!</p>';
-                
-                window.Sonar.show({
-                    adUnit: "rekchiai",
-                    loader: true,
-                    
-                    onStart: () => {
-                        console.log('Sonar reklama yuklanishi boshlandi');
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yuklanmoqda...</p>';
-                    },
-                    
-                    onShow: () => {
-                        console.log('Sonar reklama ko\'rsatildi');
-                        statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama ko\'rsatilmoqda...</p>';
-                    },
-                    
-                    onError: (error) => {
-                        console.error('Sonar reklama xatosi:', error);
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama yuklanmadi.</p>';
-                        resetWatchButton();
-                        reject(error);
-                    },
-
-                    onClose: () => {
-                        console.log('Sonar reklama yopildi - REKLAMA TUGADI');
-                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Reklama yakunlandi, bonus berilmoqda...</p>';
-                        
-                        // REKLAMA TUGAGANDA BONUS BERISH
-                        setTimeout(async () => {
-                            await giveBonusToUser('sonar');
-                            resolve();
-                        }, 1500);
-                    },
-
-                    onReward: async () => {
-                        console.log('Sonar reklama to\'liq ko\'rildi - BU HAM REKLAMA TUGAGAN DEKAN');
-                        // onReward ham reklama tugagan degani, lekin biz faqat onClose da bonus beramiz
-                    },
-                }).then((result) => {
-                    console.log('Sonar natijasi:', result);
-                    if (result.status === 'error') {
-                        statusDiv.innerHTML = '<p class="text-red-400">Reklama ochishda xatolik.</p>';
-                        resetWatchButton();
-                        reject(result);
-                    }
-                });
-            });
         }
 
         // ADSGRAM REKLAMASI - FAQAT REKLAMA TUGAGANDA BONUS
@@ -890,7 +807,7 @@
         }
 
         // BONUS BERISH - REKLAMA TUGAGANDA
-        async function giveBonusToUser(provider = 'sonar') {
+        async function giveBonusToUser(provider = 'adsgram') {
             const statusDiv = document.getElementById('ad-status');
             
             try {
