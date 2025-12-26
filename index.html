@@ -1,165 +1,89 @@
 <!doctype html>
-<html lang="uz" class="h-full dark">
+<html lang="uz">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>RekchiAi olmoslari</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
-    <style>
-        /* ... existing styles ... */
-        
-        /* STOP sahifasi */
-        .stop-page {
-            display: none;
-            min-height: 100vh;
-            background: linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%);
-        }
-        .stop-page.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-        }
-        .stop-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-    </style>
 </head>
-<body class="h-full gradient-bg text-white overflow-auto">
-    <!-- STOP sahifasi -->
-    <div id="stop-page" class="stop-page">
-        <div class="text-center">
-            <div class="stop-icon">⛔</div>
-            <h1 class="text-3xl font-bold mb-4">Dastur vaqtincha yopildi</h1>
-            <p class="text-lg mb-6 opacity-80">Iltimos, keyinroq urinib ko'ring</p>
-            <button id="refresh-btn" class="btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg transition-all duration-300">
-                Sahifani yangilash
-            </button>
-            <p class="mt-6 text-sm opacity-60">Sahifa 10 soniyadan keyin avtomatik yangilanadi</p>
-        </div>
+<body style="background:black; color:white; text-align:center; padding:50px 20px;">
+    
+    <!-- STOP xabari -->
+    <div id="stop-message">
+        <h1 style="font-size:32px; color:red; margin-bottom:20px;">⛔</h1>
+        <h2 style="font-size:24px; margin-bottom:10px;">Mini appdan chiqib kiring</h2>
+        <p style="margin-bottom:30px; opacity:0.8;">Dastur vaqtincha yopildi</p>
+        
+        <button onclick="closeApp()" 
+                style="padding:15px 30px; background:#0088cc; color:white; border:none; border-radius:10px; font-size:16px;">
+            Chiqish
+        </button>
+        
+        <p style="margin-top:20px; font-size:12px; opacity:0.6;">
+            Sahifa avtomatik yangilanadi
+        </p>
+    </div>
+    
+    <!-- Asosiy app (yashirin) -->
+    <div id="main-app" style="display:none;">
+        <!-- Bu yerda sizning asosiy app kodingiz -->
     </div>
 
-    <!-- Asosiy app -->
-    <div id="main-app" class="min-h-full w-full">
-        <div id="loading" class="flex items-center justify-center min-h-screen p-4">
-            <!-- ... existing loading content ... -->
-        </div>
+<script>
+// Telegram Web Appni yopish
+function closeApp() {
+    if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.close();
+    }
+}
 
-        <!-- Welcome Modal -->
-        <div id="welcome-modal" class="modal-overlay">
-            <!-- ... existing modal content ... -->
-        </div>
-
-        <div id="content" class="hidden">
-            <!-- ... existing content ... -->
-        </div>
-    </div>
-
-    <!-- REKLAMA SKRIPTLARI -->
-    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
-    <!-- Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-
-        // STOP tekshirish funktsiyasi
-        async function checkStopStatus() {
-            try {
-                const response = await fetch("https://yourgithub.github.io/stop.json?_t=" + Date.now());
-                const data = await response.json();
-                
-                if (data.stop === true) {
-                    // Keshni tozalash
-                    localStorage.clear();
-                    
-                    // STOP sahifasini ko'rsatish
-                    document.getElementById('stop-page').classList.add('active');
-                    document.getElementById('main-app').style.display = 'none';
-                    
-                    // Sahifani avtomatik yangilash timer
-                    let countdown = 10;
-                    const countdownElement = document.createElement('div');
-                    countdownElement.className = 'mt-4 text-sm opacity-60';
-                    document.querySelector('#stop-page .text-center').appendChild(countdownElement);
-                    
-                    const updateCountdown = () => {
-                        countdownElement.textContent = `Sahifa ${countdown} soniyadan keyin avtomatik yangilanadi`;
-                        countdown--;
-                        
-                        if (countdown < 0) {
-                            location.reload();
-                        }
-                    };
-                    
-                    updateCountdown();
-                    const timer = setInterval(updateCountdown, 1000);
-                    
-                    // Yangilash tugmasi
-                    document.getElementById('refresh-btn').addEventListener('click', () => {
-                        clearInterval(timer);
-                        location.reload();
-                    });
-                    
-                    return true; // App to'xtatildi
-                }
-                return false; // App ishlaydi
-            } catch (error) {
-                console.error('Stop status check error:', error);
-                return false; // Xatolik bo'lsa ham app ishlashi uchun
-            }
-        }
-
-        // Asosiy appni boshlash
-        async function initializeAppMain() {
-            // Avval stop statusni tekshiramiz
-            const isStopped = await checkStopStatus();
-            if (isStopped) return; // Agar stop bo'lsa, appni ishga tushirmaymiz
+// GitHubdan tekshirish
+async function checkGitHub() {
+    try {
+        const response = await fetch("https://yourgithub.github.io/stop.json?t=" + Date.now());
+        const data = await response.json();
+        
+        // Agar stop=true bo'lsa
+        if (data.stop === true) {
+            // STOP xabarini ko'rsatish
+            document.getElementById('stop-message').style.display = 'block';
+            document.getElementById('main-app').style.display = 'none';
             
-            // ... existing app initialization code ...
-            // Bu yerda sizning mavjud app initialization kodingiz bor
-            // Faqat o'zgartirish: bu funksiya faqat stop=false bo'lganda ishga tushadi
+            // 30 soniyadan keyin avtomatik yangilash
+            setTimeout(() => {
+                location.reload();
+            }, 30000);
             
-            // Keling, sizning mavjud initialization kodingizni qo'shamiz
-            const firebaseApp = initializeApp(firebaseConfig);
-            const db = getDatabase(firebaseApp);
-
-            const ADMIN_IDS = ['7500103239', '7104718080'];
-            const REWARD_AMOUNT = 1;
-            const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
-            const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-            const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
-
-            let currentUser = null;
-            let allUsers = [];
-            let isAdmin = false;
-            let botBalance = 0;
-            let currentLeaderboard = 'daily';
-            let isWatchingAd = false;
-            let adsgramController = null;
-            let hasShownWelcomeModal = false;
-
-            // ... rest of your existing app code ...
-            // Bu joyda sizning barcha mavjud JavaScript kodingiz bo'lishi kerak
+            return true;
         }
+        return false;
+    } catch (error) {
+        return false;
+    }
+}
 
-        // Appni ishga tushirish
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeAppMain);
-        } else {
-            initializeAppMain();
-        }
-    </script>
+// Dasturni boshlash
+async function startApp() {
+    // GitHubni tekshirish
+    const stopped = await checkGitHub();
+    
+    // Agar to'xtatilmagan bo'lsa
+    if (!stopped) {
+        // Asosiy appni ko'rsatish
+        document.getElementById('stop-message').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        
+        // Sizning asosiy app kodingizni ishga tushiring
+        // ...
+        
+        // Har 60 soniyada GitHubni tekshirish
+        setInterval(checkGitHub, 60000);
+    }
+}
+
+// Sahifa yuklanganda boshlash
+window.onload = startApp;
+</script>
+
 </body>
 </html>
