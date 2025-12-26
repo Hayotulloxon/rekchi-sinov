@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>RekchiAi olmoslari</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?t=<?php echo time(); ?>"></script>
     
-    <!-- VERSIYA O'ZGARGANDA KESHNI TOZALASH -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- KESHNI BUTUNLAY BLOKLASH -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 </head>
 <body style="background:black; color:white; text-align:center; padding:50px 20px;">
     
     <!-- STOP xabari -->
-    <div id="stop-message">
+    <div id="stop-message" style="display:none;">
         <h1 style="font-size:32px; color:red; margin-bottom:20px;">⛔</h1>
         <h2 style="font-size:24px; margin-bottom:10px;">Mini appdan chiqib kiring</h2>
         <p style="margin-bottom:30px; opacity:0.8;">Dastur vaqtincha yopildi</p>
@@ -25,121 +25,166 @@
         </button>
     </div>
     
-    <!-- Asosiy app (yashirin) -->
-    <div id="main-app" style="display:none;">
-        <!-- Bu yerda sizning asosiy app kodingiz -->
+    <!-- Asosiy app -->
+    <div id="main-app">
+        <!-- SIZNING ASOSIY APP KODINGIZ -->
+        <h1>RekchiAi ishlayapti...</h1>
     </div>
 
 <script>
-// KESH VERSIYASI
-const APP_VERSION = "1.0.2"; // BUNI HAR YANGI VERSIYADA O'ZGARTIRING!
-
-// LocalStorage'dagi versiyani tekshirish
-function checkVersion() {
-    const savedVersion = localStorage.getItem('app_version');
-    
-    if (savedVersion !== APP_VERSION) {
-        // Yangi versiya - keshni tozalash
-        localStorage.clear();
-        sessionStorage.clear();
-        localStorage.setItem('app_version', APP_VERSION);
+// GITHUBDAN STOP STATUSNI O'QISH (KESH OLMASLIK UCHUN)
+async function checkStopStatus() {
+    try {
+        // HAR SAFAR YANGI URL (TIMESTAMP QO'SHAMIZ)
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const url = `https://yourgithub.github.io/stop.json?t=${timestamp}&r=${random}&v=${VERSION}`;
         
-        // Sahifani yangilash
-        location.reload();
+        console.log("GitHubdan so'rov yuborildi:", url);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            },
+            cache: 'no-store'
+        });
+        
+        const data = await response.json();
+        console.log("GitHub javobi:", data);
+        
+        return data.stop === true;
+        
+    } catch (error) {
+        console.error("Xatolik:", error);
         return false;
     }
-    return true;
 }
 
-// Telegram Web Appni yopish
+// TELEGRAM APP YOPISH
 function closeApp() {
     if (window.Telegram && Telegram.WebApp) {
         Telegram.WebApp.close();
     }
 }
 
-// GitHubdan tekshirish (KESHNI BYPASS)
-async function checkGitHub() {
-    try {
-        // Timestamp qo'shamiz, har safar yangi URL bo'ladi
-        const timestamp = Date.now();
-        const response = await fetch(`https://yourgithub.github.io/stop.json?t=${timestamp}&v=${APP_VERSION}`);
-        const data = await response.json();
+// ASOSIY DASTUR
+async function main() {
+    console.log("Dastur ishga tushdi");
+    
+    // 1. GitHubdan tekshiramiz
+    const isStopped = await checkStopStatus();
+    
+    if (isStopped) {
+        // STOP holatda
+        document.getElementById('stop-message').style.display = 'block';
+        document.getElementById('main-app').style.display = 'none';
         
-        if (data.stop === true) {
-            document.getElementById('stop-message').style.display = 'block';
-            document.getElementById('main-app').style.display = 'none';
-            
-            // Her 10 soniyada GitHubni tekshirish
-            setInterval(() => {
-                fetch(`https://yourgithub.github.io/stop.json?t=${Date.now()}`)
-                    .then(r => r.json())
-                    .then(d => {
-                        if (!d.stop) {
-                            location.reload(); // stop=false bo'lsa yangilash
-                        }
-                    });
-            }, 10000);
-            
-            return true;
-        }
-        return false;
-    } catch (error) {
-        return false;
-    }
-}
-
-// APP YANGILASH TEKSHIRISH (har 60 soniyada)
-function startAutoRefresh() {
-    setInterval(async () => {
-        try {
-            const timestamp = Date.now();
-            const response = await fetch(`https://yourgithub.github.io/stop.json?t=${timestamp}`);
-            const data = await response.json();
-            
-            if (data.version && data.version !== APP_VERSION) {
-                // Yangi versiya topildi
-                localStorage.clear();
-                location.reload();
+        // 5 SONIYADA BIR TEKSHIRISH
+        setInterval(async () => {
+            const stillStopped = await checkStopStatus();
+            if (!stillStopped) {
+                location.reload(); // stop=false bo'lsa yangilash
             }
-        } catch (e) {
-            console.log("Versiya tekshirish xatosi");
-        }
-    }, 60000); // 60 soniyada bir
-}
-
-// Dasturni boshlash
-async function startApp() {
-    // 1. Versiyani tekshirish
-    if (!checkVersion()) return;
-    
-    // 2. GitHubni tekshirish
-    const stopped = await checkGitHub();
-    
-    // 3. Agar to'xtatilmagan bo'lsa
-    if (!stopped) {
+        }, 5000);
+        
+    } else {
+        // NORMAL holatda
         document.getElementById('stop-message').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         
-        // Sizning asosiy app kodingizni ishga tushiring
-        console.log("App ishga tushdi");
+        // 30 SONIYADA BIR TEKSHIRISH
+        setInterval(async () => {
+            const isStoppedNow = await checkStopStatus();
+            if (isStoppedNow) {
+                location.reload(); // stop=true bo'lsa yangilash
+            }
+        }, 30000);
         
-        // Auto refreshni boshlash
-        startAutoRefresh();
+        // SIZNING ASOSIY APP LOGIKANGIZ
+        console.log("Asosiy app ishga tushdi");
     }
 }
 
-// Sahifa yuklanganda boshlash
-window.onload = startApp;
+// VERSIYA - HAR HTML YANGILANGANDA O'ZGARSIN
+const VERSION = "2024.01.15.001"; // BU HAR YANGI VERSIYADA O'ZGARSIN!
 
-// SERVICE WORKER (agar kerak bo'lsa)
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-            registration.unregister();
-        }
+// LOCALSTORAGE'DAGI VERSIYANI TEKSHIRISH
+const savedVersion = localStorage.getItem('app_version');
+if (savedVersion !== VERSION) {
+    console.log("Yangi versiya:", VERSION);
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.setItem('app_version', VERSION);
+    
+    // INDEXEDDB NI HAM TOZALASH
+    if (window.indexedDB) {
+        indexedDB.databases().then(dbs => {
+            dbs.forEach(db => {
+                indexedDB.deleteDatabase(db.name);
+            });
+        });
+    }
+    
+    // SERVICE WORKER NI TOZALASH
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => reg.unregister());
+        });
+    }
+    
+    // COOKIE LARNI TOZALASH
+    document.cookie.split(";").forEach(c => {
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
 }
+
+// BRAUZER KESHINI TOZALASH FUNKSIYASI
+function clearAllCaches() {
+    // SERVICE WORKER
+    if ('serviceWorker' in navigator) {
+        caches.keys().then(names => {
+            names.forEach(name => caches.delete(name));
+        });
+    }
+    
+    // APPLICATION CACHE
+    if (window.applicationCache) {
+        window.applicationCache.update();
+    }
+}
+
+// SAHIFA YUKLANGANDA
+window.addEventListener('load', function() {
+    // KESHNI TOZALASH
+    clearAllCaches();
+    
+    // ASOSIY DASTURNI ISHGA TUSHIRISH
+    main();
+});
+
+// ONLINE/OFFLINE TEKSHIRISH
+window.addEventListener('online', function() {
+    console.log("Online bo'ldi, tekshiramiz...");
+    main();
+});
+
+// HAR 60 SONIYADA BRAUZER KESHINI TEKSHIRISH
+setInterval(function() {
+    // HAR DOIM YANGI VERSIYANI TEKSHIRISH
+    fetch(`https://yourgithub.github.io/version.json?t=${Date.now()}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.version !== VERSION) {
+                console.log("Yangi versiya topildi, yangilanmoqda...");
+                localStorage.clear();
+                location.reload();
+            }
+        })
+        .catch(e => console.log("Versiya tekshirish xatosi"));
+}, 60000);
 </script>
 
 </body>
