@@ -27,6 +27,11 @@
         .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
         .btn-primary:hover::after{ left:100%; }
 
+        .btn-danger{background:linear-gradient(135deg,#dc2626 0%,#991b1b 100%); box-shadow:0 6px 20px rgba(220,38,38,.3); transition:all .3s; position:relative; overflow:hidden;}
+        .btn-danger:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(220,38,38,.4); }
+        .btn-danger::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
+        .btn-danger:hover::after{ left:100%; }
+
         .avatar-container{ width:64px; height:64px; border-radius:50%; overflow:hidden; position:relative; background:linear-gradient(135deg,#0096ff,#0066cc); flex:0 0 auto; }
         .avatar-image{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; display:block; }
         .gradient-avatar{ width:100%; height:100%; background:linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
@@ -309,8 +314,8 @@
                         <div class="info-item">
                             <div class="info-icon">💎</div>
                             <div class="info-content">
-                                <h4>Cheksiz olmoslar yeg'ishingiz mumkin!</h4>
-                                <p>Bu joyda siz reklama ko'rib va bosib <span class="highlight-text">cheksiz olmoslar</span> yeg'ishingiz mumkin.</p>
+                                <h4>Olmoslar yeg'ishingiz mumkin!</h4>
+                                <p>Bu joyda siz reklama ko'rib va bosib <span class="highlight-text">olmoslar</span> yeg'ishingiz mumkin.</p>
                             </div>
                         </div>
                         
@@ -327,6 +332,14 @@
                             <div class="info-content">
                                 <h4>Tushunmagan bo'lsangiz:</h4>
                                 <p>Botdagi <span class="highlight-text">"Videoqo'llanma"</span> tugmasini bosib, olmos yeg'ish haqidagi videoni ko'ring!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">🔒</div>
+                            <div class="info-content">
+                                <h4>Maksimal chegara:</h4>
+                                <p>Mini appda maksimal <span class="warning-text">50 ta olmos</span> yeg'ishingiz mumkin. Limitga yetganingizda reklama ko'ra olmaysiz.</p>
                             </div>
                         </div>
                     </div>
@@ -348,7 +361,7 @@
                             <div class="text-3xl diamond-icon">💎</div>
                             <div>
                                 <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Reklama ko'ring, olmos bot balansiga qo'shiladi</p>
+                                <p class="text-xs text-white/60">Kuniga 10 ta reklama</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
@@ -460,6 +473,28 @@
                     </div>
 
                     <div class="flex items-center space-x-2 mb-4">
+                        <div class="text-xl">⚡</div>
+                        <h3 class="font-bold text-white/90">Admin Amallar</h3>
+                    </div>
+                    
+                    <div class="admin-actions space-y-3 mb-6">
+                        <button id="force-refresh-btn" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-xl text-base transition-all duration-300 flex items-center justify-center space-x-2">
+                            <span class="text-xl">🔄</span>
+                            <span>Mini Appni Yangilash</span>
+                        </button>
+                        
+                        <button id="kick-all-users-btn" class="btn-danger w-full text-white font-bold py-3 px-4 rounded-xl text-base transition-all duration-300 flex items-center justify-center space-x-2">
+                            <span class="text-xl">👢</span>
+                            <span>Barchani Chiqarish</span>
+                        </button>
+                        
+                        <div class="text-xs text-white/50 text-center mt-2">
+                            Yangilash: foydalanuvchilar sahifasi yangilanadi<br>
+                            Chiqarish: barcha foydalanuvchilar chiqariladi
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-4">
                         <div class="text-xl">👥</div>
                         <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
                     </div>
@@ -488,7 +523,7 @@
     <!-- Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+        import { getDatabase, ref, get, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
@@ -505,12 +540,13 @@
 
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const DAILY_LIMIT = 10; // Kuniga 10 ta reklama
+        const MAX_TOTAL_DIAMONDS = 50; // Maksimal 50 ta olmos
         const REWARD_AMOUNT = 5; // Har bir reklama uchun 5 olmos
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
         const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
         
-        // Rewarded reklama blockId (O'ZGARTIRILDI)
+        // Rewarded reklama blockId
         const REWARDED_BLOCK_ID = "19784";
         const ADSONAR_AD_UNIT = "rekchiai"; // AdSonar uchun reklama unit nomi
 
@@ -524,6 +560,7 @@
         let rewardedAdController = null;
         let hasShownWelcomeModal = false;
         let todayAdsCount = 0; // Bugungi reklamalar soni
+        let userTotalDiamonds = 0; // Foydalanuvchining jami olmoslari
 
         // Helpers
         async function getTelegramProfilePhoto(userId, username) {
@@ -563,6 +600,7 @@
                         const userData = snapshot.val();
                         const ads_by_day = userData.ads_by_day || {};
                         todayAdsCount = parseInt(ads_by_day[localKey] || 0);
+                        userTotalDiamonds = parseInt(userData.diamonds || 0);
                         
                         // Limit progress bari va matnini yangilash
                         updateLimitDisplay();
@@ -575,6 +613,14 @@
                             document.getElementById('ad-status').innerHTML = 
                                 '<p class="text-yellow-400 font-bold">Kunlik limit tugadi! Ertaga qayta urinib ko\'ring.</p>';
                         }
+                        
+                        // Agar jami olmoslar 50 dan oshgan bo'lsa, cheklash
+                        if (userTotalDiamonds >= MAX_TOTAL_DIAMONDS) {
+                            watchBtn.disabled = true;
+                            watchBtn.innerHTML = '<span>Limitga yetgansiz</span>';
+                            document.getElementById('ad-status').innerHTML = 
+                                '<p class="text-red-400 font-bold">Limitga yetgansiz! Ko\'proq olmos ishlay olmaysiz.</p>';
+                        }
                     }
                 });
             }
@@ -584,6 +630,7 @@
         function updateLimitDisplay() {
             const limitCount = document.getElementById('limit-count');
             const progressFill = document.getElementById('progress-fill');
+            
             const progressPercent = (todayAdsCount / DAILY_LIMIT) * 100;
             
             if (limitCount) {
@@ -691,19 +738,36 @@
                         avg_click_duration: 0,
                         external_clicks: 0,
                         rewarded_ads: 0,
-                        daily_limit_reset: new Date().toISOString()
+                        daily_limit_reset: new Date().toISOString(),
+                        limit_reached: false,
+                        last_refresh: new Date().toISOString()
                     };
                     await set(userRef, newUser);
                     return newUser;
                 } else {
                     let userData = snapshot.val();
+                    
+                    // Agar olmoslar 50 dan ko'p bo'lsa, 50 taga tushirish
+                    if (userData.diamonds > MAX_TOTAL_DIAMONDS) {
+                        userData.diamonds = MAX_TOTAL_DIAMONDS;
+                        await update(userRef, { diamonds: MAX_TOTAL_DIAMONDS, limit_reached: true });
+                    }
+                    
+                    // Admin yangilash so'rovini tekshirish
+                    if (userData.force_refresh) {
+                        // Yangilash kerak bo'lsa, sahifani yangilash
+                        location.reload();
+                        return userData;
+                    }
+                    
                     if (!userData.photo_url) {
                         const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
                         const updates = { 
                             photo_url: profilePhoto, 
                             username: currentUser.username || userData.username, 
                             first_name: currentUser.first_name || userData.first_name, 
-                            updated_at: new Date().toISOString() 
+                            updated_at: new Date().toISOString(),
+                            last_refresh: new Date().toISOString()
                         };
                         await update(userRef, updates);
                         userData = { ...userData, ...updates };
@@ -715,7 +779,9 @@
                     if (typeof userData.rewarded_ads === 'undefined') {
                         await update(userRef, { 
                             rewarded_ads: userData.rewarded_ads || 0,
-                            daily_limit_reset: userData.daily_limit_reset || new Date().toISOString()
+                            daily_limit_reset: userData.daily_limit_reset || new Date().toISOString(),
+                            limit_reached: userData.limit_reached || false,
+                            last_refresh: new Date().toISOString()
                         });
                     }
                     
@@ -742,6 +808,106 @@
             }
         }
 
+        // Jami olmoslarni 50 tadan oshmasligini tekshirish va tuzatish
+        async function checkAndFixTotalDiamonds() {
+            if (!currentUser) return;
+            
+            try {
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const currentDiamonds = parseInt(userData.diamonds || 0);
+                    
+                    // Agar 50 dan ko'p bo'lsa, 50 taga tushirish
+                    if (currentDiamonds > MAX_TOTAL_DIAMONDS) {
+                        await update(userRef, { 
+                            diamonds: MAX_TOTAL_DIAMONDS,
+                            limit_reached: true
+                        });
+                        userTotalDiamonds = MAX_TOTAL_DIAMONDS;
+                        updateLimitDisplay();
+                        
+                        // Bot balansini ham yangilash (agar kerak bo'lsa)
+                        try {
+                            const botUpdateBody = new URLSearchParams({ 
+                                key: BOT_API_KEY, 
+                                user_id: currentUser.user_id, 
+                                amount: MAX_TOTAL_DIAMONDS - currentDiamonds 
+                            });
+                            await fetch(BOT_API_ADD_URL, { 
+                                method: 'POST', 
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                                body: botUpdateBody.toString() 
+                            });
+                        } catch (e) {
+                            console.warn('Bot balansini yangilashda xatolik', e);
+                        }
+                        
+                        return true;
+                    }
+                }
+                return false;
+            } catch (err) {
+                console.error('checkAndFixTotalDiamonds error', err);
+                return false;
+            }
+        }
+
+        // Admin funksiyalari
+        async function forceRefreshAllUsers() {
+            try {
+                const usersRef = ref(db, 'users');
+                const snapshot = await get(usersRef);
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    const updates = {};
+                    
+                    Object.keys(users).forEach(userId => {
+                        updates[`${userId}/force_refresh`] = true;
+                        updates[`${userId}/last_refresh`] = new Date().toISOString();
+                    });
+                    
+                    await update(ref(db, 'users'), updates);
+                    
+                    // 5 soniyadan so'ng refresh flag'ini olib tashlash
+                    setTimeout(async () => {
+                        const removeUpdates = {};
+                        Object.keys(users).forEach(userId => {
+                            removeUpdates[`${userId}/force_refresh`] = null;
+                        });
+                        await update(ref(db, 'users'), removeUpdates);
+                    }, 5000);
+                    
+                    return { success: true, message: `${Object.keys(users).length} ta foydalanuvchi yangilandi` };
+                }
+                return { success: false, message: 'Foydalanuvchilar topilmadi' };
+            } catch (err) {
+                console.error('forceRefreshAllUsers error', err);
+                return { success: false, message: 'Xatolik: ' + err.message };
+            }
+        }
+        
+        async function kickAllUsers() {
+            try {
+                const usersRef = ref(db, 'users');
+                const snapshot = await get(usersRef);
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    const userCount = Object.keys(users).length;
+                    
+                    // Barcha foydalanuvchilarni o'chirish
+                    await remove(usersRef);
+                    
+                    return { success: true, message: `${userCount} ta foydalanuvchi chiqarildi` };
+                }
+                return { success: false, message: 'Foydalanuvchilar topilmadi' };
+            } catch (err) {
+                console.error('kickAllUsers error', err);
+                return { success: false, message: 'Xatolik: ' + err.message };
+            }
+        }
+
         // Subscribe to all users for leaderboard + admin
         function subscribeToUsers() {
             const usersRef = ref(db, 'users');
@@ -749,7 +915,14 @@
                 allUsers = [];
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    Object.keys(data).forEach(k => allUsers.push(data[k]));
+                    Object.keys(data).forEach(k => {
+                        const user = data[k];
+                        // Leaderboard uchun maksimal 50 ta olmosni ko'rsatish
+                        if (user.diamonds > MAX_TOTAL_DIAMONDS) {
+                            user.diamonds = MAX_TOTAL_DIAMONDS;
+                        }
+                        allUsers.push(user);
+                    });
                 }
                 updateAdminPanel();
                 renderLeaderboardsMain();
@@ -766,13 +939,15 @@
 
             const mapped = allUsers.map(u => {
                 const ads_by_day = u.ads_by_day || {};
+                // Maksimal 50 ta olmosni hisoblash
+                const diamonds = Math.min(parseInt(u.diamonds || 0), MAX_TOTAL_DIAMONDS);
                 return {
                     id: u.user_id,
                     name: u.first_name || 'Foydalanuvchi',
                     username: u.username || '',
                     photo_url: u.photo_url || '',
                     todayCount: parseInt(ads_by_day[localKey] || 0) * REWARD_AMOUNT, // Olmoslar soni
-                    overallCount: parseInt(u.ads_watched || 0) * REWARD_AMOUNT, // Olmoslar soni
+                    overallCount: diamonds, // Maksimal 50 gacha bo'lgan olmoslar soni
                     verified_clicks: u.verified_clicks || 0
                 };
             });
@@ -809,7 +984,11 @@
         function updateAdminPanel() {
             const totalUsers = allUsers.length;
             const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
-            const totalDiamonds = allUsers.reduce((s,u)=> s + (u.diamonds||0), 0);
+            const totalDiamonds = allUsers.reduce((s,u)=> {
+                // Har bir foydalanuvchi uchun maksimal 50 ta olmosni hisoblash
+                return s + Math.min(parseInt(u.diamonds || 0), MAX_TOTAL_DIAMONDS);
+            }, 0);
+            
             document.getElementById('admin-total-users').textContent = totalUsers;
             document.getElementById('admin-total-ads').textContent = totalAds;
             document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
@@ -817,10 +996,20 @@
             const usersList = document.getElementById('users-list');
             if (!usersList) return;
             usersList.innerHTML = allUsers
-                .sort((a,b)=>(b.diamonds||0)-(a.diamonds||0))
+                .sort((a,b)=> {
+                    // Maksimal 50 ta olmosni hisoblash
+                    const aDiamonds = Math.min(parseInt(a.diamonds || 0), MAX_TOTAL_DIAMONDS);
+                    const bDiamonds = Math.min(parseInt(b.diamonds || 0), MAX_TOTAL_DIAMONDS);
+                    return bDiamonds - aDiamonds;
+                })
                 .slice(0,20)
-                .map(u => `
-                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300">
+                .map(u => {
+                    // Maksimal 50 ta olmosni ko'rsatish
+                    const diamonds = Math.min(parseInt(u.diamonds || 0), MAX_TOTAL_DIAMONDS);
+                    const limitReached = diamonds >= MAX_TOTAL_DIAMONDS;
+                    
+                    return `
+                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300 ${limitReached ? 'border border-yellow-500/30' : ''}">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="avatar-container">
@@ -829,15 +1018,16 @@
                                 <div>
                                     <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
                                     <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
+                                    ${limitReached ? '<p class="text-xs text-yellow-500 mt-1">Limitga yetgan</p>' : ''}
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-lg font-bold text-yellow-400">${u.diamonds || 0} 💎</p>
+                                <p class="text-lg font-bold ${limitReached ? 'text-yellow-500' : 'text-yellow-400'}">${diamonds} 💎</p>
                                 <p class="text-xs text-white/50">${u.ads_watched || 0} reklama</p>
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
         }
 
         // ADSGRAM REWARDED REKLAMA
@@ -933,6 +1123,13 @@
                 return;
             }
             
+            // Jami olmos limitini tekshirish
+            if (userTotalDiamonds >= MAX_TOTAL_DIAMONDS) {
+                document.getElementById('ad-status').innerHTML = 
+                    '<p class="text-red-400 font-bold">Limitga yetgansiz! Ko\'proq olmos ishlay olmaysiz.</p>';
+                return;
+            }
+            
             const btn = document.getElementById('watch-ad-btn');
             const statusDiv = document.getElementById('ad-status');
             
@@ -1005,6 +1202,13 @@
                     return;
                 }
                 
+                // Jami olmos limitini tekshirish
+                if (userTotalDiamonds >= MAX_TOTAL_DIAMONDS) {
+                    statusDiv.innerHTML = '<p class="text-red-400 font-bold">Limitga yetgansiz!</p>';
+                    resetWatchButton();
+                    return;
+                }
+                
                 statusDiv.innerHTML = '<p class="text-green-400 font-bold">Bonus hisoblanmoqda...</p>';
                 
                 const userRef = ref(db, 'users/' + currentUser.user_id);
@@ -1021,6 +1225,9 @@
                 
                 // Bugungi reklamalar sonini yangilash
                 todayAdsCount = newDayCount;
+                
+                // Yangi olmoslar sonini hisoblash
+                const newDiamonds = Math.min((userData.diamonds || 0) + REWARD_AMOUNT, MAX_TOTAL_DIAMONDS);
                 
                 const clickHistory = userData.click_history || [];
                 clickHistory.push({
@@ -1039,17 +1246,28 @@
                     [`ads_by_day/${localKey}`]: newDayCount, 
                     last_ad_time: new Date().toISOString(),
                     rewarded_ads: (userData.rewarded_ads || 0) + 1,
-                    diamonds: (userData.diamonds || 0) + REWARD_AMOUNT
+                    diamonds: newDiamonds
                 };
+                
+                // Agar yangi olmoslar 50 ga yetgan bo'lsa
+                if (newDiamonds >= MAX_TOTAL_DIAMONDS) {
+                    updates.limit_reached = true;
+                }
                 
                 const ok = await updateUserData(updates);
                 if (!ok) throw new Error('Firebase yangilashida xatolik');
 
-                // Bot balansiga qo'shish (5 olmos)
-                try { 
-                    await addToBotBalance(REWARD_AMOUNT);
-                } catch(e){ 
-                    console.warn('Bot add failed', e); 
+                // Jami olmoslarni yangilash
+                userTotalDiamonds = newDiamonds;
+                
+                // Bot balansiga qo'shish (5 olmos yoki kamroq, agar limitga yaqin bo'lsa)
+                const amountToAdd = Math.min(REWARD_AMOUNT, MAX_TOTAL_DIAMONDS - (userData.diamonds || 0));
+                if (amountToAdd > 0) {
+                    try { 
+                        await addToBotBalance(amountToAdd);
+                    } catch(e){ 
+                        console.warn('Bot add failed', e); 
+                    }
                 }
 
                 // Limit displeyni yangilash
@@ -1063,18 +1281,24 @@
                         <div class="text-6xl mb-3" style="animation:celebrate .8s;">🎉</div>
                         <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
                         <div class="my-4">
-                            <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
+                            <div class="text-3xl font-bold text-yellow-400 mb-2">+${amountToAdd} 💎</div>
                             <p class="text-white/60 text-sm">Reklama to'liq ko'rildi</p>
                             <p class="text-white/40 text-xs mt-2">Bugungi holat: ${todayAdsCount}/${DAILY_LIMIT}</p>
+                            ${userTotalDiamonds >= MAX_TOTAL_DIAMONDS ? 
+                                '<p class="text-red-400 text-xs font-bold mt-2">Limitga yetdingiz!</p>' : ''}
                         </div>
                     </div>
                 `;
                 
                 // Agar limit to'lgandan keyin, tugmani bloklash
-                if (todayAdsCount >= DAILY_LIMIT) {
+                if (todayAdsCount >= DAILY_LIMIT || userTotalDiamonds >= MAX_TOTAL_DIAMONDS) {
                     const watchBtn = document.getElementById('watch-ad-btn');
                     watchBtn.disabled = true;
-                    watchBtn.innerHTML = '<span>Kunlik limit tugadi</span>';
+                    if (userTotalDiamonds >= MAX_TOTAL_DIAMONDS) {
+                        watchBtn.innerHTML = '<span>Limitga yetgansiz</span>';
+                    } else {
+                        watchBtn.innerHTML = '<span>Kunlik limit tugadi</span>';
+                    }
                 }
                 
                 resetWatchButton();
@@ -1082,6 +1306,8 @@
                 setTimeout(() => {
                     if (todayAdsCount >= DAILY_LIMIT) {
                         statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Kunlik limit tugadi! Ertaga qayta urinib ko\'ring.</p>';
+                    } else if (userTotalDiamonds >= MAX_TOTAL_DIAMONDS) {
+                        statusDiv.innerHTML = '<p class="text-red-400 font-bold">Limitga yetgansiz! Ko\'proq olmos ishlay olmaysiz.</p>';
                     } else {
                         statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
                     }
@@ -1099,7 +1325,7 @@
             isWatchingAd = false;
             
             // Agar limit to'lmagan bo'lsa, tugmani faollashtirish
-            if (todayAdsCount < DAILY_LIMIT) {
+            if (todayAdsCount < DAILY_LIMIT && userTotalDiamonds < MAX_TOTAL_DIAMONDS) {
                 btn.disabled = false;
                 btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
             }
@@ -1180,6 +1406,61 @@
                 document.getElementById('lb-tab-daily-main').classList.remove('active');
                 renderLeaderboardsMain();
             });
+            
+            // Admin tugmalari
+            document.getElementById('force-refresh-btn')?.addEventListener('click', async () => {
+                if (!isAdmin) return;
+                
+                const btn = document.getElementById('force-refresh-btn');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+                
+                try {
+                    const result = await forceRefreshAllUsers();
+                    
+                    if (result.success) {
+                        alert(`✅ ${result.message}`);
+                    } else {
+                        alert(`❌ ${result.message}`);
+                    }
+                } catch (err) {
+                    alert('❌ Xatolik yuz berdi');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+            
+            document.getElementById('kick-all-users-btn')?.addEventListener('click', async () => {
+                if (!isAdmin) return;
+                
+                if (!confirm('Haqiqatan ham barcha foydalanuvchilarni chiqarmoqchimisiz?\nBu amalni bekor qilib bo\'lmaydi!')) {
+                    return;
+                }
+                
+                const btn = document.getElementById('kick-all-users-btn');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+                
+                try {
+                    const result = await kickAllUsers();
+                    
+                    if (result.success) {
+                        alert(`✅ ${result.message}`);
+                        // O'zimizni ham chiqarish
+                        location.reload();
+                    } else {
+                        alert(`❌ ${result.message}`);
+                    }
+                } catch (err) {
+                    alert('❌ Xatolik yuz berdi');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
         }
 
         function switchSection(sectionId, menuButtonId) {
@@ -1203,6 +1484,10 @@
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
             document.getElementById('diamond-count').textContent = `${botBalance}`;
+            
+            // Jami olmoslarni ko'rsatish
+            userTotalDiamonds = Math.min(parseInt(user.diamonds || 0), MAX_TOTAL_DIAMONDS);
+            updateLimitDisplay();
         }
 
         // App init
@@ -1215,7 +1500,14 @@
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 onValue(userRef, (snap) => { 
                     if (snap.exists()) {
-                        updateUI(snap.val());
+                        const userData = snap.val();
+                        updateUI(userData);
+                        
+                        // Agar olmoslar 50 dan ko'p bo'lsa, tuzatish
+                        if (userData.diamonds > MAX_TOTAL_DIAMONDS) {
+                            checkAndFixTotalDiamonds();
+                        }
+                        
                         // Har safar ma'lumot yangilanganda limitni tekshirish
                         checkDailyLimit();
                     }
@@ -1229,6 +1521,11 @@
             if (currentUser) {
                 await fetchBotBalance();
                 setInterval(fetchBotBalance, 30000);
+                
+                // Har 5 daqiqada olmos limitini tekshirish
+                setInterval(async () => {
+                    await checkAndFixTotalDiamonds();
+                }, 300000); // 5 daqiqa
             }
 
             document.getElementById('loading').classList.add('hidden');
