@@ -408,11 +408,6 @@
                             <span class="text-2xl">▶️</span>
                             <span>Reklamani boshlash</span>
                         </button>
-                        
-                        <!-- Reklama tizimi ko'rsatgichi -->
-                        <div id="ad-provider-indicator" class="mt-4 text-center text-sm text-white/50">
-                            Keyingi reklama: <span id="next-ad-provider" class="font-bold text-blue-400">AdsGram</span>
-                        </div>
                     </div>
                 </div>
 
@@ -553,14 +548,6 @@
         function escapeHtml(str) { 
             if (!str) return ''; 
             return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
-        }
-
-        // Reklama provider ko'rsatgichini yangilash
-        function updateAdProviderIndicator() {
-            const indicator = document.getElementById('next-ad-provider');
-            if (indicator) {
-                indicator.textContent = currentAdProvider === 'adsgram' ? 'AdsGram' : 'AdSonar';
-            }
         }
 
         // Limitni tekshirish funksiyasi
@@ -953,8 +940,8 @@
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
             
-            // Hozirgi provider ko'rsatilgan
-            statusDiv.innerHTML = `<p class="text-yellow-400 font-bold">${currentAdProvider === 'adsgram' ? 'AdsGram' : 'AdSonar'} reklama tayyorlanmoqda...</p>`;
+            // Oddiy "Reklama yuklanyapti..." xabari
+            statusDiv.innerHTML = `<p class="text-yellow-400 font-bold">Reklama yuklanyapti...</p>`;
             
             try {
                 let result;
@@ -977,7 +964,6 @@
                         
                         // Navbatni o'zgartirish: adsgram -> adsonar -> adsgram
                         currentAdProvider = currentAdProvider === 'adsgram' ? 'adsonar' : 'adsgram';
-                        updateAdProviderIndicator();
                     }, 1500);
                     
                 } else {
@@ -986,7 +972,6 @@
                     
                     // Xatolik bo'lsa ham navbatni o'zgartirish
                     currentAdProvider = currentAdProvider === 'adsgram' ? 'adsonar' : 'adsgram';
-                    updateAdProviderIndicator();
                     
                     resetWatchButton();
                     setTimeout(() => { 
@@ -1000,7 +985,6 @@
                 
                 // Xatolik bo'lsa ham navbatni o'zgartirish
                 currentAdProvider = currentAdProvider === 'adsgram' ? 'adsonar' : 'adsgram';
-                updateAdProviderIndicator();
                 
                 resetWatchButton();
                 setTimeout(() => { 
@@ -1080,9 +1064,8 @@
                         <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
                         <div class="my-4">
                             <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
-                            <p class="text-white/60 text-sm">${provider === 'adsgram' ? 'AdsGram' : 'AdSonar'} reklama to'liq ko'rildi</p>
+                            <p class="text-white/60 text-sm">Reklama to'liq ko'rildi</p>
                             <p class="text-white/40 text-xs mt-2">Bugungi holat: ${todayAdsCount}/${DAILY_LIMIT}</p>
-                            <p class="text-white/40 text-xs mt-1">Keyingi reklama: ${currentAdProvider === 'adsgram' ? 'AdsGram' : 'AdSonar'}</p>
                         </div>
                     </div>
                 `;
@@ -1253,9 +1236,6 @@
             
             // Limit displeyni yangilash
             updateLimitDisplay();
-            
-            // Reklama provider ko'rsatgichini yangilash
-            updateAdProviderIndicator();
             
             // Show welcome modal after a short delay
             setTimeout(() => {
