@@ -58,7 +58,8 @@
         .leaderboard-tab { padding:8px 12px; border-radius:10px; cursor:pointer; color:rgba(255,255,255,.75); background:transparent; font-weight:600; border:1px solid transparent; }
         .leaderboard-tab.active { background:linear-gradient(90deg,#0096ff,#0066cc); color:white; box-shadow:0 6px 18px rgba(0,150,255,0.12); }
         .leaderboard-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; }
-        .leaderboard-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; transition:background .12s; }
+        .leaderboard-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; transition:background .12s; cursor:pointer; }
+        .leaderboard-item:hover { background:rgba(255,255,255,0.05); }
         .leader-rank { width:36px; text-align:center; font-weight:800; color:#ffd54a; }
         .leader-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex:0 0 auto; }
         .leader-meta { flex:1; }
@@ -170,7 +171,7 @@
         }
         .limit-text {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255,255, 0.7);
         }
         .limit-count {
             font-weight: bold;
@@ -188,6 +189,68 @@
             background: linear-gradient(90deg, #0096ff, #0066cc);
             border-radius: 4px;
             transition: width 0.3s ease;
+        }
+        
+        /* User info modal */
+        .user-info-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .user-info-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .user-info-content {
+            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            max-width: 400px;
+            width: 100%;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .user-info-modal.active .user-info-content {
+            transform: translateY(0);
+        }
+        .user-info-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .user-info-body {
+            padding: 20px;
+        }
+        .user-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-info-item:last-child {
+            border-bottom: none;
+        }
+        .user-info-label {
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            width: 100px;
+            flex-shrink: 0;
+        }
+        .user-info-value {
+            color: #fff;
+            flex: 1;
+            word-break: break-all;
         }
         
         /* Telefon uchun optimallashtirishlar */
@@ -334,20 +397,63 @@
                                 <p>Botdagi <span class="highlight-text">"Videoqo'llanma"</span> tugmasini bosib, olmos yeg'ish haqidagi videoni ko'ring!</p>
                             </div>
                         </div>
-                        
-                        <div class="info-item">
-                            <div class="info-icon">🔒</div>
-                            <div class="info-content">
-                                <h4>Maksimal chegara:</h4>
-                                <p>Mini appda maksimal <span class="warning-text">50 ta olmos</span> yeg'ishingiz mumkin. Limitga yetganingizda reklama ko'ra olmaysiz.</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
                 <div class="modal-footer">
                     <button id="modal-ok-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-300">
                         Tushundim
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Info Modal (Admin uchun) -->
+        <div id="user-info-modal" class="user-info-modal">
+            <div class="user-info-content">
+                <div class="user-info-header">
+                    <h2 class="text-xl font-bold text-white/90 mb-2">Foydalanuvchi ma'lumotlari</h2>
+                    <p class="text-white/60 text-sm">Admin panel</p>
+                </div>
+                
+                <div class="user-info-body">
+                    <div class="user-info-item">
+                        <span class="user-info-label">Ism:</span>
+                        <span class="user-info-value" id="info-name">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Username:</span>
+                        <span class="user-info-value" id="info-username">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">ID:</span>
+                        <span class="user-info-value" id="info-id">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Olmoslar:</span>
+                        <span class="user-info-value" id="info-diamonds">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Reklamalar:</span>
+                        <span class="user-info-value" id="info-ads">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Yaratilgan:</span>
+                        <span class="user-info-value" id="info-created">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Oxirgi faollik:</span>
+                        <span class="user-info-value" id="info-last-active">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Limitga yetgan:</span>
+                        <span class="user-info-value" id="info-limit-reached">-</span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="close-user-info-btn" class="btn-primary w-full text-white font-bold py-3 px-6 rounded-2xl text-base transition-all duration-300">
+                        Yopish
                     </button>
                 </div>
             </div>
@@ -587,6 +693,19 @@
             return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
         }
 
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleString('uz-UZ', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
         // Limitni tekshirish funksiyasi
         function checkDailyLimit() {
             const now = new Date();
@@ -664,6 +783,30 @@
             
             // Mark as visited
             localStorage.setItem('rekchiai_first_visit', 'true');
+        }
+
+        // User Info Modal functions
+        function showUserInfoModal(userData) {
+            const modal = document.getElementById('user-info-modal');
+            
+            // Ma'lumotlarni to'ldirish
+            document.getElementById('info-name').textContent = userData.first_name || 'Foydalanuvchi';
+            document.getElementById('info-username').textContent = userData.username ? `@${userData.username}` : 'Yo\'q';
+            document.getElementById('info-id').textContent = userData.user_id || '-';
+            document.getElementById('info-diamonds').textContent = `${Math.min(userData.diamonds || 0, MAX_TOTAL_DIAMONDS)} 💎`;
+            document.getElementById('info-ads').textContent = userData.ads_watched || 0;
+            document.getElementById('info-created').textContent = formatDate(userData.created_at);
+            document.getElementById('info-last-active').textContent = formatDate(userData.updated_at);
+            document.getElementById('info-limit-reached').textContent = (userData.diamonds || 0) >= MAX_TOTAL_DIAMONDS ? 'Ha ✅' : 'Yo\'q ❌';
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideUserInfoModal() {
+            const modal = document.getElementById('user-info-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         // Init Telegram
@@ -948,7 +1091,8 @@
                     photo_url: u.photo_url || '',
                     todayCount: parseInt(ads_by_day[localKey] || 0) * REWARD_AMOUNT, // Olmoslar soni
                     overallCount: diamonds, // Maksimal 50 gacha bo'lgan olmoslar soni
-                    verified_clicks: u.verified_clicks || 0
+                    verified_clicks: u.verified_clicks || 0,
+                    user_data: u // Barcha ma'lumotlarni saqlash
                 };
             });
 
@@ -965,8 +1109,12 @@
                 return;
             }
 
-            listEl.innerHTML = top.map((u,i) => `
-                <div class="leaderboard-item">
+            listEl.innerHTML = top.map((u,i) => {
+                // Agar admin bo'lsa, click event qo'shish
+                const clickHandler = isAdmin ? `onclick="handleLeaderboardItemClick('${u.id}')"` : '';
+                
+                return `
+                <div class="leaderboard-item" ${clickHandler} data-user-id="${u.id}">
                     <div class="leader-rank">${i+1}</div>
                     <div class="leader-avatar">
                         ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
@@ -977,7 +1125,17 @@
                     </div>
                     <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
                 </div>
-            `).join('');
+            `}).join('');
+        }
+
+        // Leaderboard item bosilganda (faqat admin uchun)
+        function handleLeaderboardItemClick(userId) {
+            if (!isAdmin) return;
+            
+            const userData = allUsers.find(u => u.user_id === userId);
+            if (userData) {
+                showUserInfoModal(userData);
+            }
         }
 
         // Admin panel render (avatars same style)
@@ -1008,8 +1166,11 @@
                     const diamonds = Math.min(parseInt(u.diamonds || 0), MAX_TOTAL_DIAMONDS);
                     const limitReached = diamonds >= MAX_TOTAL_DIAMONDS;
                     
+                    // Admin uchun click event
+                    const clickHandler = isAdmin ? `onclick="showUserInfoModal(${JSON.stringify(u).replace(/"/g, '&quot;')})"` : '';
+                    
                     return `
-                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300 ${limitReached ? 'border border-yellow-500/30' : ''}">
+                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300 ${limitReached ? 'border border-yellow-500/30' : ''}" ${clickHandler} style="cursor: ${isAdmin ? 'pointer' : 'default'}">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="avatar-container">
@@ -1388,6 +1549,9 @@
             
             // Modal OK button
             document.getElementById('modal-ok-btn')?.addEventListener('click', hideWelcomeModal);
+            
+            // User Info Modal close button
+            document.getElementById('close-user-info-btn')?.addEventListener('click', hideUserInfoModal);
 
             // bottom menu
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
