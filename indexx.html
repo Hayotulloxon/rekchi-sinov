@@ -1,0 +1,1706 @@
+<!doctype html>
+<html lang="uz" class="h-full dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>RekchiAi olmoslari</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
+    <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
+    <style>
+        body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3),0 0 40px rgba(0,150,255,.1)} 50%{box-shadow:0 0 30px rgba(0,150,255,.5),0 0 60px rgba(0,150,255,.2)} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+        @keyframes celebrate { 0%,100%{transform:scale(1) rotate(0)} 25%{transform:scale(1.15) rotate(-3deg)} 75%{transform:scale(1.15) rotate(3deg)} }
+        .float-animation{animation:float 3s ease-in-out infinite} 
+        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} 
+        .slide-up{animation:slideUp .4s ease-out}
+
+        .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
+        .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
+        .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6)); color:#0096ff}
+
+        .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); box-shadow:0 6px 20px rgba(0,150,255,.3); transition:all .3s; position:relative; overflow:hidden;}
+        .btn-primary:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,.4); }
+        .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
+        .btn-primary:hover::after{ left:100%; }
+
+        .btn-danger{background:linear-gradient(135deg,#dc2626 0%,#991b1b 100%); box-shadow:0 6px 20px rgba(220,38,38,.3); transition:all .3s; position:relative; overflow:hidden;}
+        .btn-danger:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(220,38,38,.4); }
+        .btn-danger::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
+        .btn-danger:hover::after{ left:100%; }
+
+        .avatar-container{ width:64px; height:64px; border-radius:50%; overflow:hidden; position:relative; background:linear-gradient(135deg,#0096ff,#0066cc); flex:0 0 auto; }
+        .avatar-image{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; display:block; }
+        .gradient-avatar{ width:100%; height:100%; background:linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+        .status-card{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); }
+        .reward-badge{ background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); }
+        .diamond-count{ background:rgba(0,150,255,.1); border:1px solid rgba(0,150,255,.2); }
+
+        .menu-container{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
+        .menu-nav{ display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
+        .menu-item{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s; cursor:pointer; position:relative; }
+        .menu-item.active{ background:rgba(255,255,255,.1); color:white; }
+        .content-container{ padding-bottom:100px; }
+
+        ::-webkit-scrollbar{ width:6px } ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px } ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px } ::-webkit-scrollbar-thumb:hover{ background:#0066cc }
+        ::selection{ background:rgba(0,150,255,.3); color:white }
+
+        .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
+
+        .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
+        .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
+        .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
+        .leaderboard-tab { padding:8px 12px; border-radius:10px; cursor:pointer; color:rgba(255,255,255,.75); background:transparent; font-weight:600; border:1px solid transparent; }
+        .leaderboard-tab.active { background:linear-gradient(90deg,#0096ff,#0066cc); color:white; box-shadow:0 6px 18px rgba(0,150,255,0.12); }
+        .leaderboard-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; }
+        .leaderboard-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; transition:background .12s; cursor:pointer; }
+        .leaderboard-item:hover { background:rgba(255,255,255,0.05); }
+        .leader-rank { width:36px; text-align:center; font-weight:800; color:#ffd54a; }
+        .leader-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex:0 0 auto; }
+        .leader-meta { flex:1; }
+        .leader-name { font-weight:700; color:#fff; }
+        .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
+        .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(0, 150, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .info-content h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: rgba(255,255,255,0.95);
+            font-size: 16px;
+        }
+        .info-content p {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .highlight-text {
+            color: #0096ff;
+            font-weight: 600;
+        }
+        .warning-text {
+            color: #ffd54a;
+            font-weight: 600;
+        }
+        
+        /* Limit progress bar styles */
+        .limit-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+        .limit-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .limit-text {
+            font-size: 14px;
+            color: rgba(255, 255,255, 0.7);
+        }
+        .limit-count {
+            font-weight: bold;
+            color: #ffd54a;
+        }
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0096ff, #0066cc);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        /* User info modal */
+        .user-info-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .user-info-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .user-info-content {
+            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            max-width: 400px;
+            width: 100%;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .user-info-modal.active .user-info-content {
+            transform: translateY(0);
+        }
+        .user-info-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .user-info-body {
+            padding: 20px;
+        }
+        .user-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-info-item:last-child {
+            border-bottom: none;
+        }
+        .user-info-label {
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            width: 100px;
+            flex-shrink: 0;
+        }
+        .user-info-value {
+            color: #fff;
+            flex: 1;
+            word-break: break-all;
+        }
+        
+        /* Time info styles */
+        .time-info {
+            background: rgba(0, 150, 255, 0.05);
+            border: 1px solid rgba(0, 150, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .time-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .time-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0096ff;
+        }
+        
+        /* Telefon uchun optimallashtirishlar */
+        @media (max-width: 420px) { 
+            .leaderboard-list{ max-height:300px } 
+            .leader-avatar{ width:40px; height:40px }
+            
+            /* Modal optimallashtirish */
+            .modal-overlay {
+                padding: 16px;
+            }
+            .modal-content {
+                max-width: 100%;
+                max-height: 85vh;
+                border-radius: 20px;
+            }
+            .modal-header {
+                padding: 20px 20px 12px;
+            }
+            .modal-header .text-6xl {
+                font-size: 4rem;
+            }
+            .modal-header h2 {
+                font-size: 1.5rem;
+                line-height: 1.3;
+            }
+            .modal-header p {
+                font-size: 14px;
+            }
+            .modal-body {
+                padding: 16px;
+            }
+            .modal-footer {
+                padding: 12px 16px 16px;
+            }
+            .info-item {
+                padding: 10px 0;
+            }
+            .info-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+            }
+            .info-content h4 {
+                font-size: 15px;
+                line-height: 1.3;
+            }
+            .info-content p {
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            .btn-primary {
+                padding: 16px;
+                font-size: 16px;
+                font-weight: 600;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .modal-header .text-6xl {
+                font-size: 3.5rem;
+            }
+            .modal-header h2 {
+                font-size: 1.3rem;
+            }
+            .info-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+            .info-content h4 {
+                font-size: 14px;
+            }
+            .info-content p {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .modal-content {
+                max-height: 85vh;
+            }
+            .modal-body {
+                max-height: 45vh;
+                overflow-y: auto;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .modal-content {
+                max-height: 90vh;
+            }
+            .modal-body {
+                max-height: 40vh;
+            }
+            .modal-header {
+                padding: 16px 16px 12px;
+            }
+        }
+    </style>
+</head>
+<body class="h-full gradient-bg text-white overflow-auto">
+    <div id="app" class="min-h-full w-full">
+        <div id="loading" class="flex items-center justify-center min-h-screen p-4">
+            <div class="text-center slide-up">
+                <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
+                <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
+                <p class="text-xl font-semibold text-white/90">RekchiAi olmoslari</p>
+                <p class="text-white/60 mt-2">Yuklanmoqda...</p>
+            </div>
+        </div>
+
+        <!-- Welcome Modal -->
+        <div id="welcome-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="text-6xl mb-4 float-animation diamond-icon">💎</div>
+                    <h2 class="text-2xl font-bold text-white/90 mb-2">RekchiAi olmoslari</h2>
+                    <p class="text-white/60">Mini appga xush kelibsiz!</p>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="space-y-4">
+                        <div class="info-item">
+                            <div class="info-icon">💎</div>
+                            <div class="info-content">
+                                <h4>Olmoslar yeg'ishingiz mumkin!</h4>
+                                <p>Bu joyda siz reklama ko'rib va bosib <span class="highlight-text">olmoslar</span> yeg'ishingiz mumkin.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">⚠️</div>
+                            <div class="info-content">
+                                <h4>Diqqat! Muhim qoida:</h4>
+                                <p>Har <span class="warning-text">3 ta olmos</span> yeg'ganingizda <span class="warning-text">bitta klik</span> qiling. Ya'ni reklama qilayotgan joyga kirib chiqing. (2-3 sekund vaqt ketishi mumkin).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">🎥</div>
+                            <div class="info-content">
+                                <h4>Tushunmagan bo'lsangiz:</h4>
+                                <p>Botdagi <span class="highlight-text">"Videoqo'llanma"</span> tugmasini bosib, olmos yeg'ish haqidagi videoni ko'ring!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="modal-ok-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-300">
+                        Tushundim
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Info Modal (Admin uchun) -->
+        <div id="user-info-modal" class="user-info-modal">
+            <div class="user-info-content">
+                <div class="user-info-header">
+                    <h2 class="text-xl font-bold text-white/90 mb-2">Foydalanuvchi ma'lumotlari</h2>
+                    <p class="text-white/60 text-sm">Admin panel</p>
+                </div>
+                
+                <div class="user-info-body">
+                    <div class="user-info-item">
+                        <span class="user-info-label">Ism:</span>
+                        <span class="user-info-value" id="info-name">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Username:</span>
+                        <span class="user-info-value" id="info-username">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">ID:</span>
+                        <span class="user-info-value" id="info-id">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Olmoslar:</span>
+                        <span class="user-info-value" id="info-diamonds">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Reklamalar:</span>
+                        <span class="user-info-value" id="info-ads">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Yaratilgan:</span>
+                        <span class="user-info-value" id="info-created">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Oxirgi faollik:</span>
+                        <span class="user-info-value" id="info-last-active">-</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Bugun limit:</span>
+                        <span class="user-info-value" id="info-limit-reached">-</span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button id="close-user-info-btn" class="btn-primary w-full text-white font-bold py-3 px-6 rounded-2xl text-base transition-all duration-300">
+                        Yopish
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="content" class="hidden">
+            <div class="sticky top-0 z-50 top-bar border-b border-white/5">
+                <div class="max-w-lg mx-auto px-4 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-3xl diamond-icon">💎</div>
+                            <div>
+                                <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
+                                <p class="text-xs text-white/60">Kuniga 50 ta olmos</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
+                            <span id="diamond-count" class="text-2xl font-bold text-yellow-400">0</span>
+                            <span class="text-xl diamond-icon">💎</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
+                <div id="earn-section" class="content-section active">
+                    <div class="app-card p-5 slide-up">
+                        <div class="flex items-center space-x-4">
+                            <div id="user-avatar" class="avatar-container user-avatar"></div>
+                            <div class="flex-1">
+                                <h3 id="user-name" class="font-bold text-lg text-white/90">Foydalanuvchi</h3>
+                                <p id="user-id" class="text-white/50 text-sm">ID: Loading...</p>
+                                <p id="user-username" class="text-white/60 text-xs mt-1">@username</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="text-3xl">💎</div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
+                                    <p class="text-white/60 text-sm">Kuniga 50 ta olmos, har biri uchun 5 olmos</p>
+                                </div>
+                            </div>
+                            <div class="reward-badge px-3 py-1.5 rounded-full">
+                                <span class="text-green-400 font-bold text-sm">+5 💎</span>
+                            </div>
+                        </div>
+
+                        <!-- Kunlik limit progress bar -->
+                        <div id="limit-info" class="limit-info">
+                            <div class="limit-header">
+                                <span class="limit-text">Kunlik limit:</span>
+                                <span class="limit-count" id="limit-count">0/50</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="time-info">
+                                <div class="time-text">Limit soat <span class="time-value" id="reset-time">00:00</span> da yangilanadi (Toshkent vaqti)</div>
+                                <div class="time-text">Qolgan vaqt: <span class="time-value" id="time-remaining">24:00:00</span></div>
+                            </div>
+                        </div>
+
+                        <div id="ad-status" class="status-card rounded-2xl p-6 mb-5 text-center min-h-[100px] flex items-center justify-center">
+                            <p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>
+                        </div>
+
+                        <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
+                            <span class="text-2xl">▶️</span>
+                            <span>Reklamani boshlash</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="leaderboard-section" class="content-section">
+                    <div class="leaderboard-wrapper slide-up">
+                        <div class="leaderboard-card">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold">Reytinglar</h3>
+                                    <p class="text-xs text-white/60">Kunlik va umumiy top 10</p>
+                                </div>
+                                <div class="leaderboard-tabs" role="tablist" aria-label="Reyting turlari">
+                                    <button id="lb-tab-daily-main" class="leaderboard-tab active" type="button">Kunlik</button>
+                                    <button id="lb-tab-overall-main" class="leaderboard-tab" type="button">Umumiy</button>
+                                </div>
+                            </div>
+
+                            <div id="leaderboard-list" class="leaderboard-list" aria-live="polite">
+                                <div class="text-white/60 text-sm">Yuklanmoqda...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay:0.3s;">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="text-3xl">👑</div>
+                        <h2 class="text-xl font-bold text-white/90">Admin Panel</h2>
+                    </div>
+
+                    <div class="admin-card rounded-2xl p-5 mb-6">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <div class="text-xl">📈</div>
+                            <h3 class="font-bold text-white/90">Umumiy statistika</h3>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-users">0</p>
+                                <p class="text-xs text-white/60 mt-1">Foydalanuvchi</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-ads">0</p>
+                                <p class="text-xs text-white/60 mt-1">Reklamalar</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
+                                <p class="text-xs text-white/60 mt-1">Olmoslar</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="text-xl">⚡</div>
+                        <h3 class="font-bold text-white/90">Admin Amallar</h3>
+                    </div>
+                    
+                    <div class="admin-actions space-y-3 mb-6">
+                        <button id="force-refresh-btn" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-xl text-base transition-all duration-300 flex items-center justify-center space-x-2">
+                            <span class="text-xl">🔄</span>
+                            <span>Mini Appni Yangilash</span>
+                        </button>
+                        
+                        <button id="kick-all-users-btn" class="btn-danger w-full text-white font-bold py-3 px-4 rounded-xl text-base transition-all duration-300 flex items-center justify-center space-x-2">
+                            <span class="text-xl">👢</span>
+                            <span>Barchani Chiqarish</span>
+                        </button>
+                        
+                        <div class="text-xs text-white/50 text-center mt-2">
+                            Yangilash: foydalanuvchilar sahifasi yangilanadi<br>
+                            Chiqarish: barcha foydalanuvchilar chiqariladi
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="text-xl">👥</div>
+                        <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
+                    </div>
+                    <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+            <div class="menu-container">
+                <nav class="menu-nav">
+                    <button class="menu-item active" data-section="earn-section" id="menu-earn">
+                        <span class="menu-icon">💎</span>
+                        <span class="menu-label">Olmos ishlash</span>
+                    </button>
+                    <button class="menu-item" data-section="leaderboard-section" id="menu-leaderboard">
+                        <span class="menu-icon">🏆</span>
+                        <span class="menu-label">Reytinglar</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- REKLAMA SKRIPTI -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+    <!-- Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, get, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
+            authDomain: "rekchi-2dc2f.firebaseapp.com",
+            databaseURL: "https://rekchi-2dc2f-default-rtdb.firebaseio.com",
+            projectId: "rekchi-2dc2f",
+            storageBucket: "rekchi-2dc2f.firebasestorage.app",
+            messagingSenderId: "352655860270",
+            appId: "1:352655860270:web:e071c82f4b911c21c0b5bf",
+            measurementId: "G-4WVC8S5V3R"
+        };
+        const firebaseApp = initializeApp(firebaseConfig);
+        const db = getDatabase(firebaseApp);
+
+        const ADMIN_IDS = ['7500103239', '7104718080'];
+        const DAILY_DIAMOND_LIMIT = 50; // Kuniga 50 ta olmos
+        const REWARD_AMOUNT = 5; // Har bir reklama uchun 5 olmos
+        const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
+        const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
+        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
+        
+        // Rewarded reklama blockId
+        const REWARDED_BLOCK_ID = "19784";
+        const ADSONAR_AD_UNIT = "rekchiai"; // AdSonar uchun reklama unit nomi
+
+        // Toshkent vaqti (UTC+5)
+        const TASHKENT_OFFSET = 5 * 60 * 60 * 1000; // 5 soat millisekundlarda
+
+        let currentUser = null;
+        let allUsers = [];
+        let isAdmin = false;
+        let botBalance = 0;
+        let currentLeaderboard = 'daily';
+        let isWatchingAd = false;
+        let currentAdProvider = 'adsgram'; // 'adsgram' yoki 'adsonar'
+        let rewardedAdController = null;
+        let hasShownWelcomeModal = false;
+        let todayDiamondEarned = 0; // Bugun ishlangan olmoslar soni (50 taga yetguncha)
+        let timeUpdateInterval = null;
+
+        // Toshkent vaqtini olish
+        function getTashkentTime() {
+            const now = new Date();
+            // UTC vaqtiga 5 soat qo'shamiz (Toshkent vaqti)
+            return new Date(now.getTime() + TASHKENT_OFFSET);
+        }
+
+        // Toshkent vaqti bo'yicha sana olish (YYYY-MM-DD)
+        function getTashkentDateString() {
+            const tashkentTime = getTashkentTime();
+            const year = tashkentTime.getUTCFullYear();
+            const month = String(tashkentTime.getUTCMonth() + 1).padStart(2, '0');
+            const date = String(tashkentTime.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${date}`;
+        }
+
+        // Limit qayta tiklanadigan vaqtni hisoblash
+        function calculateResetTime() {
+            const tashkentTime = getTashkentTime();
+            // Keyingi kun 00:00 Toshkent vaqti
+            const nextDay = new Date(tashkentTime);
+            nextDay.setUTCHours(24, 0, 0, 0); // Keyingi kun 00:00
+            
+            // Qolgan vaqtni hisoblash
+            const timeRemaining = nextDay - tashkentTime;
+            
+            return {
+                nextReset: nextDay,
+                timeRemaining: timeRemaining
+            };
+        }
+
+        // Qolgan vaqtni formatlash
+        function formatTimeRemaining(ms) {
+            const hours = Math.floor(ms / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Vaqt displeyni yangilash
+        function updateTimeDisplay() {
+            const resetInfo = calculateResetTime();
+            const resetTimeElement = document.getElementById('reset-time');
+            const timeRemainingElement = document.getElementById('time-remaining');
+            
+            if (resetTimeElement) {
+                resetTimeElement.textContent = '00:00';
+            }
+            
+            if (timeRemainingElement) {
+                timeRemainingElement.textContent = formatTimeRemaining(resetInfo.timeRemaining);
+            }
+            
+            // Agar vaqt tugagan bo'lsa (1 daqiqadan kam)
+            if (resetInfo.timeRemaining < 60000) {
+                // Limitni yangilash uchun tekshirish
+                setTimeout(() => {
+                    checkDailyDiamondLimit();
+                }, 60000); // 1 daqiqadan keyin tekshirish
+            }
+        }
+
+        // Helpers
+        async function getTelegramProfilePhoto(userId, username) {
+            try {
+                const tg = window.Telegram?.WebApp;
+                if (tg?.initDataUnsafe?.user?.photo_url) return tg.initDataUnsafe.user.photo_url;
+                if (username) return `https://t.me/i/userpic/320/${username}.jpg`;
+                return createFullGradientAvatar(userId);
+            } catch (e) {
+                return createFullGradientAvatar(userId);
+            }
+        }
+        
+        function createFullGradientAvatar(userId) {
+            const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
+            const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
+            const [c1,c2] = gradients[idx];
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
+            return 'data:image/svg+xml;base64,' + btoa(svg);
+        }
+
+        function escapeHtml(str) { 
+            if (!str) return ''; 
+            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            // Toshkent vaqtini formatlash
+            const tashkentTime = new Date(date.getTime() + TASHKENT_OFFSET);
+            return tashkentTime.toISOString().slice(0, 16).replace('T', ' ');
+        }
+
+        // Kunlik limitni tekshirish funksiyasi (Toshkent vaqtida)
+        function checkDailyDiamondLimit() {
+            const tashkentDateKey = getTashkentDateString(); // Toshkent sana
+            
+            if (currentUser) {
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const ads_by_day = userData.ads_by_day || {};
+                        
+                        // Bugun ishlangan olmoslar sonini hisoblash (har bir reklama = 5 olmos)
+                        const todayAdsCount = parseInt(ads_by_day[tashkentDateKey] || 0);
+                        todayDiamondEarned = todayAdsCount * REWARD_AMOUNT;
+                        
+                        // Limit progress bari va matnini yangilash
+                        updateLimitDisplay();
+                        
+                        // Agar kunlik olmos limiti (50 ta) to'lgan bo'lsa, tugmani bloklash
+                        const watchBtn = document.getElementById('watch-ad-btn');
+                        if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
+                            watchBtn.disabled = true;
+                            watchBtn.innerHTML = '<span>Kunlik limit tugadi</span>';
+                            document.getElementById('ad-status').innerHTML = 
+                                '<p class="text-yellow-400 font-bold">Kunlik limit tugadi! Ertaga qayta urinib ko\'ring.</p>';
+                        } else {
+                            watchBtn.disabled = false;
+                            watchBtn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+                        }
+                    }
+                });
+            }
+        }
+
+        // Limit displeyni yangilash
+        function updateLimitDisplay() {
+            const limitCount = document.getElementById('limit-count');
+            const progressFill = document.getElementById('progress-fill');
+            
+            const progressPercent = (todayDiamondEarned / DAILY_DIAMOND_LIMIT) * 100;
+            
+            if (limitCount) {
+                limitCount.textContent = `${todayDiamondEarned}/${DAILY_DIAMOND_LIMIT}`;
+            }
+            
+            if (progressFill) {
+                progressFill.style.width = `${progressPercent}%`;
+            }
+            
+            // Vaqt displeyni yangilash
+            updateTimeDisplay();
+        }
+
+        // Modal functions
+        function showWelcomeModal() {
+            if (hasShownWelcomeModal) return;
+            
+            const modal = document.getElementById('welcome-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Check if this is first visit
+            const firstVisit = localStorage.getItem('rekchiai_first_visit');
+            if (!firstVisit) {
+                hasShownWelcomeModal = true;
+            }
+        }
+
+        function hideWelcomeModal() {
+            const modal = document.getElementById('welcome-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Mark as visited
+            localStorage.setItem('rekchiai_first_visit', 'true');
+        }
+
+        // User Info Modal functions
+        function showUserInfoModal(userData) {
+            const modal = document.getElementById('user-info-modal');
+            
+            // Ma'lumotlarni to'ldirish
+            document.getElementById('info-name').textContent = userData.first_name || 'Foydalanuvchi';
+            document.getElementById('info-username').textContent = userData.username ? `@${userData.username}` : 'Yo\'q';
+            document.getElementById('info-id').textContent = userData.user_id || '-';
+            document.getElementById('info-diamonds').textContent = `${userData.diamonds || 0} 💎`;
+            document.getElementById('info-ads').textContent = userData.ads_watched || 0;
+            document.getElementById('info-created').textContent = formatDate(userData.created_at);
+            document.getElementById('info-last-active').textContent = formatDate(userData.updated_at);
+            
+            // Bugun ishlangan olmoslar sonini hisoblash - Toshkent vaqtida
+            const tashkentDateKey = getTashkentDateString();
+            const ads_by_day = userData.ads_by_day || {};
+            const todayAdsCount = parseInt(ads_by_day[tashkentDateKey] || 0);
+            const todayDiamonds = todayAdsCount * REWARD_AMOUNT;
+            const todayLimitReached = todayDiamonds >= DAILY_DIAMOND_LIMIT;
+            
+            document.getElementById('info-limit-reached').textContent = todayLimitReached ? 'Ha ✅' : `Yoʻq (${todayDiamonds}/50)`;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideUserInfoModal() {
+            const modal = document.getElementById('user-info-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Init Telegram
+        function initTelegram() {
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+                window.Telegram.WebApp.setBackgroundColor('#0f0f0f');
+                window.Telegram.WebApp.setHeaderColor('#0f0f0f');
+                const tg = window.Telegram.WebApp;
+                const user = tg.initDataUnsafe?.user;
+                if (user) {
+                    currentUser = {
+                        user_id: user.id.toString(),
+                        username: user.username || '',
+                        first_name: user.first_name || 'Foydalanuvchi',
+                        last_name: user.last_name || '',
+                        photo_url: user.photo_url || null,
+                        language_code: user.language_code || 'uz'
+                    };
+                    isAdmin = ADMIN_IDS.includes(currentUser.user_id);
+                } else {
+                    currentUser = { 
+                        user_id: 'web_' + Date.now(), 
+                        username: 'foydalanuvchi', 
+                        first_name: 'Foydalanuvchi', 
+                        last_name:'', 
+                        photo_url:null, 
+                        language_code:'uz' 
+                    };
+                }
+            } else {
+                currentUser = { 
+                    user_id: 'web_' + Date.now(), 
+                    username: 'foydalanuvchi', 
+                    first_name: 'Foydalanuvchi', 
+                    last_name:'', 
+                    photo_url:null, 
+                    language_code:'uz' 
+                };
+            }
+        }
+
+        // Load/create user in Firebase
+        async function loadOrCreateUser() {
+            if (!currentUser) return null;
+            try {
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                if (!snapshot.exists()) {
+                    const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
+                    const newUser = {
+                        user_id: currentUser.user_id,
+                        username: currentUser.username || '',
+                        first_name: currentUser.first_name || 'Foydalanuvchi',
+                        last_name: currentUser.last_name || '',
+                        photo_url: profilePhoto,
+                        language_code: currentUser.language_code || 'uz',
+                        ads_by_day: {},
+                        diamonds: 0,
+                        ads_watched: 0,
+                        withdraw_history: [],
+                        last_ad_time: new Date().toISOString(),
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                        total_clicks: 0,
+                        verified_clicks: 0,
+                        fake_clicks: 0,
+                        click_history: [],
+                        last_click_time: null,
+                        last_verified_click: null,
+                        avg_click_duration: 0,
+                        external_clicks: 0,
+                        rewarded_ads: 0,
+                        daily_limit_reset: new Date().toISOString(),
+                        last_refresh: new Date().toISOString()
+                    };
+                    await set(userRef, newUser);
+                    return newUser;
+                } else {
+                    let userData = snapshot.val();
+                    
+                    // Admin yangilash so'rovini tekshirish
+                    if (userData.force_refresh) {
+                        // Yangilash kerak bo'lsa, sahifani yangilash
+                        location.reload();
+                        return userData;
+                    }
+                    
+                    if (!userData.photo_url) {
+                        const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
+                        const updates = { 
+                            photo_url: profilePhoto, 
+                            username: currentUser.username || userData.username, 
+                            first_name: currentUser.first_name || userData.first_name, 
+                            updated_at: new Date().toISOString(),
+                            last_refresh: new Date().toISOString()
+                        };
+                        await update(userRef, updates);
+                        userData = { ...userData, ...updates };
+                    }
+                    if (!userData.ads_by_day) {
+                        await update(userRef, { ads_by_day: {} });
+                        userData.ads_by_day = {};
+                    }
+                    if (typeof userData.rewarded_ads === 'undefined') {
+                        await update(userRef, { 
+                            rewarded_ads: userData.rewarded_ads || 0,
+                            daily_limit_reset: userData.daily_limit_reset || new Date().toISOString(),
+                            last_refresh: new Date().toISOString()
+                        });
+                    }
+                    
+                    // Kunlik limitni tekshirish (50 ta olmos) - Toshkent vaqtida
+                    checkDailyDiamondLimit();
+                    
+                    return userData;
+                }
+            } catch (err) {
+                console.error('loadOrCreateUser error', err);
+                return null;
+            }
+        }
+        
+        async function updateUserData(updates) {
+            if (!currentUser) return false;
+            try {
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                await update(userRef, { ...updates, updated_at: new Date().toISOString() });
+                return true;
+            } catch (err) {
+                console.error('updateUserData error', err);
+                return false;
+            }
+        }
+
+        // Admin funksiyalari
+        async function forceRefreshAllUsers() {
+            try {
+                const usersRef = ref(db, 'users');
+                const snapshot = await get(usersRef);
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    const updates = {};
+                    
+                    Object.keys(users).forEach(userId => {
+                        updates[`${userId}/force_refresh`] = true;
+                        updates[`${userId}/last_refresh`] = new Date().toISOString();
+                    });
+                    
+                    await update(ref(db, 'users'), updates);
+                    
+                    // 5 soniyadan so'ng refresh flag'ini olib tashlash
+                    setTimeout(async () => {
+                        const removeUpdates = {};
+                        Object.keys(users).forEach(userId => {
+                            removeUpdates[`${userId}/force_refresh`] = null;
+                        });
+                        await update(ref(db, 'users'), removeUpdates);
+                    }, 5000);
+                    
+                    return { success: true, message: `${Object.keys(users).length} ta foydalanuvchi yangilandi` };
+                }
+                return { success: false, message: 'Foydalanuvchilar topilmadi' };
+            } catch (err) {
+                console.error('forceRefreshAllUsers error', err);
+                return { success: false, message: 'Xatolik: ' + err.message };
+            }
+        }
+        
+        async function kickAllUsers() {
+            try {
+                const usersRef = ref(db, 'users');
+                const snapshot = await get(usersRef);
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    const userCount = Object.keys(users).length;
+                    
+                    // Barcha foydalanuvchilarni o'chirish
+                    await remove(usersRef);
+                    
+                    return { success: true, message: `${userCount} ta foydalanuvchi chiqarildi` };
+                }
+                return { success: false, message: 'Foydalanuvchilar topilmadi' };
+            } catch (err) {
+                console.error('kickAllUsers error', err);
+                return { success: false, message: 'Xatolik: ' + err.message };
+            }
+        }
+
+        // Subscribe to all users for leaderboard + admin
+        function subscribeToUsers() {
+            const usersRef = ref(db, 'users');
+            onValue(usersRef, (snapshot) => {
+                allUsers = [];
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    Object.keys(data).forEach(k => {
+                        allUsers.push(data[k]);
+                    });
+                }
+                updateAdminPanel();
+                renderLeaderboardsMain();
+            }, (err) => console.error('subscribeToUsers error', err));
+        }
+
+        // Render leaderboards into the standalone leaderboard section - Toshkent vaqtida
+        function renderLeaderboardsMain() {
+            const listEl = document.getElementById('leaderboard-list');
+            if (!listEl) return;
+            const tashkentDateKey = getTashkentDateString(); // Toshkent sana
+
+            const mapped = allUsers.map(u => {
+                const ads_by_day = u.ads_by_day || {};
+                const diamonds = parseInt(u.diamonds || 0);
+                const todayAds = parseInt(ads_by_day[tashkentDateKey] || 0);
+                
+                // Kunlik olmoslar (har bir reklama = 5 olmos, maksimal 50)
+                const todayDiamonds = Math.min(todayAds * REWARD_AMOUNT, DAILY_DIAMOND_LIMIT);
+                
+                return {
+                    id: u.user_id,
+                    name: u.first_name || 'Foydalanuvchi',
+                    username: u.username || '',
+                    photo_url: u.photo_url || '',
+                    todayCount: todayDiamonds, // Bugungi olmoslar (maksimal 50)
+                    overallCount: diamonds, // Umumiy olmoslar
+                    verified_clicks: u.verified_clicks || 0,
+                    user_data: u // Barcha ma'lumotlarni saqlash
+                };
+            });
+
+            let sorted;
+            if (currentLeaderboard === 'daily') {
+                sorted = mapped.sort((a,b) => b.todayCount - a.todayCount || b.verified_clicks - a.verified_clicks);
+            } else {
+                sorted = mapped.sort((a,b) => b.overallCount - a.overallCount || b.verified_clicks - a.verified_clicks);
+            }
+
+            const top = sorted.slice(0,10);
+            if (top.length === 0) {
+                listEl.innerHTML = `<div class="text-white/60 text-sm">Hozircha ma'lumot yo'q.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = top.map((u,i) => {
+                // Agar admin bo'lsa, click event qo'shish
+                const clickHandler = isAdmin ? `onclick="handleLeaderboardItemClick('${u.id}')"` : '';
+                
+                return `
+                <div class="leaderboard-item" ${clickHandler} data-user-id="${u.id}">
+                    <div class="leader-rank">${i+1}</div>
+                    <div class="leader-avatar">
+                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
+                    </div>
+                    <div class="leader-meta">
+                        <div class="leader-name">${escapeHtml(u.name)}</div>
+                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
+                    </div>
+                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
+                </div>
+            `}).join('');
+        }
+
+        // Leaderboard item bosilganda (faqat admin uchun)
+        function handleLeaderboardItemClick(userId) {
+            if (!isAdmin) return;
+            
+            const userData = allUsers.find(u => u.user_id === userId);
+            if (userData) {
+                showUserInfoModal(userData);
+            }
+        }
+
+        // Admin panel render - Toshkent vaqtida
+        function updateAdminPanel() {
+            const totalUsers = allUsers.length;
+            const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
+            const totalDiamonds = allUsers.reduce((s,u)=> s + (parseInt(u.diamonds||0)), 0);
+            
+            document.getElementById('admin-total-users').textContent = totalUsers;
+            document.getElementById('admin-total-ads').textContent = totalAds;
+            document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
+
+            const usersList = document.getElementById('users-list');
+            if (!usersList) return;
+            
+            const tashkentDateKey = getTashkentDateString(); // Toshkent sana
+            
+            usersList.innerHTML = allUsers
+                .sort((a,b)=> (parseInt(b.diamonds||0)) - (parseInt(a.diamonds||0)))
+                .slice(0,20)
+                .map(u => {
+                    const diamonds = parseInt(u.diamonds || 0);
+                    
+                    // Bugun ishlangan olmoslar - Toshkent vaqtida
+                    const ads_by_day = u.ads_by_day || {};
+                    const todayAds = parseInt(ads_by_day[tashkentDateKey] || 0);
+                    const todayDiamonds = todayAds * REWARD_AMOUNT;
+                    const todayLimitReached = todayDiamonds >= DAILY_DIAMOND_LIMIT;
+                    
+                    // Admin uchun click event
+                    const clickHandler = isAdmin ? `onclick="showUserInfoModal(${JSON.stringify(u).replace(/"/g, '&quot;')})"` : '';
+                    
+                    return `
+                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300 ${todayLimitReached ? 'border border-yellow-500/30' : ''}" ${clickHandler} style="cursor: ${isAdmin ? 'pointer' : 'default'}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="avatar-container">
+                                    ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
+                                    <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
+                                    <p class="text-xs ${todayLimitReached ? 'text-yellow-500' : 'text-green-500'} mt-1">
+                                        Bugun: ${todayDiamonds}/50 olmos
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-yellow-400">${diamonds} 💎</p>
+                                <p class="text-xs text-white/50">${u.ads_watched || 0} reklama</p>
+                            </div>
+                        </div>
+                    </div>
+                `}).join('');
+        }
+
+        // ADSGRAM REWARDED REKLAMA
+        async function showAdsGramAd() {
+            return new Promise((resolve, reject) => {
+                try {
+                    if (!rewardedAdController) {
+                        rewardedAdController = window.Adsgram.init({ 
+                            blockId: REWARDED_BLOCK_ID 
+                        });
+                    }
+                    
+                    rewardedAdController.show().then((result) => {
+                        console.log('AdsGram reklama natijasi:', result);
+                        if (result.done) {
+                            resolve({ success: true, provider: 'adsgram' });
+                        } else {
+                            resolve({ success: false, provider: 'adsgram', message: 'Reklama to\'liq ko\'rilmadi' });
+                        }
+                    }).catch((errorResult) => {
+                        console.error('AdsGram reklama xatosi:', errorResult);
+                        reject({ success: false, provider: 'adsgram', error: errorResult });
+                    });
+                    
+                } catch (e) {
+                    console.error('AdsGram init xatosi:', e);
+                    reject({ success: false, provider: 'adsgram', error: e });
+                }
+            });
+        }
+
+        // ADSONAR REWARDED REKLAMA
+        async function showAdSonarAd() {
+            return new Promise((resolve, reject) => {
+                try {
+                    if (!window.Sonar) {
+                        reject({ success: false, provider: 'adsonar', error: 'AdSonar not loaded' });
+                        return;
+                    }
+                    
+                    window.Sonar.show({
+                        adUnit: ADSONAR_AD_UNIT,
+                        loader: true,
+                        
+                        onStart: () => {
+                            console.log('AdSonar reklama yuklanmoqda...');
+                        },
+                        
+                        onShow: () => {
+                            console.log('AdSonar reklama ko\'rsatilmoqda...');
+                        },
+                        
+                        onError: () => {
+                            console.log('AdSonar reklama xatosi');
+                            resolve({ success: false, provider: 'adsonar', message: 'Reklama xatosi' });
+                        },
+
+                        onClose: () => {
+                            console.log('AdSonar reklama yopildi');
+                        },
+
+                        onReward: () => {
+                            console.log('AdSonar reklama to\'liq ko\'rildi, bonus berildi');
+                            resolve({ success: true, provider: 'adsonar' });
+                        },
+                    }).then((result) => {
+                        if (result.status === 'error') {
+                            console.error('AdSonar reklama muvaffaqiyatsiz:', result.message);
+                            resolve({ success: false, provider: 'adsonar', message: result.message });
+                        } else {
+                            console.log('AdSonar reklama holati:', result.status);
+                        }
+                    }).catch((error) => {
+                        console.error('AdSonar catch xatosi:', error);
+                        reject({ success: false, provider: 'adsonar', error: error });
+                    });
+                    
+                } catch (e) {
+                    console.error('AdSonar xatosi:', e);
+                    reject({ success: false, provider: 'adsonar', error: e });
+                }
+            });
+        }
+
+        // REWARDED REKLAMANI NAVBAT ASOSIDA KO'RSATISH
+        async function watchAd() {
+            if (!currentUser || isWatchingAd) return;
+            
+            // Kunlik olmos limitini tekshirish (50 ta)
+            if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
+                document.getElementById('ad-status').innerHTML = 
+                    '<p class="text-yellow-400 font-bold">Kunlik limit tugadi! Ertaga qayta urinib ko\'ring.</p>';
+                return;
+            }
+            
+            const btn = document.getElementById('watch-ad-btn');
+            const statusDiv = document.getElementById('ad-status');
+            
+            isWatchingAd = true;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+            
+            // Oddiy "Reklama yuklanyapti..." xabari
+            statusDiv.innerHTML = `<p class="text-yellow-400 font-bold">Reklama yuklanyapti...</p>`;
+            
+            try {
+                let result;
+                
+                // Navbat asosida reklama ko'rsatish
+                if (currentAdProvider === 'adsgram') {
+                    result = await showAdsGramAd();
+                } else {
+                    result = await showAdSonarAd();
+                }
+                
+                console.log('Reklama natijasi:', result);
+                
+                if (result.success) {
+                    // Reklama to'liq ko'rilgan bo'lsa, bonus berish
+                    statusDiv.innerHTML = '<p class="text-green-400 font-bold">Reklama to\'liq ko\'rildi! Bonus berilmoqda...</p>';
+                    
+                    setTimeout(async () => {
+                        await giveBonusToUser(currentAdProvider);
+                        
+                        // Navbatni o'zgartirish: adsgram -> adsonar -> adsgram
+                        currentAdProvider = currentAdProvider === 'adsgram' ? 'adsonar' : 'adsgram';
+                    }, 1500);
+                    
+                } else {
+                    // Reklama to'liq ko'rilmagan yoki xatolik bo'lsa
+                    statusDiv.innerHTML = `<p class="text-yellow-400 font-bold">Reklama to\'liq ko\'rilmadi. Bonus berilmadi.</p>`;
+                    
+                    // Xatolik bo'lsa ham navbatni o'zgartirish
+                    currentAdProvider = currentAdProvider === 'adsgram' ? 'adsonar' : 'adsgram';
+                    
+                    resetWatchButton();
+                    setTimeout(() => { 
+                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                    }, 3000);
+                }
+                
+            } catch (err) {
+                console.error('Reklama xatosi:', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Reklama xatosi yoki to\'liq ko\'rilmadi.</p>';
+                
+                // Xatolik bo'lsa ham navbatni o'zgartirish
+                currentAdProvider = currentAdProvider === 'adsgram' ? 'adsonar' : 'adsgram';
+                
+                resetWatchButton();
+                setTimeout(() => { 
+                    statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>'; 
+                }, 3000);
+            }
+        }
+
+        // BONUS BERISH - FAQAT REWARDED REKLAMA TO'LIQ KO'RILGANDA
+        async function giveBonusToUser(provider = 'adsgram') {
+            const statusDiv = document.getElementById('ad-status');
+            
+            try {
+                // Kunlik olmos limitini tekshirish (50 ta)
+                if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
+                    statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Kunlik limit tugadi!</p>';
+                    resetWatchButton();
+                    return;
+                }
+                
+                statusDiv.innerHTML = '<p class="text-green-400 font-bold">Bonus hisoblanmoqda...</p>';
+                
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+
+                const tashkentDateKey = getTashkentDateString(); // Toshkent sana
+
+                const ads_by_day = userData.ads_by_day || {};
+                const newDayCount = (ads_by_day[tashkentDateKey] || 0) + 1;
+                const newOverall = (userData.ads_watched || 0) + 1;
+                
+                // Bugungi olmoslar sonini yangilash
+                todayDiamondEarned = newDayCount * REWARD_AMOUNT;
+                
+                // Yangi olmoslar sonini hisoblash
+                const newDiamonds = (userData.diamonds || 0) + REWARD_AMOUNT;
+                
+                const clickHistory = userData.click_history || [];
+                clickHistory.push({
+                    time: new Date().toISOString(),
+                    duration: 0,
+                    rewarded: true,
+                    type: 'rewarded_completed',
+                    verified: true,
+                    provider: provider,
+                    reward_amount: REWARD_AMOUNT
+                });
+                const limitedHistory = clickHistory.slice(-20);
+
+                const updates = { 
+                    ads_watched: newOverall, 
+                    [`ads_by_day/${tashkentDateKey}`]: newDayCount, 
+                    last_ad_time: new Date().toISOString(),
+                    rewarded_ads: (userData.rewarded_ads || 0) + 1,
+                    diamonds: newDiamonds
+                };
+                
+                const ok = await updateUserData(updates);
+                if (!ok) throw new Error('Firebase yangilashida xatolik');
+                
+                // Bot balansiga qo'shish (5 olmos)
+                try { 
+                    await addToBotBalance(REWARD_AMOUNT);
+                } catch(e){ 
+                    console.warn('Bot add failed', e); 
+                }
+
+                // Limit displeyni yangilash
+                updateLimitDisplay();
+                
+                renderLeaderboardsMain();
+                await fetchBotBalance();
+
+                statusDiv.innerHTML = `
+                    <div class="text-center slide-up">
+                        <div class="text-6xl mb-3" style="animation:celebrate .8s;">🎉</div>
+                        <p class="text-green-400 font-bold text-xl mb-1">Tabriklaymiz!</p>
+                        <div class="my-4">
+                            <div class="text-3xl font-bold text-yellow-400 mb-2">+${REWARD_AMOUNT} 💎</div>
+                            <p class="text-white/60 text-sm">Reklama to'liq ko'rildi</p>
+                            <p class="text-white/40 text-xs mt-2">Bugungi holat: ${todayDiamondEarned}/${DAILY_DIAMOND_LIMIT}</p>
+                            ${todayDiamondEarned >= DAILY_DIAMOND_LIMIT ? 
+                                '<p class="text-yellow-400 text-xs font-bold mt-2">Kunlik limit tugadi! Ertaga qayta urinib ko\'ring.</p>' : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Agar kunlik limit to'lgandan keyin, tugmani bloklash
+                if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
+                    const watchBtn = document.getElementById('watch-ad-btn');
+                    watchBtn.disabled = true;
+                    watchBtn.innerHTML = '<span>Kunlik limit tugadi</span>';
+                }
+                
+                resetWatchButton();
+                
+                setTimeout(() => {
+                    if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
+                        statusDiv.innerHTML = '<p class="text-yellow-400 font-bold">Kunlik limit tugadi! Ertaga qayta urinib ko\'ring.</p>';
+                    } else {
+                        statusDiv.innerHTML = '<p class="text-white/70">Reklama tayyor. Tugmani bosing! 🚀</p>';
+                    }
+                }, 4000);
+                
+            } catch (err) {
+                console.error('Bonus berishda xatolik', err);
+                statusDiv.innerHTML = '<p class="text-red-400">Xatolik!</p>';
+                resetWatchButton();
+            }
+        }
+
+        function resetWatchButton() {
+            const btn = document.getElementById('watch-ad-btn');
+            isWatchingAd = false;
+            
+            // Agar kunlik limit (50 ta olmos) to'lmagan bo'lsa, tugmani faollashtirish
+            if (todayDiamondEarned < DAILY_DIAMOND_LIMIT) {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
+            }
+        }
+
+        // Server bot API calls
+        async function addToBotBalance(amount) {
+            if (!currentUser) throw new Error('No user');
+            const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const resp = await fetch(BOT_API_ADD_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+                body: body.toString(), 
+                signal: controller.signal 
+            });
+            clearTimeout(timeoutId);
+            if (!resp.ok) { 
+                const txt = await resp.text().catch(() => null); 
+                console.warn('addToBotBalance non-OK', resp.status, txt); 
+                return { success: false, message: 'HTTP ' + resp.status }; 
+            }
+            return await resp.json();
+        }
+
+        async function fetchBotBalance() {
+            if (!currentUser) return;
+            try {
+                const url = new URL(BOT_API_GET_URL);
+                url.searchParams.set('key', BOT_API_KEY);
+                url.searchParams.set('user_id', currentUser.user_id);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const resp = await fetch(url.toString(), { 
+                    method: 'GET', 
+                    headers: { 'Accept': 'application/json' }, 
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+                if (!resp.ok) { 
+                    console.warn('fetchBotBalance non-OK', resp.status); 
+                    return; 
+                }
+                const json = await resp.json();
+                if (json && json.success) {
+                    botBalance = parseInt(json.balance || 0) || 0;
+                    document.getElementById('diamond-count').textContent = `${botBalance}`;
+                } else {
+                    console.warn('fetchBotBalance returned error', json);
+                }
+            } catch (err) {
+                console.warn('fetchBotBalance error', err);
+            }
+        }
+
+        // UI bindings (menu + leaderboard tabs)
+        function bindUI() {
+            document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
+            
+            // Modal OK button
+            document.getElementById('modal-ok-btn')?.addEventListener('click', hideWelcomeModal);
+            
+            // User Info Modal close button
+            document.getElementById('close-user-info-btn')?.addEventListener('click', hideUserInfoModal);
+
+            // bottom menu
+            document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
+            document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
+
+            // leaderboard tabs
+            document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
+                currentLeaderboard = 'daily';
+                document.getElementById('lb-tab-daily-main').classList.add('active');
+                document.getElementById('lb-tab-overall-main').classList.remove('active');
+                renderLeaderboardsMain();
+            });
+            document.getElementById('lb-tab-overall-main')?.addEventListener('click', () => {
+                currentLeaderboard = 'overall';
+                document.getElementById('lb-tab-overall-main').classList.add('active');
+                document.getElementById('lb-tab-daily-main').classList.remove('active');
+                renderLeaderboardsMain();
+            });
+            
+            // Admin tugmalari
+            document.getElementById('force-refresh-btn')?.addEventListener('click', async () => {
+                if (!isAdmin) return;
+                
+                const btn = document.getElementById('force-refresh-btn');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+                
+                try {
+                    const result = await forceRefreshAllUsers();
+                    
+                    if (result.success) {
+                        alert(`✅ ${result.message}`);
+                    } else {
+                        alert(`❌ ${result.message}`);
+                    }
+                } catch (err) {
+                    alert('❌ Xatolik yuz berdi');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+            
+            document.getElementById('kick-all-users-btn')?.addEventListener('click', async () => {
+                if (!isAdmin) return;
+                
+                if (!confirm('Haqiqatan ham barcha foydalanuvchilarni chiqarmoqchimisiz?\nBu amalni bekor qilib bo\'lmaydi!')) {
+                    return;
+                }
+                
+                const btn = document.getElementById('kick-all-users-btn');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
+                
+                try {
+                    const result = await kickAllUsers();
+                    
+                    if (result.success) {
+                        alert(`✅ ${result.message}`);
+                        // O'zimizni ham chiqarish
+                        location.reload();
+                    } else {
+                        alert(`❌ ${result.message}`);
+                    }
+                } catch (err) {
+                    alert('❌ Xatolik yuz berdi');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        }
+
+        function switchSection(sectionId, menuButtonId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+            if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
+            if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
+        }
+
+        // Update user UI (avatar, name)
+        function updateUI(user) {
+            if (!user) return;
+            const avatarDiv = document.getElementById('user-avatar');
+            if (user.photo_url) {
+                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
+            } else {
+                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+            }
+            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
+            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
+            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
+            document.getElementById('diamond-count').textContent = `${botBalance}`;
+            
+            // Bugungi olmoslarni ko'rsatish
+            updateLimitDisplay();
+        }
+
+        // App init
+        async function initializeAppMain() {
+            initTelegram();
+            bindUI();
+
+            const user = await loadOrCreateUser();
+            if (user) {
+                const userRef = ref(db, 'users/' + currentUser.user_id);
+                onValue(userRef, (snap) => { 
+                    if (snap.exists()) {
+                        const userData = snap.val();
+                        updateUI(userData);
+                        
+                        // Har safar ma'lumot yangilanganda kunlik limitni tekshirish
+                        checkDailyDiamondLimit();
+                    }
+                });
+
+                subscribeToUsers();
+
+                if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
+            }
+
+            if (currentUser) {
+                await fetchBotBalance();
+                setInterval(fetchBotBalance, 30000);
+                
+                // Vaqt displeyni har soniya yangilash
+                if (timeUpdateInterval) {
+                    clearInterval(timeUpdateInterval);
+                }
+                timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
+            }
+
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+            
+            // Limit displeyni yangilash
+            updateLimitDisplay();
+            
+            // Show welcome modal after a short delay
+            setTimeout(() => {
+                showWelcomeModal();
+            }, 500);
+        }
+
+        // start
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
+        else initializeAppMain();
+    </script>
+</body>
+</html>
