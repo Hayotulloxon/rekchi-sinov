@@ -201,63 +201,6 @@
             color: #0096ff;
             font-weight: 600;
         }
-        .warning-text {
-            color: #ffd54a;
-            font-weight: 600;
-        }
-        
-        /* Limit progress bar styles */
-        .limit-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 16px;
-        }
-        .limit-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .limit-text {
-            font-size: 14px;
-            color: rgba(255, 255,255, 0.7);
-        }
-        .limit-count {
-            font-weight: bold;
-            color: #ffd54a;
-        }
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0096ff, #0066cc);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-        
-        /* Time info styles */
-        .time-info {
-            background: rgba(0, 150, 255, 0.05);
-            border: 1px solid rgba(0, 150, 255, 0.1);
-            border-radius: 12px;
-            padding: 10px;
-            margin-top: 8px;
-            text-align: center;
-        }
-        .time-text {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .time-value {
-            font-size: 12px;
-            font-weight: bold;
-            color: #0096ff;
-        }
         
         /* User info modal */
         .user-info-modal {
@@ -435,7 +378,7 @@
         <div class="reward-icon">🎉</div>
         <div class="reward-content">
             <div class="reward-title">Tabriklaymiz!</div>
-            <div class="reward-amount" id="reward-amount">+5 💎</div>
+            <div class="reward-amount" id="reward-amount">+1 💎</div>
             <div class="reward-subtitle" id="reward-subtitle">Reklama to'liq ko'rildi</div>
         </div>
     </div>
@@ -470,18 +413,18 @@
                         </div>
                         
                         <div class="info-item">
-                            <div class="info-icon">⚠️</div>
+                            <div class="info-icon">🎥</div>
                             <div class="info-content">
-                                <h4>Diqqat! Muhim qoida:</h4>
-                                <p>Har <span class="warning-text">3 ta olmos</span> yeg'ganingizda <span class="warning-text">bitta klik</span> qiling. Ya'ni reklama qilayotgan joyga kirib chiqing. (2-3 sekund vaqt ketishi mumkin).</p>
+                                <h4>Har bir reklama uchun 1 olmos!</h4>
+                                <p>Har bir reklama to'liq ko'rganingizda <span class="highlight-text">1 olmos</span> olasiz. Limit yo'q!</p>
                             </div>
                         </div>
                         
                         <div class="info-item">
-                            <div class="info-icon">🎥</div>
+                            <div class="info-icon">⚡</div>
                             <div class="info-content">
-                                <h4>Tushunmagan bo'lsangiz:</h4>
-                                <p>Botdagi <span class="highlight-text">"Videoqo'llanma"</span> tugmasini bosib, olmos yeg'ish haqidagi videoni ko'ring!</p>
+                                <h4>Cheksiz imkoniyat!</h4>
+                                <p>Siz cheksiz reklama ko'rib, cheksiz olmos yeg'ishingiz mumkin!</p>
                             </div>
                         </div>
                     </div>
@@ -518,23 +461,7 @@
                     </div>
                     <div class="user-info-item">
                         <span class="user-info-label">Olmoslar:</span>
-                        <span class="user-info-value" id="info-diamonds">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">Reklamalar:</span>
-                        <span class="user-info-value" id="info-ads">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">Yaratilgan:</span>
-                        <span class="user-info-value" id="info-created">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">Oxirgi faollik:</span>
-                        <span class="user-info-value" id="info-last-active">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">Bugun limit:</span>
-                        <span class="user-info-value" id="info-limit-reached">-</span>
+                        <span class="user-info-value" id="info-diamonds"> 0 💎</span>
                     </div>
                 </div>
                 
@@ -554,7 +481,7 @@
                             <div class="text-3xl diamond-icon">💎</div>
                             <div>
                                 <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Kuniga 50 ta olmos</p>
+                                <p class="text-xs text-white/60">Cheksiz olmos ishlash</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
@@ -584,30 +511,15 @@
                                 <div class="text-3xl">💎</div>
                                 <div>
                                     <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
-                                    <p class="text-white/60 text-sm">Kuniga 50 ta olmos, har biri uchun 5 olmos</p>
+                                    <p class="text-white/60 text-sm">Cheksiz olmos ishlash, har biri uchun 1 olmos</p>
                                 </div>
                             </div>
                             <div class="reward-badge px-3 py-1.5 rounded-full">
-                                <span class="text-green-400 font-bold text-sm">+5 💎</span>
+                                <span class="text-green-400 font-bold text-sm">+1 💎</span>
                             </div>
                         </div>
 
-                        <!-- Kunlik limit progress bar -->
-                        <div id="limit-info" class="limit-info">
-                            <div class="limit-header">
-                                <span class="limit-text">Kunlik limit:</span>
-                                <span class="limit-count" id="limit-count">0/50</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <div class="time-info">
-                                <div class="time-text">Limit soat <span class="time-value" id="reset-time">00:00</span> da yangilanadi (Toshkent vaqti)</div>
-                                <div class="time-text">Qolgan vaqt: <span class="time-value" id="time-remaining">24:00:00</span></div>
-                            </div>
-                        </div>
-
-                        <!-- Reklama holati (endilikda xabar yo'q) -->
+                        <!-- Reklama holati -->
                         <div id="ad-status" class="min-h-[60px]"></div>
 
                         <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
@@ -616,7 +528,7 @@
                         </button>
                         
                         <p class="text-center text-white/40 text-sm mt-4">
-                            Reklama to'liq ko'rilgandan so'ng <span class="text-green-400">+5 olmos</span> olasiz
+                            Reklama to'liq ko'rilgandan so'ng <span class="text-green-400">+1 olmos</span> olasiz
                         </p>
                     </div>
                 </div>
@@ -627,11 +539,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 class="text-lg font-bold">Reytinglar</h3>
-                                    <p class="text-xs text-white/60">Kunlik va umumiy top 10</p>
-                                </div>
-                                <div class="leaderboard-tabs" role="tablist" aria-label="Reyting turlari">
-                                    <button id="lb-tab-daily-main" class="leaderboard-tab active" type="button">Kunlik</button>
-                                    <button id="lb-tab-overall-main" class="leaderboard-tab" type="button">Umumiy</button>
+                                    <p class="text-xs text-white/60">Umumiy olmoslar bo'yicha top 10</p>
                                 </div>
                             </div>
 
@@ -657,10 +565,6 @@
                             <div>
                                 <p class="text-2xl font-bold text-yellow-400" id="admin-total-users">0</p>
                                 <p class="text-xs text-white/60 mt-1">Foydalanuvchi</p>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-ads">0</p>
-                                <p class="text-xs text-white/60 mt-1">Reklamalar</p>
                             </div>
                             <div>
                                 <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
@@ -732,8 +636,7 @@
         const db = getDatabase(firebaseApp);
 
         const ADMIN_IDS = ['7500103239', '7104718080'];
-        const DAILY_DIAMOND_LIMIT = 50;
-        const REWARD_AMOUNT = 5;
+        const REWARD_AMOUNT = 1; // 1 olmos har bir reklama uchun
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
         const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
@@ -741,22 +644,12 @@
         // Adsonar AD unit
         const ADSONAR_AD_UNIT = "rekchiai";
 
-        // Toshkent vaqti (UTC+5) millisekundlarda
-        const TASHKENT_OFFSET = 5 * 60 * 60 * 1000;
-
         let currentUser = null;
         let allUsers = [];
         let isAdmin = false;
         let botBalance = 0;
-        let currentLeaderboard = 'daily';
         let isWatchingAd = false;
         let hasShownWelcomeModal = false;
-        let todayDiamondEarned = 0;
-        let timeUpdateInterval = null;
-
-        // Firebase server vaqti uchun o'zgaruvchi
-        let serverTimeOffset = 0;
-        let lastServerTimeUpdate = 0;
 
         // ========== REWARD NOTIFICATION FUNCTIONS ==========
         function showRewardNotification(amount, subtitle = "Reklama to'liq ko'rildi") {
@@ -776,251 +669,19 @@
             }, 3000);
         }
 
-        // ========== VAQT FUNKSIYALARI ==========
-        // Firebase server vaqtini yangilash
-        async function updateServerTime() {
-            try {
-                const startTime = Date.now();
-                const timestampRef = ref(db, '.info/serverTimeOffset');
-                const snapshot = await get(timestampRef);
-                
-                if (snapshot.exists()) {
-                    const offset = snapshot.val();
-                    const endTime = Date.now();
-                    const roundTripTime = endTime - startTime;
-                    
-                    serverTimeOffset = offset + (roundTripTime / 2);
-                    lastServerTimeUpdate = Date.now();
-                    
-                    console.log('✅ Server vaqti yangilandi. Offset:', serverTimeOffset, 'ms');
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                console.error('❌ Server vaqtini yangilashda xatolik:', error);
-                return false;
-            }
-        }
-
-        // Server vaqtini olish
-        function getServerTimestamp() {
-            if (!lastServerTimeUpdate || (Date.now() - lastServerTimeUpdate) > 300000) {
-                updateServerTime().then(() => {
-                    console.log('Server vaqti yangilandi');
-                });
-            }
-            return Date.now() + serverTimeOffset;
-        }
-
-        // Toshkent vaqtini olish (server vaqtidan)
-        function getTashkentTime() {
-            const serverTime = getServerTimestamp();
-            return new Date(serverTime + TASHKENT_OFFSET);
-        }
-
-        // Toshkent vaqti bo'yicha sana olish (YYYY-MM-DD)
-        function getTashkentDateString() {
-            const tashkentTime = getTashkentTime();
-            const year = tashkentTime.getUTCFullYear();
-            const month = String(tashkentTime.getUTCMonth() + 1).padStart(2, '0');
-            const date = String(tashkentTime.getUTCDate()).padStart(2, '0');
-            return `${year}-${month}-${date}`;
-        }
-
-        // Keyingi Toshkent 00:00 vaqtini hisoblash (UTC formatida)
-        function getNextTashkentMidnight() {
-            const tashkentTime = getTashkentTime();
-            
-            // Keyingi kun 00:00 Toshkent vaqti
-            const nextMidnight = new Date(tashkentTime);
-            nextMidnight.setUTCHours(24, 0, 0, 0);
-            
-            // UTC ga qaytarish (serverTime uchun)
-            return new Date(nextMidnight.getTime() - TASHKENT_OFFSET);
-        }
-
-        // Limit qayta tiklanadigan vaqtni hisoblash (daily_limit_reset maydonidan)
-        function calculateResetTime() {
-            if (!currentUser) return { nextReset: null, timeRemaining: 0 };
-            
-            try {
-                const userData = allUsers.find(u => u.user_id === currentUser.user_id);
-                if (!userData || !userData.daily_limit_reset) {
-                    // Agar maydon yo'q bo'lsa, keyingi 00:00 ni hisoblaymiz
-                    const nextMidnight = getNextTashkentMidnight();
-                    const now = getServerTimestamp();
-                    const timeRemaining = nextMidnight.getTime() - now;
-                    
-                    return {
-                        nextReset: nextMidnight,
-                        timeRemaining: timeRemaining
-                    };
-                }
-                
-                const resetTime = new Date(userData.daily_limit_reset);
-                const now = getServerTimestamp();
-                const timeRemaining = resetTime.getTime() - now;
-                
-                return {
-                    nextReset: resetTime,
-                    timeRemaining: timeRemaining > 0 ? timeRemaining : 0
-                };
-            } catch (error) {
-                console.error('Reset vaqtini hisoblashda xatolik:', error);
-                const nextMidnight = getNextTashkentMidnight();
-                const now = getServerTimestamp();
-                const timeRemaining = nextMidnight.getTime() - now;
-                
-                return {
-                    nextReset: nextMidnight,
-                    timeRemaining: timeRemaining
-                };
-            }
-        }
-
-        // Qolgan vaqtni formatlash
-        function formatTimeRemaining(ms) {
-            if (ms <= 0) return '00:00:00';
-            
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // Vaqt displeyni yangilash
-        function updateTimeDisplay() {
-            try {
-                const resetInfo = calculateResetTime();
-                const resetTimeElement = document.getElementById('reset-time');
-                const timeRemainingElement = document.getElementById('time-remaining');
-                
-                if (resetTimeElement) {
-                    const tashkentResetTime = new Date(resetInfo.nextReset.getTime() + TASHKENT_OFFSET);
-                    const hours = tashkentResetTime.getUTCHours().toString().padStart(2, '0');
-                    const minutes = tashkentResetTime.getUTCMinutes().toString().padStart(2, '0');
-                    resetTimeElement.textContent = `${hours}:${minutes}`;
-                }
-                
-                if (timeRemainingElement) {
-                    timeRemainingElement.textContent = formatTimeRemaining(resetInfo.timeRemaining);
-                }
-                
-                // Agar vaqt tugagan bo'lsa (1 daqiqadan kam)
-                if (resetInfo.timeRemaining > 0 && resetInfo.timeRemaining < 60000) {
-                    setTimeout(() => {
-                        checkDailyDiamondLimit();
-                    }, 61000);
-                }
-            } catch (error) {
-                console.error('Vaqt displeyni yangilashda xatolik:', error);
-            }
-        }
-
         // Format date
         function formatDate(dateString) {
             if (!dateString) return '-';
             try {
                 const date = new Date(dateString);
-                // Toshkent vaqtini formatlash
-                const tashkentTime = new Date(date.getTime() + TASHKENT_OFFSET);
-                const year = tashkentTime.getUTCFullYear();
-                const month = String(tashkentTime.getUTCMonth() + 1).padStart(2, '0');
-                const day = String(tashkentTime.getUTCDate()).padStart(2, '0');
-                const hours = String(tashkentTime.getUTCHours()).padStart(2, '0');
-                const minutes = String(tashkentTime.getUTCMinutes()).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
                 return `${day}.${month}.${year} ${hours}:${minutes}`;
             } catch (e) {
                 return '-';
-            }
-        }
-
-        // ========== ASOSIY FUNKSIYALAR ==========
-        // Kunlik limitni tekshirish funksiyasi - FIXED VERSION
-        async function checkDailyDiamondLimit() {
-            if (!currentUser) return;
-            
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                if (!snapshot.exists()) return;
-                
-                const userData = snapshot.val();
-                const now = getServerTimestamp();
-                const nowDate = new Date(now);
-                
-                // Agar daily_limit_reset maydoni yo'q yoki hozirgi vaqt reset vaqtidan keyin bo'lsa
-                if (!userData.daily_limit_reset || nowDate >= new Date(userData.daily_limit_reset)) {
-                    // Yangi reset vaqtini belgilash (keyingi kun 00:00 Toshkent vaqti)
-                    const nextReset = getNextTashkentMidnight();
-                    
-                    // Bugungi sana (Toshkent vaqti)
-                    const tashkentDateKey = getTashkentDateString();
-                    
-                    // ads_by_day ni faqat bugungi sanaga o'rnatish
-                    const newAdsByDay = {};
-                    newAdsByDay[tashkentDateKey] = 0;
-                    
-                    // Yangilashlar
-                    const updates = {
-                        ads_by_day: newAdsByDay,
-                        daily_limit_reset: nextReset.toISOString(),
-                        updated_at: new Date(now).toISOString()
-                    };
-                    
-                    await update(userRef, updates);
-                    
-                    // Mahalliy o'zgaruvchini yangilash
-                    todayDiamondEarned = 0;
-                    updateLimitDisplay();
-                    
-                    console.log('🔄 Kunlik limit yangilandi. Yangi reset vaqti:', nextReset.toISOString());
-                } else {
-                    // Agar limit yangilanmagan bo'lsa, bugungi hisobni hisoblash
-                    const tashkentDateKey = getTashkentDateString();
-                    const ads_by_day = userData.ads_by_day || {};
-                    const todayAdsCount = parseInt(ads_by_day[tashkentDateKey] || 0);
-                    todayDiamondEarned = todayAdsCount * REWARD_AMOUNT;
-                    
-                    console.log('📊 Bugungi reklamalar:', todayAdsCount, 'Olmoslar:', todayDiamondEarned);
-                }
-                
-                updateLimitDisplay();
-                
-                const watchBtn = document.getElementById('watch-ad-btn');
-                if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
-                    watchBtn.disabled = true;
-                    watchBtn.innerHTML = '<span>Kunlik limit tugadi</span>';
-                } else {
-                    watchBtn.disabled = false;
-                    watchBtn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-                }
-            } catch (error) {
-                console.error('❌ Limit tekshirishda xatolik:', error);
-            }
-        }
-
-        // Limit displeyni yangilash
-        function updateLimitDisplay() {
-            try {
-                const limitCount = document.getElementById('limit-count');
-                const progressFill = document.getElementById('progress-fill');
-                
-                const progressPercent = Math.min((todayDiamondEarned / DAILY_DIAMOND_LIMIT) * 100, 100);
-                
-                if (limitCount) {
-                    limitCount.textContent = `${todayDiamondEarned}/${DAILY_DIAMOND_LIMIT}`;
-                }
-                
-                if (progressFill) {
-                    progressFill.style.width = `${progressPercent}%`;
-                }
-                
-                updateTimeDisplay();
-            } catch (error) {
-                console.error('Limit displeyni yangilashda xatolik:', error);
             }
         }
 
@@ -1079,17 +740,6 @@
             document.getElementById('info-username').textContent = userData.username ? `@${userData.username}` : 'Yo\'q';
             document.getElementById('info-id').textContent = userData.user_id || '-';
             document.getElementById('info-diamonds').textContent = `${userData.diamonds || 0} 💎`;
-            document.getElementById('info-ads').textContent = userData.ads_watched || 0;
-            document.getElementById('info-created').textContent = formatDate(userData.created_at);
-            document.getElementById('info-last-active').textContent = formatDate(userData.updated_at);
-            
-            const tashkentDateKey = getTashkentDateString();
-            const ads_by_day = userData.ads_by_day || {};
-            const todayAdsCount = parseInt(ads_by_day[tashkentDateKey] || 0);
-            const todayDiamonds = todayAdsCount * REWARD_AMOUNT;
-            const todayLimitReached = todayDiamonds >= DAILY_DIAMOND_LIMIT;
-            
-            document.getElementById('info-limit-reached').textContent = todayLimitReached ? 'Ha ✅' : `Yoʻq (${todayDiamonds}/50)`;
             
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1142,7 +792,7 @@
             }
         }
 
-        // Load/create user in Firebase - FIXED VERSION
+        // Load/create user in Firebase
         async function loadOrCreateUser() {
             if (!currentUser) return null;
             try {
@@ -1150,8 +800,7 @@
                 const snapshot = await get(userRef);
                 if (!snapshot.exists()) {
                     const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
-                    const now = new Date(getServerTimestamp());
-                    const nextReset = getNextTashkentMidnight();
+                    const now = new Date();
                     
                     const newUser = {
                         user_id: currentUser.user_id,
@@ -1160,23 +809,9 @@
                         last_name: currentUser.last_name || '',
                         photo_url: profilePhoto,
                         language_code: currentUser.language_code || 'uz',
-                        ads_by_day: {},
                         diamonds: 0,
-                        ads_watched: 0,
-                        withdraw_history: [],
-                        last_ad_time: now.toISOString(),
                         created_at: now.toISOString(),
                         updated_at: now.toISOString(),
-                        total_clicks: 0,
-                        verified_clicks: 0,
-                        fake_clicks: 0,
-                        click_history: [],
-                        last_click_time: null,
-                        last_verified_click: null,
-                        avg_click_duration: 0,
-                        external_clicks: 0,
-                        rewarded_ads: 0,
-                        daily_limit_reset: nextReset.toISOString(), // Yangi: reset vaqtini belgilash
                         last_refresh: now.toISOString()
                     };
                     await set(userRef, newUser);
@@ -1189,7 +824,7 @@
                         return userData;
                     }
                     
-                    const now = new Date(getServerTimestamp());
+                    const now = new Date();
                     
                     if (!userData.photo_url) {
                         const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
@@ -1204,29 +839,6 @@
                         userData = { ...userData, ...updates };
                     }
                     
-                    if (!userData.ads_by_day) {
-                        await update(userRef, { ads_by_day: {} });
-                        userData.ads_by_day = {};
-                    }
-                    
-                    if (typeof userData.rewarded_ads === 'undefined') {
-                        await update(userRef, { 
-                            rewarded_ads: userData.rewarded_ads || 0
-                        });
-                    }
-                    
-                    // Agar daily_limit_reset maydoni yo'q bo'lsa, yaratish
-                    if (!userData.daily_limit_reset) {
-                        const nextReset = getNextTashkentMidnight();
-                        await update(userRef, { 
-                            daily_limit_reset: nextReset.toISOString(),
-                            last_refresh: now.toISOString()
-                        });
-                        userData.daily_limit_reset = nextReset.toISOString();
-                    }
-                    
-                    await checkDailyDiamondLimit();
-                    
                     return userData;
                 }
             } catch (err) {
@@ -1239,7 +851,7 @@
             if (!currentUser) return false;
             try {
                 const userRef = ref(db, 'users/' + currentUser.user_id);
-                await update(userRef, { ...updates, updated_at: new Date(getServerTimestamp()).toISOString() });
+                await update(userRef, { ...updates, updated_at: new Date().toISOString() });
                 return true;
             } catch (err) {
                 console.error('updateUserData error', err);
@@ -1247,46 +859,18 @@
             }
         }
 
-        // BONUS BERISH - FIXED VERSION
+        // BONUS BERISH
         async function giveBonusToUser() {
             try {
-                if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
-                    resetWatchButton();
-                    return;
-                }
-                
                 const userRef = ref(db, 'users/' + currentUser.user_id);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val() || {};
 
-                const tashkentDateKey = getTashkentDateString();
-                const now = new Date(getServerTimestamp());
-
-                const ads_by_day = userData.ads_by_day || {};
-                const newDayCount = (ads_by_day[tashkentDateKey] || 0) + 1;
-                const newOverall = (userData.ads_watched || 0) + 1;
-                
-                todayDiamondEarned = newDayCount * REWARD_AMOUNT;
+                const now = new Date();
                 
                 const newDiamonds = (userData.diamonds || 0) + REWARD_AMOUNT;
-                
-                const clickHistory = userData.click_history || [];
-                clickHistory.push({
-                    time: now.toISOString(),
-                    duration: 0,
-                    rewarded: true,
-                    type: 'rewarded_completed',
-                    verified: true,
-                    provider: 'adsonar',
-                    reward_amount: REWARD_AMOUNT
-                });
-                const limitedHistory = clickHistory.slice(-20);
 
                 const updates = { 
-                    ads_watched: newOverall, 
-                    [`ads_by_day/${tashkentDateKey}`]: newDayCount, 
-                    last_ad_time: now.toISOString(),
-                    rewarded_ads: (userData.rewarded_ads || 0) + 1,
                     diamonds: newDiamonds,
                     updated_at: now.toISOString()
                 };
@@ -1300,19 +884,11 @@
                     console.warn('Bot add failed', e); 
                 }
 
-                updateLimitDisplay();
-                
                 renderLeaderboardsMain();
                 await fetchBotBalance();
 
                 // Reward notificationni ko'rsatish
                 showRewardNotification(REWARD_AMOUNT, "Reklama to'liq ko'rildi");
-                
-                if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
-                    const watchBtn = document.getElementById('watch-ad-btn');
-                    watchBtn.disabled = true;
-                    watchBtn.innerHTML = '<span>Kunlik limit tugadi</span>';
-                }
                 
                 resetWatchButton();
                 
@@ -1327,10 +903,8 @@
             const btn = document.getElementById('watch-ad-btn');
             isWatchingAd = false;
             
-            if (todayDiamondEarned < DAILY_DIAMOND_LIMIT) {
-                btn.disabled = false;
-                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-            }
+            btn.disabled = false;
+            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
         }
 
         // Server bot API calls
@@ -1395,7 +969,7 @@
                     
                     Object.keys(users).forEach(userId => {
                         updates[`${userId}/force_refresh`] = true;
-                        updates[`${userId}/last_refresh`] = new Date(getServerTimestamp()).toISOString();
+                        updates[`${userId}/last_refresh`] = new Date().toISOString();
                     });
                     
                     await update(ref(db, 'users'), updates);
@@ -1456,33 +1030,21 @@
         function renderLeaderboardsMain() {
             const listEl = document.getElementById('leaderboard-list');
             if (!listEl) return;
-            const tashkentDateKey = getTashkentDateString();
 
             const mapped = allUsers.map(u => {
-                const ads_by_day = u.ads_by_day || {};
                 const diamonds = parseInt(u.diamonds || 0);
-                const todayAds = parseInt(ads_by_day[tashkentDateKey] || 0);
-                
-                const todayDiamonds = Math.min(todayAds * REWARD_AMOUNT, DAILY_DIAMOND_LIMIT);
                 
                 return {
                     id: u.user_id,
                     name: u.first_name || 'Foydalanuvchi',
                     username: u.username || '',
                     photo_url: u.photo_url || '',
-                    todayCount: todayDiamonds,
                     overallCount: diamonds,
-                    verified_clicks: u.verified_clicks || 0,
                     user_data: u
                 };
             });
 
-            let sorted;
-            if (currentLeaderboard === 'daily') {
-                sorted = mapped.sort((a,b) => b.todayCount - a.todayCount || b.verified_clicks - a.verified_clicks);
-            } else {
-                sorted = mapped.sort((a,b) => b.overallCount - a.overallCount || b.verified_clicks - a.verified_clicks);
-            }
+            const sorted = mapped.sort((a,b) => b.overallCount - a.overallCount);
 
             const top = sorted.slice(0,10);
             if (top.length === 0) {
@@ -1503,7 +1065,7 @@
                         <div class="leader-name">${escapeHtml(u.name)}</div>
                         <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
                     </div>
-                    <div class="leader-count">${currentLeaderboard === 'daily' ? u.todayCount : u.overallCount} 💎</div>
+                    <div class="leader-count">${u.overallCount} 💎</div>
                 </div>
             `}).join('');
         }
@@ -1521,17 +1083,13 @@
         // Admin panel render
         function updateAdminPanel() {
             const totalUsers = allUsers.length;
-            const totalAds = allUsers.reduce((s,u)=> s + (u.ads_watched||0), 0);
             const totalDiamonds = allUsers.reduce((s,u)=> s + (parseInt(u.diamonds||0)), 0);
             
             document.getElementById('admin-total-users').textContent = totalUsers;
-            document.getElementById('admin-total-ads').textContent = totalAds;
             document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
 
             const usersList = document.getElementById('users-list');
             if (!usersList) return;
-            
-            const tashkentDateKey = getTashkentDateString();
             
             usersList.innerHTML = allUsers
                 .sort((a,b)=> (parseInt(b.diamonds||0)) - (parseInt(a.diamonds||0)))
@@ -1539,15 +1097,10 @@
                 .map(u => {
                     const diamonds = parseInt(u.diamonds || 0);
                     
-                    const ads_by_day = u.ads_by_day || {};
-                    const todayAds = parseInt(ads_by_day[tashkentDateKey] || 0);
-                    const todayDiamonds = todayAds * REWARD_AMOUNT;
-                    const todayLimitReached = todayDiamonds >= DAILY_DIAMOND_LIMIT;
-                    
                     const clickHandler = isAdmin ? `onclick="showUserInfoModal(${JSON.stringify(u).replace(/"/g, '&quot;')})"` : '';
                     
                     return `
-                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300 ${todayLimitReached ? 'border border-yellow-500/30' : ''}" ${clickHandler} style="cursor: ${isAdmin ? 'pointer' : 'default'}">
+                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300" ${clickHandler} style="cursor: ${isAdmin ? 'pointer' : 'default'}">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="avatar-container">
@@ -1556,21 +1109,17 @@
                                 <div>
                                     <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
                                     <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
-                                    <p class="text-xs ${todayLimitReached ? 'text-yellow-500' : 'text-green-500'} mt-1">
-                                        Bugun: ${todayDiamonds}/50 olmos
-                                    </p>
                                 </div>
                             </div>
                             <div class="text-right">
                                 <p class="text-lg font-bold text-yellow-400">${diamonds} 💎</p>
-                                <p class="text-xs text-white/50">${u.ads_watched || 0} reklama</p>
                             </div>
                         </div>
                     </div>
                 `}).join('');
         }
 
-        // ADSONAR REWARDED REKLAMA - TO'G'RI VERSIYA
+        // ADSONAR REWARDED REKLAMA
         async function showAdSonarAd() {
             return new Promise((resolve, reject) => {
                 try {
@@ -1625,10 +1174,6 @@
         async function watchAd() {
             if (!currentUser || isWatchingAd) return;
             
-            if (todayDiamondEarned >= DAILY_DIAMOND_LIMIT) {
-                return;
-            }
-            
             const btn = document.getElementById('watch-ad-btn');
             
             isWatchingAd = true;
@@ -1662,19 +1207,6 @@
 
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
             document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
-
-            document.getElementById('lb-tab-daily-main')?.addEventListener('click', () => {
-                currentLeaderboard = 'daily';
-                document.getElementById('lb-tab-daily-main').classList.add('active');
-                document.getElementById('lb-tab-overall-main').classList.remove('active');
-                renderLeaderboardsMain();
-            });
-            document.getElementById('lb-tab-overall-main')?.addEventListener('click', () => {
-                currentLeaderboard = 'overall';
-                document.getElementById('lb-tab-overall-main').classList.add('active');
-                document.getElementById('lb-tab-daily-main').classList.remove('active');
-                renderLeaderboardsMain();
-            });
             
             document.getElementById('force-refresh-btn')?.addEventListener('click', async () => {
                 if (!isAdmin) return;
@@ -1751,20 +1283,10 @@
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
             document.getElementById('diamond-count').textContent = `${botBalance}`;
-            
-            updateLimitDisplay();
         }
 
         // App init
         async function initializeAppMain() {
-            // Avval server vaqtini yangilash
-            await updateServerTime();
-            
-            // Har 5 daqiqada server vaqtini yangilash
-            setInterval(async () => {
-                await updateServerTime();
-            }, 5 * 60 * 1000);
-            
             initTelegram();
             bindUI();
 
@@ -1775,8 +1297,6 @@
                     if (snap.exists()) {
                         const userData = snap.val();
                         updateUI(userData);
-                        
-                        checkDailyDiamondLimit();
                     }
                 });
 
@@ -1788,17 +1308,10 @@
             if (currentUser) {
                 await fetchBotBalance();
                 setInterval(fetchBotBalance, 30000);
-                
-                if (timeUpdateInterval) {
-                    clearInterval(timeUpdateInterval);
-                }
-                timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
             }
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
-            
-            updateLimitDisplay();
             
             setTimeout(() => {
                 showWelcomeModal();
