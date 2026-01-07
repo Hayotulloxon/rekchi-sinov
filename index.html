@@ -520,7 +520,16 @@
                         </div>
 
                         <!-- Reklama holati -->
-                        <div id="ad-status" class="min-h-[60px]"></div>
+                        <div id="ad-status" class="min-h-[60px] mb-4 transition-all duration-300">
+                            <div id="ad-timer-container" class="hidden">
+                                <div class="flex items-center justify-center mb-2">
+                                    <div class="w-64 bg-gray-800 rounded-full h-2.5">
+                                        <div id="ad-timer-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <p id="ad-timer-text" class="text-center text-white/60 text-sm"></p>
+                            </div>
+                        </div>
 
                         <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
                             <span class="text-2xl">▶️</span>
@@ -530,6 +539,15 @@
                         <p class="text-center text-white/40 text-sm mt-4">
                             Reklama to'liq ko'rilgandan so'ng <span class="text-green-400">+1 olmos</span> olasiz
                         </p>
+                        
+                        <!-- Qo'shimcha eslatma -->
+                        <div class="mt-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                            <p class="text-xs text-white/70 text-center">
+                                <span class="text-yellow-400 font-semibold">Eslatma:</span> 
+                                Bonus olish uchun reklamani <span class="text-green-400 font-semibold">to'liq ko'rish</span> lozim. 
+                                Agar 10 soniyaliq reklama chiqsa, uni <span class="text-green-400 font-semibold">oxirigacha</span> ko'ring
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -650,6 +668,9 @@
         let botBalance = 0;
         let isWatchingAd = false;
         let hasShownWelcomeModal = false;
+        let adTimerInterval = null;
+        let adDuration = 0;
+        let adStartTime = 0;
 
         // ========== REWARD NOTIFICATION FUNCTIONS ==========
         function showRewardNotification(amount, subtitle = "Reklama to'liq ko'rildi") {
@@ -708,6 +729,43 @@
         function escapeHtml(str) { 
             if (!str) return ''; 
             return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
+        }
+
+        // Ad timer functions
+        function startAdTimer(durationSeconds = 10) {
+            clearAdTimer();
+            adDuration = durationSeconds;
+            adStartTime = Date.now();
+            
+            const timerContainer = document.getElementById('ad-timer-container');
+            const timerBar = document.getElementById('ad-timer-bar');
+            const timerText = document.getElementById('ad-timer-text');
+            
+            if (timerContainer) timerContainer.classList.remove('hidden');
+            
+            adTimerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - adStartTime) / 1000);
+                const remaining = Math.max(0, adDuration - elapsed);
+                const percentage = Math.min(100, (elapsed / adDuration) * 100);
+                
+                if (timerBar) timerBar.style.width = `${percentage}%`;
+                if (timerText) timerText.textContent = `Qolgan vaqt: ${remaining} soniya`;
+                
+                if (elapsed >= adDuration) {
+                    clearAdTimer();
+                    if (timerContainer) timerContainer.classList.add('hidden');
+                }
+            }, 1000);
+        }
+        
+        function clearAdTimer() {
+            if (adTimerInterval) {
+                clearInterval(adTimerInterval);
+                adTimerInterval = null;
+            }
+            
+            const timerContainer = document.getElementById('ad-timer-container');
+            if (timerContainer) timerContainer.classList.add('hidden');
         }
 
         // Modal functions
@@ -872,7 +930,8 @@
 
                 const updates = { 
                     diamonds: newDiamonds,
-                    updated_at: now.toISOString()
+                    updated_at: now.toISOString(),
+                    last_reward: now.toISOString()
                 };
                 
                 const ok = await updateUserData(updates);
@@ -892,10 +951,14 @@
                 
                 resetWatchButton();
                 
+                // Ad holatini yangilash
+                updateAdStatus('success', "Reklama to'liq ko'rildi! +1 olmos qo'shildi");
+                
             } catch (err) {
                 console.error('Bonus berishda xatolik', err);
                 showRewardNotification(0, "Xatolik yuz berdi");
                 resetWatchButton();
+                updateAdStatus('error', "Xatolik yuz berdi");
             }
         }
 
@@ -910,6 +973,69 @@
             btn.classList.remove('btn-primary');
             void btn.offsetWidth; // Reflow trigger
             btn.classList.add('btn-primary');
+            
+            // Timerlarni tozalash
+            clearAdTimer();
+        }
+
+        function updateAdStatus(type, message) {
+            const adStatus = document.getElementById('ad-status');
+            if (!adStatus) return;
+            
+            let html = '';
+            
+            switch(type) {
+                case 'loading':
+                    html = `
+                        <div class="text-center p-4">
+                            <div class="w-10 h-10 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
+                            <p class="text-white/80 text-sm">${message || "Reklama yuklanmoqda..."}</p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'success':
+                    html = `
+                        <div class="text-center p-4 slide-up">
+                            <div class="text-4xl text-green-400 mb-3 animate-pulse">✅</div>
+                            <p class="text-white/90 font-semibold">${message || "Reklama to'liq ko'rildi!"}</p>
+                            <p class="text-green-400 text-sm mt-1">+${REWARD_AMOUNT} olmos qo'shildi</p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'error':
+                    html = `
+                        <div class="text-center p-4 slide-up">
+                            <div class="text-4xl text-red-400 mb-3">❌</div>
+                            <p class="text-white/90 font-semibold">${message || "Reklama xatosi"}</p>
+                            <p class="text-white/60 text-sm mt-1">Iltimos, qayta urinib ko'ring</p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'incomplete':
+                    html = `
+                        <div class="text-center p-4 slide-up">
+                            <div class="text-4xl text-yellow-400 mb-3">⚠️</div>
+                            <p class="text-white/90 font-semibold">${message || "Reklama to'liq ko'rilmadi"}</p>
+                            <p class="text-white/60 text-sm mt-1">Reklamani to'liq ko'ring</p>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    html = '';
+            }
+            
+            adStatus.innerHTML = html;
+            
+            // Agar success yoki error bo'lsa, 3 soniyadan keyin tozalash
+            if (type === 'success' || type === 'error' || type === 'incomplete') {
+                setTimeout(() => {
+                    adStatus.innerHTML = '';
+                }, 3000);
+            }
         }
 
         // Server bot API calls
@@ -1124,15 +1250,17 @@
                 `}).join('');
         }
 
-        // ADSONAR REWARDED REKLAMA
+        // ADSONAR REWARDED REKLAMA - Dokumentatsiyaga muvofiq
         async function showAdSonarAd() {
             return new Promise((resolve, reject) => {
                 try {
                     if (!window.Sonar) {
-                        resetWatchButton();
+                        console.error('AdSonar not loaded');
                         reject({ success: false, error: 'AdSonar not loaded' });
                         return;
                     }
+                    
+                    console.log('AdSonar show function called');
                     
                     window.Sonar.show({
                         adUnit: ADSONAR_AD_UNIT,
@@ -1140,45 +1268,52 @@
                         
                         onStart: () => {
                             console.log('Reklama yuklanmoqda...');
+                            updateAdStatus('loading', "Reklama yuklanmoqda...");
+                            startAdTimer(10); // 10 soniyalik reklama deb taxmin qilamiz
                         },
                         
                         onShow: () => {
                             console.log('Reklama koʻrsatilmoqda...');
+                            updateAdStatus('loading', "Reklama ko'rsatilmoqda...");
                         },
                         
-                        onError: () => {
-                            console.log('Reklama xatosi');
-                            resetWatchButton();
-                            resolve({ success: false, message: 'Reklama xatosi' });
+                        onError: (error) => {
+                            console.log('Reklama xatosi:', error);
+                            clearAdTimer();
+                            resolve({ success: false, message: 'Reklama xatosi: ' + (error || 'Noma\'lum xato') });
                         },
 
                         onClose: () => {
                             console.log('Reklama yopildi');
+                            clearAdTimer();
                             // Reklama to'liq ko'rilmagan holatda yopilsa, tugmani tiklash
                             setTimeout(() => {
-                                resetWatchButton();
+                                updateAdStatus('incomplete', "Reklama to'liq ko'rilmadi");
                             }, 500);
                         },
 
                         onReward: () => {
-                            console.log('Mukofot berilishi kerak');
-                            resolve({ success: true });
+                            console.log('Mukofot berilishi kerak - reklama to\'liq ko\'rildi');
+                            clearAdTimer();
+                            // Reklama to'liq ko'rilganda bonusni berish
+                            resolve({ success: true, message: 'Reklama to\'liq ko\'rildi' });
                         },
                     }).then((result) => {
-                        if (result.status === 'error') {
+                        console.log('AdSonar show result:', result);
+                        if (result && result.status === 'error') {
                             console.error('Reklama koʻrsatishda xatolik:', result.message);
-                            resetWatchButton();
+                            clearAdTimer();
                             resolve({ success: false, message: result.message });
                         }
                     }).catch((error) => {
                         console.error('Reklama catch xatosi:', error);
-                        resetWatchButton();
+                        clearAdTimer();
                         reject({ success: false, error: error });
                     });
                     
                 } catch (e) {
                     console.error('Reklama funksiya xatosi:', e);
-                    resetWatchButton();
+                    clearAdTimer();
                     reject({ success: false, error: e });
                 }
             });
@@ -1194,13 +1329,19 @@
             btn.disabled = true;
             btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
             
+            updateAdStatus('loading', "Reklama yuklanmoqda...");
+            
             try {
                 const result = await showAdSonarAd();
                 
                 if (result.success) {
+                    // Reklama muvaffaqiyatli ko'rilgan, bonus berish
+                    console.log('Reklama muvaffaqiyatli, bonus berilmoqda...');
                     await giveBonusToUser();
                 } else {
-                    showRewardNotification(0, "Reklama to'liq ko'rilmadi");
+                    // Reklama xatosi yoki to'liq ko'rilmadi
+                    console.log('Reklama muvaffaqiyatsiz:', result.message);
+                    showRewardNotification(0, result.message || "Reklama to'liq ko'rilmadi");
                     resetWatchButton();
                 }
                 
