@@ -539,15 +539,6 @@
                         <p class="text-center text-white/40 text-sm mt-4">
                             Reklama to'liq ko'rilgandan so'ng <span class="text-green-400">+1 olmos</span> olasiz
                         </p>
-                        
-                        <!-- Qo'shimcha eslatma -->
-                        <div class="mt-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                            <p class="text-xs text-white/70 text-center">
-                                <span class="text-yellow-400 font-semibold">Eslatma:</span> 
-                                Bonus olish uchun reklamani <span class="text-green-400 font-semibold">to'liq ko'rish</span> lozim. 
-                                Agar 10 soniyaliq reklama chiqsa, uni <span class="text-green-400 font-semibold">oxirigacha</span> ko'ring
-                            </p>
-                        </div>
                     </div>
                 </div>
 
@@ -606,11 +597,6 @@
                             <span class="text-xl">👢</span>
                             <span>Barchani Chiqarish</span>
                         </button>
-                        
-                        <div class="text-xs text-white/50 text-center mt-2">
-                            Yangilash: foydalanuvchilar sahifasi yangilanadi<br>
-                            Chiqarish: barcha foydalanuvchilar chiqariladi
-                        </div>
                     </div>
 
                     <div class="flex items-center space-x-2 mb-4">
@@ -969,11 +955,6 @@
             btn.disabled = false;
             btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
             
-            // Tugma animatsiyasini qayta ishga tushiramiz
-            btn.classList.remove('btn-primary');
-            void btn.offsetWidth; // Reflow trigger
-            btn.classList.add('btn-primary');
-            
             // Timerlarni tozalash
             clearAdTimer();
         }
@@ -1269,7 +1250,7 @@
                         onStart: () => {
                             console.log('Reklama yuklanmoqda...');
                             updateAdStatus('loading', "Reklama yuklanmoqda...");
-                            startAdTimer(10); // 10 soniyalik reklama deb taxmin qilamiz
+                            startAdTimer(10);
                         },
                         
                         onShow: () => {
@@ -1286,10 +1267,11 @@
                         onClose: () => {
                             console.log('Reklama yopildi');
                             clearAdTimer();
-                            // Reklama to'liq ko'rilmagan holatda yopilsa, tugmani tiklash
+                            // Reklama yopilganda, agar reward kelmagan bo'lsa, incomplete deb belgilash
                             setTimeout(() => {
-                                updateAdStatus('incomplete', "Reklama to'liq ko'rilmadi");
-                            }, 500);
+                                if (!isWatchingAd) return; // Agar tugma allaqachon tiklanga bo'lsa
+                                resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
+                            }, 100);
                         },
 
                         onReward: () => {
@@ -1342,12 +1324,14 @@
                     // Reklama xatosi yoki to'liq ko'rilmadi
                     console.log('Reklama muvaffaqiyatsiz:', result.message);
                     showRewardNotification(0, result.message || "Reklama to'liq ko'rilmadi");
+                    updateAdStatus('incomplete', result.message || "Reklama to'liq ko'rilmadi");
                     resetWatchButton();
                 }
                 
             } catch (err) {
                 console.error('Reklama xatosi:', err);
                 showRewardNotification(0, "Reklama xatosi yoki to'liq ko'rilmadi");
+                updateAdStatus('error', "Reklama xatosi");
                 resetWatchButton();
             }
         }
