@@ -877,7 +877,7 @@
             } catch (err) { console.warn(err); }
         }
 
-        // --- YANGILANGAN ADSONAR KODI ---
+        // --- ADSONAR REKLAMA (KUCHAYTIRILGAN VERSIYA) ---
         async function showAdSonarAd() {
             return new Promise((resolve, reject) => {
                 if (!window.Sonar) {
@@ -885,45 +885,73 @@
                     return;
                 }
                 
+                console.log("Reklama chaqirilmoqda...");
+                
                 // MUKOFOT HOLATI
                 let isRewarded = false;
+                // Reklama yopildimi?
+                let isClosed = false;
                 
                 window.Sonar.show({
                     adUnit: ADSONAR_AD_UNIT,
                     loader: true,
+                    
                     onStart: () => {
+                        console.log("Reklama boshlandi");
                         updateAdStatus('loading', "Reklama yuklanmoqda...");
                         startAdTimer(10);
                     },
+                    
                     onShow: () => {
+                        console.log("Reklama ko'rinyapti");
                         updateAdStatus('loading', "Reklama ko'rsatilmoqda...");
                     },
+                    
                     onError: (err) => {
+                        console.error("Reklama xatosi:", err);
                         clearAdTimer();
                         resolve({ success: false, message: 'Xatolik: ' + (err || 'Noma\'lum') });
                     },
+                    
                     onReward: () => {
-                        console.log('Reward received');
-                        isRewarded = true; // BAYROQNI KO'TARAMIZ
-                        clearAdTimer();
-                        resolve({ success: true, message: 'Mukofot olindi' });
-                    },
-                    onClose: () => {
-                        console.log('Ad closed. Rewarded:', isRewarded);
-                        clearAdTimer();
-                        // Agar mukofot allaqachon olingan bo'lsa, hech narsa qilmaymiz
-                        if (isRewarded) return;
+                        console.log('✅ REWARD SIGNAL KELDI!');
+                        isRewarded = true;
                         
-                        // Kichik pauza (poyga holatini oldini olish uchun)
+                        // Agar reklama allaqachon yopilgan bo'lsa va biz kutayotgan bo'lsak, bu signal hal qiluvchi bo'ladi
+                        if (isClosed) {
+                             console.log('Reklama yopiq edi, lekin mukofot endi keldi. Qabul qilindi.');
+                        }
+                    },
+                    
+                    onClose: () => {
+                        console.log('Reklama yopildi. Status:', isRewarded ? 'Mukofotlangan' : 'Kutilmoqda');
+                        isClosed = true;
+                        clearAdTimer();
+
+                        // 1-SCENARIO: Agar mukofot allaqachon olingan bo'lsa
+                        if (isRewarded) {
+                            resolve({ success: true, message: 'Mukofot olindi' });
+                            return;
+                        }
+
+                        // 2-SCENARIO: Mukofot hali kelmadi (poyga holati). 
+                        // Biz 2.5 soniya kutamiz. Agar shu vaqt ichida onReward ishlasa, hisobga o'tamiz.
+                        updateAdStatus('loading', "Tekshirilmoqda...");
+                        
                         setTimeout(() => {
-                            if (!isRewarded) {
+                            if (isRewarded) {
+                                console.log('Kutish vaqtidan keyin: Muvaffaqiyatli');
+                                resolve({ success: true, message: 'Mukofot olindi (kechikib)' });
+                            } else {
+                                console.log('Kutish vaqtidan keyin: Muvaffaqiyatsiz');
                                 resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
                             }
-                        }, 200);
+                        }, 2500); // 2.5 soniya kutish
                     }
                 }).catch(e => {
+                    console.error("Catch error:", e);
                     clearAdTimer();
-                    resolve({ success: false, message: 'Xatolik' });
+                    resolve({ success: false, message: 'Tizim xatosi' });
                 });
             });
         }
