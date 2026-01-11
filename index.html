@@ -1231,72 +1231,63 @@
                 `}).join('');
         }
 
-        // ADSONAR REWARDED REKLAMA - Dokumentatsiyaga muvofiq
+        // ADSONAR REWARDED REKLAMA - Tuzatilgan talqin
         async function showAdSonarAd() {
             return new Promise((resolve, reject) => {
+                let rewardReceived = false; // Lokal o'zgaruvchi: mukofot olinganini tekshirish uchun
+
                 try {
                     if (!window.Sonar) {
                         console.error('AdSonar not loaded');
-                        reject({ success: false, error: 'AdSonar not loaded' });
+                        resolve({ success: false, error: 'AdSonar yuklanmagan' });
                         return;
                     }
-                    
-                    console.log('AdSonar show function called');
                     
                     window.Sonar.show({
                         adUnit: ADSONAR_AD_UNIT,
                         loader: true,
                         
                         onStart: () => {
-                            console.log('Reklama yuklanmoqda...');
                             updateAdStatus('loading', "Reklama yuklanmoqda...");
                             startAdTimer(10);
                         },
                         
                         onShow: () => {
-                            console.log('Reklama koʻrsatilmoqda...');
                             updateAdStatus('loading', "Reklama ko'rsatilmoqda...");
                         },
                         
                         onError: (error) => {
-                            console.log('Reklama xatosi:', error);
                             clearAdTimer();
-                            resolve({ success: false, message: 'Reklama xatosi: ' + (error || 'Noma\'lum xato') });
+                            resolve({ success: false, message: 'Reklama xatosi' });
                         },
 
                         onClose: () => {
-                            console.log('Reklama yopildi');
                             clearAdTimer();
-                            // Reklama yopilganda, agar reward kelmagan bo'lsa, incomplete deb belgilash
+                            // Biroz kutamiz, chunki onReward onClose dan sal keyinroq kelishi mumkin
                             setTimeout(() => {
-                                if (!isWatchingAd) return; // Agar tugma allaqachon tiklanga bo'lsa
-                                resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
-                            }, 100);
+                                if (!rewardReceived) {
+                                    resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
+                                }
+                            }, 300); 
                         },
 
                         onReward: () => {
-                            console.log('Mukofot berilishi kerak - reklama to\'liq ko\'rildi');
-                            clearAdTimer();
-                            // Reklama to'liq ko'rilganda bonusni berish
+                            rewardReceived = true; // Mukofot tasdiqlandi
                             resolve({ success: true, message: 'Reklama to\'liq ko\'rildi' });
                         },
                     }).then((result) => {
-                        console.log('AdSonar show result:', result);
                         if (result && result.status === 'error') {
-                            console.error('Reklama koʻrsatishda xatolik:', result.message);
                             clearAdTimer();
                             resolve({ success: false, message: result.message });
                         }
                     }).catch((error) => {
-                        console.error('Reklama catch xatosi:', error);
                         clearAdTimer();
-                        reject({ success: false, error: error });
+                        resolve({ success: false, error: error });
                     });
                     
                 } catch (e) {
-                    console.error('Reklama funksiya xatosi:', e);
                     clearAdTimer();
-                    reject({ success: false, error: e });
+                    resolve({ success: false, error: e });
                 }
             });
         }
