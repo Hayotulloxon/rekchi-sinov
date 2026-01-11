@@ -317,6 +317,14 @@
                                 <p>Har bir reklama to'liq ko'rganingizda <span class="highlight-text">1 olmos</span> olasiz. Limit yo'q!</p>
                             </div>
                         </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">⚡</div>
+                            <div class="info-content">
+                                <h4>Cheksiz imkoniyat!</h4>
+                                <p>Siz cheksiz reklama ko'rib, cheksiz olmos yeg'ishingiz mumkin!</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -375,6 +383,7 @@
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
+                            <!-- BU YERDA BALANS GET_BALANCE.PHP DAN KELADI -->
                             <span id="diamond-count" class="text-2xl font-bold text-yellow-400">0</span>
                             <span class="text-xl diamond-icon">💎</span>
                         </div>
@@ -438,7 +447,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 class="text-lg font-bold">Reytinglar</h3>
-                                    <p class="text-xs text-white/60">Umumiy olmoslar bo'yicha top 50</p>
+                                    <p class="text-xs text-white/60">Umumiy olmoslar bo'yicha top 10</p>
                                 </div>
                             </div>
 
@@ -467,18 +476,14 @@
                             </div>
                             <div>
                                 <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
-                                <p class="text-xs text-white/60 mt-1">Olmoslar</p>
+                                <p class="text-xs text-white/60 mt-1">Olmoslar (Baza)</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <button onclick="location.reload()" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-xl text-base mb-4">
-                         🔄 Yangilash
-                    </button>
 
                     <div class="flex items-center space-x-2 mb-4">
                         <div class="text-xl">👥</div>
-                        <h3 class="font-bold text-white/90">Barcha Foydalanuvchilar</h3>
+                        <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
                     </div>
                     <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
                 </div>
@@ -500,22 +505,19 @@
     </div>
 
     <script>
-        // API Sozlamalari
-        const API_URL = 'https://68ed1ab05ca4e.myxvest1.ru/api.php';
         const ADMIN_IDS = ['7500103239', '7104718080'];
         const REWARD_AMOUNT = 1; 
-        
-        // Bot balans API (o'zgartirmasdan qoldirildi)
         const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
         const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
         const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
+        const API_URL = 'https://68ed1ab05ca4e.myxvest1.ru/api.php'; // Lokal PHP API
         
         const ADSONAR_AD_UNIT = "rekchiai";
 
         let currentUser = null;
-        let allUsers = []; // Admin panel uchun
+        let allUsers = [];
         let isAdmin = false;
-        let botBalance = 0;
+        let userBalance = 0;
         let isWatchingAd = false;
         let hasShownWelcomeModal = false;
         let adTimerInterval = null;
@@ -550,29 +552,6 @@
         function escapeHtml(str) { 
             if (!str) return ''; 
             return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
-        }
-
-        // --- API bilan ishlash funksiyasi ---
-        async function callApi(action, data = {}, method = 'POST') {
-            try {
-                let url = `${API_URL}?action=${action}`;
-                let options = { method: method };
-
-                if (method === 'POST') {
-                    options.headers = { 'Content-Type': 'application/json' };
-                    options.body = JSON.stringify(data);
-                } else if (method === 'GET' && Object.keys(data).length > 0) {
-                    const params = new URLSearchParams(data).toString();
-                    url += `&${params}`;
-                }
-
-                const response = await fetch(url, options);
-                const json = await response.json();
-                return json;
-            } catch (error) {
-                console.error("API xatosi:", error);
-                return { success: false, message: "Tarmoq xatosi" };
-            }
         }
 
         function startAdTimer(durationSeconds = 10) {
@@ -654,6 +633,7 @@
                     first_name: user.first_name || 'Foydalanuvchi',
                     last_name: user.last_name || '',
                     photo_url: user.photo_url || null,
+                    language_code: user.language_code || 'uz',
                     is_telegram: true
                 };
             }
@@ -666,6 +646,7 @@
                     first_name: 'Web Tester',
                     last_name: '',
                     photo_url: null,
+                    language_code: 'uz',
                     is_telegram: false
                 };
             }
@@ -678,6 +659,7 @@
                 first_name: 'Mehmon',
                 last_name: '',
                 photo_url: null,
+                language_code: 'uz',
                 is_telegram: false
             };
         }
@@ -695,56 +677,52 @@
             isAdmin = ADMIN_IDS.includes(currentUser.user_id);
         }
 
+        // Backend (api.php) bilan ishlash
         async function loadOrCreateUser() {
             if (!currentUser) return null;
-            
-            let profilePhoto = null;
-            if (currentUser.is_telegram) {
-                 profilePhoto = currentUser.photo_url || createFullGradientAvatar(currentUser.user_id);
-            } else {
-                profilePhoto = createFullGradientAvatar(currentUser.user_id);
-            }
-            
-            // PHP API ga so'rov yuborish
-            const result = await callApi('login', {
-                user_id: currentUser.user_id,
-                username: currentUser.username,
-                first_name: currentUser.first_name,
-                last_name: currentUser.last_name,
-                photo_url: profilePhoto
-            });
+            try {
+                let profilePhoto = currentUser.photo_url;
+                if (!profilePhoto) {
+                    profilePhoto = createFullGradientAvatar(currentUser.user_id);
+                }
 
-            if (result.success) {
-                return result.data;
-            } else {
-                console.error("Login failed:", result.message);
+                const response = await fetch(`${API_URL}?action=login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...currentUser,
+                        photo_url: profilePhoto
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    return result.user;
+                }
+            } catch (err) {
+                console.error('Login error', err);
                 return null;
             }
         }
 
         async function giveBonusToUser() {
             try {
-                // PHP API orqali olmos qo'shish
-                const result = await callApi('add_diamond', {
-                    user_id: currentUser.user_id,
-                    amount: REWARD_AMOUNT
+                // 1. Tashqi API ga yozish (Balans uchun)
+                await addToBotBalance(REWARD_AMOUNT);
+
+                // 2. Lokal API ga yozish (Reyting va statistika uchun)
+                await fetch(`${API_URL}?action=add_diamond`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: currentUser.user_id })
                 });
 
-                if (result.success) {
-                    // UI yangilash
-                    document.getElementById('diamond-count').textContent = result.new_balance;
-                    
-                    // Bot balansiga qo'shish (server orqali)
-                    addToBotBalance(REWARD_AMOUNT).catch(e => console.warn('Bot add failed', e));
+                // UI yangilash
+                fetchUserBalance(); // Balansni yangilash
+                fetchLeaderboard(); // Reytingni yangilash
 
-                    // Leaderboardni yangilash
-                    loadLeaderboard();
-                    
-                    showRewardNotification(REWARD_AMOUNT, "Reklama to'liq ko'rildi");
-                    updateAdStatus('success', "Reklama to'liq ko'rildi! +1 olmos qo'shildi");
-                } else {
-                    throw new Error(result.message);
-                }
+                showRewardNotification(REWARD_AMOUNT, "Reklama to'liq ko'rildi");
+                updateAdStatus('success', "Reklama to'liq ko'rildi! +1 olmos qo'shildi");
                 
             } catch (err) {
                 console.error('Bonus berishda xatolik', err);
@@ -803,15 +781,19 @@
             } catch(e) { console.warn(e); }
         }
 
-        async function fetchBotBalance() {
+        // User balansini get_balance.php dan olish
+        async function fetchUserBalance() {
             if (!currentUser) return;
             try {
-                // UI da foydalanuvchining shaxsiy olmoslarini ko'rsatish
-                const userNow = await callApi('login', { // Oddiy login so'rovi user datasini qaytaradi
-                    user_id: currentUser.user_id
-                });
-                if (userNow.success) {
-                    document.getElementById('diamond-count').textContent = userNow.data.diamonds;
+                const url = new URL(BOT_API_GET_URL);
+                url.searchParams.set('key', BOT_API_KEY);
+                url.searchParams.set('user_id', currentUser.user_id);
+                const resp = await fetch(url.toString());
+                if (!resp.ok) return;
+                const json = await resp.json();
+                if (json && json.success) {
+                    userBalance = parseInt(json.balance || 0) || 0;
+                    document.getElementById('diamond-count').textContent = `${userBalance}`;
                 }
             } catch (err) { console.warn(err); }
         }
@@ -824,7 +806,6 @@
                     return;
                 }
                 
-                console.log("Reklama chaqirilmoqda...");
                 let isRewarded = false;
                 let isClosed = false;
                 
@@ -850,15 +831,16 @@
                         clearAdTimer();
                         if (isRewarded) {
                             resolve({ success: true, message: 'Mukofot olindi' });
-                        } else {
-                            setTimeout(() => {
-                                if (isRewarded) {
-                                    resolve({ success: true, message: 'Mukofot olindi (kechikib)' });
-                                } else {
-                                    resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
-                                }
-                            }, 2500);
+                            return;
                         }
+                        updateAdStatus('loading', "Tekshirilmoqda...");
+                        setTimeout(() => {
+                            if (isRewarded) {
+                                resolve({ success: true, message: 'Mukofot olindi (kechikib)' });
+                            } else {
+                                resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
+                            }
+                        }, 2500);
                     }
                 }).catch(e => {
                     clearAdTimer();
@@ -877,7 +859,6 @@
             
             try {
                 const result = await showAdSonarAd();
-                
                 if (result.success) {
                     await giveBonusToUser();
                 } else {
@@ -891,16 +872,43 @@
             }
         }
 
-        async function loadLeaderboard() {
-            const result = await callApi('get_leaderboard', {}, 'GET');
+        // PHP API orqali leaderboarni olish
+        async function fetchLeaderboard() {
+            try {
+                const resp = await fetch(`${API_URL}?action=get_leaderboard`);
+                const json = await resp.json();
+                if (json.success) {
+                    allUsers = json.data;
+                    renderLeaderboardsMain();
+                    if (isAdmin) updateAdminPanel();
+                }
+            } catch (e) {
+                console.error("Leaderboard fetch error", e);
+            }
+        }
+        
+        async function fetchAllUsersForAdmin() {
+            if (!isAdmin) return;
+            try {
+                const resp = await fetch(`${API_URL}?action=get_all_users`);
+                const json = await resp.json();
+                if (json.success) {
+                    allUsers = json.data;
+                    updateAdminPanel();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderLeaderboardsMain() {
             const listEl = document.getElementById('leaderboard-list');
+            if (!listEl) return;
             
-            if (!result.success || !result.data || result.data.length === 0) {
+            if (allUsers.length === 0) {
                 listEl.innerHTML = `<div class="text-white/60 text-sm">Ma'lumot yo'q.</div>`;
                 return;
             }
 
-            listEl.innerHTML = result.data.map((u, i) => `
+            listEl.innerHTML = allUsers.map((u,i) => `
                 <div class="leaderboard-item" onclick="isAdmin && showUserInfoModal(${JSON.stringify(u).replace(/"/g, '&quot;')})">
                     <div class="leader-rank">${i+1}</div>
                     <div class="leader-avatar">
@@ -915,17 +923,13 @@
             `).join('');
         }
 
-        async function updateAdminPanel() {
+        function updateAdminPanel() {
             if (!isAdmin) return;
-            const result = await callApi('get_all_users', {}, 'GET');
-            if (!result.success) return;
-            
-            const users = result.data;
-            document.getElementById('admin-total-users').textContent = users.length;
-            document.getElementById('admin-total-diamonds').textContent = users.reduce((s,u)=>s+(parseInt(u.diamonds)||0),0);
+            document.getElementById('admin-total-users').textContent = allUsers.length;
+            document.getElementById('admin-total-diamonds').textContent = allUsers.reduce((s,u)=>s+(parseInt(u.diamonds)||0),0);
             
             const list = document.getElementById('users-list');
-            list.innerHTML = users.map(u => `
+            list.innerHTML = allUsers.map(u => `
                 <div class="app-card p-3 cursor-pointer hover:bg-white/5" onclick="showUserInfoModal(${JSON.stringify(u).replace(/"/g, '&quot;')})">
                     <div class="flex justify-between items-center">
                         <div class="font-bold text-sm">${u.first_name}</div>
@@ -941,10 +945,7 @@
             document.getElementById('modal-ok-btn')?.addEventListener('click', hideWelcomeModal);
             document.getElementById('close-user-info-btn')?.addEventListener('click', hideUserInfoModal);
             document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
-            document.getElementById('menu-leaderboard')?.addEventListener('click', () => {
-                switchSection('leaderboard-section', 'menu-leaderboard');
-                loadLeaderboard();
-            });
+            document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
         }
 
         function switchSection(sectionId, btnId) {
@@ -952,6 +953,7 @@
             document.getElementById(sectionId).classList.add('active');
             document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
             if(btnId) document.getElementById(btnId).classList.add('active');
+            if(sectionId === 'leaderboard-section') fetchLeaderboard();
         }
 
         function updateUI(user) {
@@ -961,7 +963,6 @@
             document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
             document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
             document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            document.getElementById('diamond-count').textContent = user.diamonds;
         }
 
         async function initializeAppMain() {
@@ -971,11 +972,17 @@
             const user = await loadOrCreateUser();
             if (user) {
                 updateUI(user);
-                loadLeaderboard();
+                fetchLeaderboard();
                 if (isAdmin) {
                     document.getElementById('admin-panel').classList.remove('hidden');
-                    updateAdminPanel();
+                    fetchAllUsersForAdmin();
                 }
+            }
+
+            if (currentUser) {
+                fetchUserBalance();
+                // Balansni har 30 sekundda yangilab turish
+                setInterval(fetchUserBalance, 30000);
             }
 
             document.getElementById('loading').classList.add('hidden');
@@ -983,9 +990,8 @@
             setTimeout(showWelcomeModal, 500);
         }
 
-        // Global export
         window.showUserInfoModal = showUserInfoModal;
-
+        
         document.addEventListener('DOMContentLoaded', initializeAppMain);
     </script>
 </body>
