@@ -1231,64 +1231,73 @@
                 `}).join('');
         }
 
-        // ADSONAR REWARDED REKLAMA - Tuzatilgan talqin
         async function showAdSonarAd() {
-            return new Promise((resolve) => {
-                let isRewarded = false; // Mukofot berildimi yoki yo'q, belgilab boramiz
-
-                if (!window.Sonar) {
-                    console.error('AdSonar not loaded');
-                    resolve({ success: false, message: 'Reklama tizimi yuklanmagan' });
-                    return;
-                }
-
-                window.Sonar.show({
-                    adUnit: ADSONAR_AD_UNIT,
-                    loader: true,
-                    
-                    onStart: () => {
-                        updateAdStatus('loading', "Reklama yuklanmoqda...");
-                        startAdTimer(10);
-                    },
-                    
-                    onShow: () => {
-                        updateAdStatus('loading', "Reklama ko'rsatilmoqda...");
-                    },
-                    
-                    onError: (error) => {
-                        console.error('AdSonar Error:', error);
-                        clearAdTimer();
-                        resolve({ success: false, message: 'Reklama xatosi yuz berdi' });
-                    },
-
-                    // FOYDALANUVCHI REKLAMANI TO'LIQ KO'RSA SHU ISHLAYDI
-                    onReward: () => {
-                        console.log('Mukofot tasdiqlandi (onReward)');
-                        isRewarded = true; 
-                    },
-
-                    // REKLAMA YOPILGANDA (XOH TO'LIQ KO'RILSIN, XOH CHALA) SHU ISHLAYDI
-                    onClose: () => {
-                        console.log('Reklama yopildi (onClose). Status:', isRewarded);
-                        clearAdTimer();
-                        
-                        // Faqat reklama yopilganda yakuniy javobni qaytaramiz
-                        if (isRewarded) {
-                            resolve({ success: true, message: 'Muvaffaqiyatli' });
-                        } else {
-                            resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
-                        }
-                    },
-                }).then((result) => {
-                    if (result && result.status === 'error') {
-                        clearAdTimer();
-                        resolve({ success: false, message: result.message });
+            return new Promise((resolve, reject) => {
+                try {
+                    if (!window.Sonar) {
+                        console.error('AdSonar not loaded');
+                        reject({ success: false, error: 'AdSonar not loaded' });
+                        return;
                     }
-                }).catch((error) => {
-                    console.error('AdSonar Catch Error:', error);
+                    
+                    console.log('AdSonar show function called');
+                    
+                    window.Sonar.show({
+                        adUnit: ADSONAR_AD_UNIT,
+                        loader: true,
+                        
+                        onStart: () => {
+                            console.log('Reklama yuklanmoqda...');
+                            updateAdStatus('loading', "Reklama yuklanmoqda...");
+                        },
+                        
+                        onShow: () => {
+                            console.log('Reklama koʻrsatilmoqda...');
+                            updateAdStatus('loading', "Reklama ko'rsatilmoqda...");
+                        },
+                        
+                        onError: (error) => {
+                            console.log('Reklama xatosi:', error);
+                            clearAdTimer();
+                            resolve({ success: false, message: 'Reklama xatosi: ' + (error || 'Noma\'lum xato') });
+                        },
+        
+                        onClose: () => {
+                            console.log('Reklama yopildi');
+                            clearAdTimer();
+                            // Reklama yopilganda, mukofot hali kelmagan bo'lsa, u to'liq ko'rilmagan
+                            setTimeout(() => {
+                                resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
+                            }, 100);
+                        },
+        
+                        onReward: () => {
+                            console.log('Mukofot berilishi kerak - reklama to\'liq ko\'rildi');
+                            clearAdTimer();
+                            // Mukofot qabul qilinganda, reklama to'liq ko'rilgan deb hisoblash
+                            resolve({ success: true, message: 'Reklama to\'liq ko\'rildi' });
+                        },
+                    }).then((result) => {
+                        console.log('AdSonar show result:', result);
+                        // AdSonar'ning o'z result'ini qayta ishlash
+                        if (result && result.status === 'error') {
+                            console.error('Reklama koʻrsatishda xatolik:', result.message);
+                            clearAdTimer();
+                            resolve({ success: false, message: result.message });
+                        }
+                        // Agar result muvaffaqiyatli bo'lsa, lekin onReward ishlamagan bo'lsa
+                        // onClose yoki boshqa handlerga tayanamiz
+                    }).catch((error) => {
+                        console.error('Reklama catch xatosi:', error);
+                        clearAdTimer();
+                        reject({ success: false, error: error });
+                    });
+                    
+                } catch (e) {
+                    console.error('Reklama funksiya xatosi:', e);
                     clearAdTimer();
-                    resolve({ success: false, message: 'Kutilmagan xatolik' });
-                });
+                    reject({ success: false, error: e });
+                }
             });
         }
 
