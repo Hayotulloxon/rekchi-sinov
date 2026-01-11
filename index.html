@@ -1231,6 +1231,7 @@
                 `}).join('');
         }
 
+        // ADSONAR REWARDED REKLAMA - TUZATILGAN VERSIYA
         async function showAdSonarAd() {
             return new Promise((resolve, reject) => {
                 try {
@@ -1242,6 +1243,9 @@
                     
                     console.log('AdSonar show function called');
                     
+                    // YANGI O'ZGARUVCHI: Mukofot olindimi yoki yo'qmi tekshirish uchun
+                    let isRewarded = false;
+                    
                     window.Sonar.show({
                         adUnit: ADSONAR_AD_UNIT,
                         loader: true,
@@ -1249,6 +1253,7 @@
                         onStart: () => {
                             console.log('Reklama yuklanmoqda...');
                             updateAdStatus('loading', "Reklama yuklanmoqda...");
+                            startAdTimer(10);
                         },
                         
                         onShow: () => {
@@ -1261,32 +1266,40 @@
                             clearAdTimer();
                             resolve({ success: false, message: 'Reklama xatosi: ' + (error || 'Noma\'lum xato') });
                         },
-        
+
+                        onReward: () => {
+                            console.log('Mukofot berilishi kerak - reklama to\'liq ko\'rildi');
+                            // Mukofot olinganini belgilaymiz
+                            isRewarded = true;
+                            
+                            clearAdTimer();
+                            // Reklama to'liq ko'rilganda bonusni berish
+                            resolve({ success: true, message: 'Reklama to\'liq ko\'rildi' });
+                        },
+
                         onClose: () => {
                             console.log('Reklama yopildi');
                             clearAdTimer();
-                            // Reklama yopilganda, mukofot hali kelmagan bo'lsa, u to'liq ko'rilmagan
+                            
+                            // AGAR MUKOFOT ALLAQACHON BERILGAN BO'LSA, HECH NARSA QILISH SHART EMAS
+                            if (isRewarded) {
+                                return;
+                            }
+
+                            // Agar mukofot berilmagan bo'lsa, demak chala yopilgan
                             setTimeout(() => {
-                                resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
+                                // Qayta tekshiramiz (ehtimol onReward onClose bilan bir vaqtda ishlagan bo'lsa)
+                                if (!isRewarded) {
+                                    resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
+                                }
                             }, 100);
-                        },
-        
-                        onReward: () => {
-                            console.log('Mukofot berilishi kerak - reklama to\'liq ko\'rildi');
-                            clearAdTimer();
-                            // Mukofot qabul qilinganda, reklama to'liq ko'rilgan deb hisoblash
-                            resolve({ success: true, message: 'Reklama to\'liq ko\'rildi' });
-                        },
+                        }
                     }).then((result) => {
                         console.log('AdSonar show result:', result);
-                        // AdSonar'ning o'z result'ini qayta ishlash
                         if (result && result.status === 'error') {
-                            console.error('Reklama koʻrsatishda xatolik:', result.message);
                             clearAdTimer();
                             resolve({ success: false, message: result.message });
                         }
-                        // Agar result muvaffaqiyatli bo'lsa, lekin onReward ishlamagan bo'lsa
-                        // onClose yoki boshqa handlerga tayanamiz
                     }).catch((error) => {
                         console.error('Reklama catch xatosi:', error);
                         clearAdTimer();
