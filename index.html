@@ -979,48 +979,76 @@
     };
 
     async function submitOrder(btn) {
-        let link = document.getElementById('targetLink').value;
-        if(!link) return notif(false, 'Link kiriting');
+        let link = document.getElementById('targetLink').value.trim();
+        if(!link) return notif(false, 'Iltimos, havolani kiriting');
         
-        // Stars uchun @ qo'shish
+        // Havola formatini tahrirlash
         if(curService.id === 467 && !link.includes('@') && !link.startsWith('http')) {
-             link = '@' + link;
+            link = '@' + link;
         } else if(curService.id !== 218 && curService.id !== 467 && !link.startsWith('http')) {
-             link = 'https://' + link;
+            link = 'https://' + link;
         }
     
         // Himoya: Double click oldini olish
         btn.disabled = true;
     
-        document.getElementById('modalBody').style.display='none';
-        document.getElementById('modalFooter').style.display='none';
-        document.getElementById('loader').style.display='block';
+        // Loaderni ko'rsatish
+        document.getElementById('modalBody').style.display = 'none';
+        document.getElementById('modalFooter').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
     
-        let res = await api('order', {service_id: curService.id, link: link, quantity: selQty, price: selPrice, currency: curService.currency});
-        
-        document.getElementById('loader').style.display='none';
-        
-        if(res.success) {
-            notif(true, 'Buyurtma qabul qilindi!');
-            document.getElementById('mainModal').style.display='none';
-            fetchBalance();
-        } else {
-            // Xatolik xabarini tushunarli tarjima qilish
-            let errorMessage = res.message;
+        try {
+            let res = await api('order', {
+                service_id: curService.id, 
+                link: link, 
+                quantity: selQty, 
+                price: selPrice, 
+                currency: curService.currency
+            });
             
-            if(res.error_code === 'link_duplicate') {
-                errorMessage = 'Sizda bu havola bo\'yicha faol buyurtma mavjud. Iltimos, birozdan keyin urinib ko\'ring.';
-            } else if(res.message.includes('duplicate')) {
-                errorMessage = 'Bu havola bo\'yicha allaqachon buyurtma mavjud. Iltimos, birozdan keyin urinib ko\'ring.';
-            } else if(res.message.includes('Mablag\' qaytarildi')) {
-                errorMessage = 'Mablag\' qaytarildi. Bu havola bo\'yicha allaqachon buyurtma mavjud.';
+            document.getElementById('loader').style.display = 'none';
+            
+            if(res.success) {
+                notif(true, '✅ Buyurtma muvaffaqiyatli qabul qilindi!');
+                document.getElementById('mainModal').style.display = 'none';
+                fetchBalance();
+            } else {
+                // Backend xatolik xabarini tahlil qilish
+                let errorMessage = res.message || 'Noma\'lum xatolik yuz berdi';
+                
+                // Xatolik xabarlarini tushunarli qilish
+                if (errorMessage.includes('duplicate') || 
+                    errorMessage.includes('qaytarildi') ||
+                    errorMessage.includes('faol')) {
+                    errorMessage = '⚠️ Sizda bu havola bo\'yicha faol buyurtma mavjud. Iltimos, bir necha daqiqadan keyin urinib ko\'ring yoki boshqa havola kiriting.';
+                } else if (errorMessage.includes('not enough') || 
+                          errorMessage.includes('yetarli')) {
+                    errorMessage = '❌ Balansingizda yetarli mablag\' mavjud emas. Iltimos, balansingizni to\'ldiring.';
+                } else if (errorMessage.includes('invalid') || 
+                          errorMessage.includes('link')) {
+                    errorMessage = '❌ Noto\'g\'ri havola formati. Iltimos, to\'g\'ri havola kiriting.';
+                } else if (errorMessage.includes('minimum') || 
+                          errorMessage.includes('minimal')) {
+                    errorMessage = '❌ Minimal miqdor: ' + curService.min;
+                } else {
+                    // Umumiy xatolik xabari
+                    errorMessage = '❌ Xatolik: ' + errorMessage;
+                }
+                
+                notif(false, errorMessage);
+                
+                // Formani qayta ko'rsatish
+                document.getElementById('modalBody').style.display = 'block';
+                document.getElementById('modalFooter').style.display = 'block';
+                btn.disabled = false;
             }
+        } catch (error) {
+            document.getElementById('loader').style.display = 'none';
+            notif(false, '🌐 Internet aloqasi xatosi. Iltimos, internetingizni tekshiring.');
             
-            notif(false, errorMessage);
-            
-            // Xatolik bo'lsa qayta ko'rsatish
-            document.getElementById('modalBody').style.display='block';
-            document.getElementById('modalFooter').style.display='block';
+            // Formani qayta ko'rsatish
+            document.getElementById('modalBody').style.display = 'block';
+            document.getElementById('modalFooter').style.display = 'block';
             btn.disabled = false;
         }
     }
