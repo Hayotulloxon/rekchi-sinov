@@ -988,24 +988,36 @@
         } else if(curService.id !== 218 && curService.id !== 467 && !link.startsWith('http')) {
              link = 'https://' + link;
         }
-
+    
         // Himoya: Double click oldini olish
         btn.disabled = true;
-
+    
         document.getElementById('modalBody').style.display='none';
         document.getElementById('modalFooter').style.display='none';
         document.getElementById('loader').style.display='block';
-
+    
         let res = await api('order', {service_id: curService.id, link: link, quantity: selQty, price: selPrice, currency: curService.currency});
         
         document.getElementById('loader').style.display='none';
         
         if(res.success) {
-            notif(true, 'Qabul qilindi!');
+            notif(true, 'Buyurtma qabul qilindi!');
             document.getElementById('mainModal').style.display='none';
             fetchBalance();
         } else {
-            notif(false, res.message);
+            // Xatolik xabarini tushunarli tarjima qilish
+            let errorMessage = res.message;
+            
+            if(res.error_code === 'link_duplicate') {
+                errorMessage = 'Sizda bu havola bo\'yicha faol buyurtma mavjud. Iltimos, birozdan keyin urinib ko\'ring.';
+            } else if(res.message.includes('duplicate')) {
+                errorMessage = 'Bu havola bo\'yicha allaqachon buyurtma mavjud. Iltimos, birozdan keyin urinib ko\'ring.';
+            } else if(res.message.includes('Mablag\' qaytarildi')) {
+                errorMessage = 'Mablag\' qaytarildi. Bu havola bo\'yicha allaqachon buyurtma mavjud.';
+            }
+            
+            notif(false, errorMessage);
+            
             // Xatolik bo'lsa qayta ko'rsatish
             document.getElementById('modalBody').style.display='block';
             document.getElementById('modalFooter').style.display='block';
