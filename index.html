@@ -1,1478 +1,1236 @@
-
-<!doctype html>
-<html lang="uz" class="h-full dark">
+<!DOCTYPE html>
+<html lang="uz">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>RekchiAi olmoslari</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RekchiAi Ultimate</title>
+    <!-- Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AdSonar Script -->
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
-    <script> window.process = { env: { NODE_ENV: 'production' } }; </script>
+
     <style>
-        body { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0f0f0f; color: #fff; }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(0,150,255,.3),0 0 40px rgba(0,150,255,.1)} 50%{box-shadow:0 0 30px rgba(0,150,255,.5),0 0 60px rgba(0,150,255,.2)} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
-        @keyframes celebrate { 0%,100%{transform:scale(1) rotate(0)} 25%{transform:scale(1.15) rotate(-3deg)} 75%{transform:scale(1.15) rotate(3deg)} }
-        @keyframes fadeOut { from{opacity:1; transform:translateY(0)} to{opacity:0; transform:translateY(-20px)} }
-        .float-animation{animation:float 3s ease-in-out infinite} 
-        .pulse-glow{animation:pulse-glow 2s ease-in-out infinite} 
-        .slide-up{animation:slideUp .4s ease-out}
-        .fade-out{animation:fadeOut .5s ease-out}
-
-        /* Reward notification styles */
-        .reward-notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(20,20,20,0.95), rgba(30,30,30,0.95));
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 16px;
-            padding: 16px 24px;
-            z-index: 9999;
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
-            display: none;
-            align-items: center;
-            gap: 12px;
-            min-width: 300px;
-            max-width: 90vw;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            height: 100vh; overflow: hidden; color: #333;
+            user-select: none;
         }
-        .reward-notification.active {
+        
+        .app-container {
+            max-width: 450px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column;
+            background: white; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            padding: 12px 15px; 
+            border-bottom: 3px solid #ffd166; 
+            z-index: 10;
+        }
+        
+        .header-content {
             display: flex;
-            animation: slideUp 0.4s ease-out, fadeOut 0.5s ease-out 2.5s forwards;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
         }
-        .reward-icon {
-            font-size: 2rem;
-            animation: celebrate 0.8s ease-out;
-        }
-        .reward-content {
+        
+        .balances-group {
+            display: flex;
+            gap: 6px;
             flex: 1;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
-        .reward-title {
-            font-weight: bold;
-            color: #22c55e;
-            font-size: 1.1rem;
-            margin-bottom: 2px;
+        .balances-group::-webkit-scrollbar { display: none; }
+        
+        .balance-item {
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 8px 10px; 
+            border-radius: 12px;
+            font-weight: 800; 
+            font-size: 13px; 
+            border: 2px solid #ffd166;
+            display: flex; align-items: center; justify-content: center;
+            gap: 4px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex: 1;
+            white-space: nowrap;
+            min-width: fit-content;
         }
-        .reward-amount {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #ffd54a;
-            text-shadow: 0 0 10px rgba(255, 213, 74, 0.3);
+        
+        .b-diamond { color: #ff6b6b; } 
+        .b-coin { color: #ff8e53; }
+        
+        .small-decimal { font-size: 10px; opacity: 0.8; margin-left: 1px; font-weight: 600; }
+
+        .header-actions {
+            display: flex; gap: 5px; align-items: center;
         }
-        .reward-subtitle {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.85rem;
+
+        .icon-btn-header {
+            width: 42px; height: 42px; background: white; border-radius: 12px;
+            border: 2px solid #ffd166; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #ff6b6b; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: 0.1s; flex-shrink: 0;
         }
+        .icon-btn-header:active { transform: scale(0.95); }
 
-        .app-card{background:linear-gradient(135deg, rgba(20,20,20,.95), rgba(30,30,30,.95)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.08); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
-        .gradient-bg{background:linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 50%,#2d2d2d 100%)}
-        .diamond-icon{filter:drop-shadow(0 0 8px rgba(0,150,255,.6)); color:#0096ff}
+        /* MAIN CONTENT */
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; background: #f8f9fa; display: none; padding-bottom: 90px; }
+        #servicesPage { display: block; } 
+        
+        .service-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        
+        .service-btn {
+            padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 700;
+            color: white; cursor: pointer; display: flex; align-items: center; gap: 15px; width: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; overflow: hidden;
+            transition: transform 0.1s;
+        }
+        .service-btn:active { transform: scale(0.98); }
+        .service-icon { font-size: 24px; width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        
+        /* Colors */
+        .instagram { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+        .telegram { background: linear-gradient(135deg, #0088cc, #34aadc); }
+        .tiktok { background: linear-gradient(135deg, #000000, #25f4ee, #fe2c55); }
+        .youtube { background: linear-gradient(135deg, #FF0000, #CC0000); }
+        .game { background: linear-gradient(135deg, #9C27B0, #673AB7); }
+        .special { background: linear-gradient(135deg, #FF9800, #FF5722); }
 
-        .btn-primary{background:linear-gradient(135deg,#0096ff 0%,#0066cc 100%); box-shadow:0 6px 20px rgba(0,150,255,.3); transition:all .3s; position:relative; overflow:hidden;}
-        .btn-primary:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(0,150,255,.4); }
-        .btn-primary::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
-        .btn-primary:hover::after{ left:100%; }
+        /* Tabs */
+        .tabs-container { display: flex; background: #eee; padding: 5px; border-radius: 15px; margin-bottom: 20px; gap: 5px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 12px; font-weight: 600; color: #666; cursor: pointer; transition: 0.3s; font-size: 13px; }
+        .tab-btn.active { background: white; color: #ff6b6b; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        .btn-danger{background:linear-gradient(135deg,#dc2626 0%,#991b1b 100%); box-shadow:0 6px 20px rgba(220,38,38,.3); transition:all .3s; position:relative; overflow:hidden;}
-        .btn-danger:hover:not(:disabled){ transform:translateY(-2px) scale(1.02); box-shadow:0 10px 25px rgba(220,38,38,.4); }
-        .btn-danger::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .5s; }
-        .btn-danger:hover::after{ left:100%; }
+        /* MINER CARDS (1 USTUN) */
+        .miner-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        
+        .miner-card { 
+            background: #fff; border: 2px solid #eee; border-radius: 20px; padding: 15px 20px; 
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; 
+            justify-content: space-between; position: relative; overflow: hidden;
+        }
+        .miner-card:active { transform: scale(0.98); background: #f9f9f9; }
+        .miner-card.standard { border-color: #2196F3; }
+        .miner-card.pro { border-color: #4CAF50; }
+        .miner-card.ultra { border-color: #9C27B0; }
+        .miner-card.dragon { border-color: #FF9800; background: #fffdf5; }
+        
+        .miner-left { display: flex; align-items: center; gap: 15px; }
+        .miner-img { font-size: 32px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
+        .miner-info { text-align: left; }
+        .miner-name { font-weight: 800; font-size: 16px; color: #333; margin-bottom: 2px; }
+        .miner-time { font-size: 12px; color: #888; font-weight: 500; }
+        
+        .miner-price { font-weight: 700; font-size: 14px; padding: 8px 15px; border-radius: 12px; white-space: nowrap; }
+        .price-diamond { color: #ff6b6b; background: #ffebee; }
+        .price-coin { color: #ff8e53; background: #fff3e0; }
 
-        .avatar-container{ width:64px; height:64px; border-radius:50%; overflow:hidden; position:relative; background:linear-gradient(135deg,#0096ff,#0066cc); flex:0 0 auto; }
-        .avatar-image{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; display:block; }
-        .gradient-avatar{ width:100%; height:100%; background:linear-gradient(135deg,#0096ff,#0066cc); border-radius:50%; display:flex; align-items:center; justify-content:center; }
-
-        .status-card{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); }
-        .reward-badge{ background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); }
-        .diamond-count{ background:rgba(0,150,255,.1); border:1px solid rgba(0,150,255,.2); }
-
-        .menu-container{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,15,15,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.1); z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-        .menu-nav{ display:flex; max-width:600px; margin:0 auto; padding:12px 16px; gap:8px; }
-        .menu-item{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 8px; border-radius:16px; background:transparent; border:none; color:rgba(255,255,255,.5); transition:all .3s; cursor:pointer; position:relative; }
-        .menu-item.active{ background:rgba(255,255,255,.1); color:white; }
-        .content-container{ padding-bottom:100px; }
-
-        ::-webkit-scrollbar{ width:6px } ::-webkit-scrollbar-track{ background:rgba(255,255,255,.05); border-radius:10px } ::-webkit-scrollbar-thumb{ background:#0096ff; border-radius:10px } ::-webkit-scrollbar-thumb:hover{ background:#0066cc }
-        ::selection{ background:rgba(0,150,255,.3); color:white }
-
-        .content-section{ display:none; animation:fadeIn .3s ease-out; } .content-section.active{ display:block; }
-        @keyframes fadeIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
-
-        .leaderboard-wrapper { max-width:640px; margin:10px auto; padding:12px; }
-        .leaderboard-card { background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; }
-        .leaderboard-tabs { display:flex; gap:8px; margin-bottom:12px; }
-        .leaderboard-tab { padding:8px 12px; border-radius:10px; cursor:pointer; color:rgba(255,255,255,.75); background:transparent; font-weight:600; border:1px solid transparent; }
-        .leaderboard-tab.active { background:linear-gradient(90deg,#0096ff,#0066cc); color:white; box-shadow:0 6px 18px rgba(0,150,255,0.12); }
-        .leaderboard-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; }
-        .leaderboard-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; transition:background .12s; cursor:pointer; }
-        .leaderboard-item:hover { background:rgba(255,255,255,0.05); }
-        .leader-rank { width:36px; text-align:center; font-weight:800; color:#ffd54a; }
-        .leader-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex:0 0 auto; }
-        .leader-meta { flex:1; }
-        .leader-name { font-weight:700; color:#fff; }
-        .leader-username { font-size:12px; color:rgba(255,255,255,.6) }
-        .leader-count { font-weight:800; color:#ffd54a; margin-left:auto; white-space:nowrap; }
-
-        /* Modal styles */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+        /* --- BANK CARD STYLE --- */
+        .bank-card {
+            background: linear-gradient(135deg, #1c1c1c 0%, #2c3e50 100%);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-height: 140px; 
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .bank-card:active { transform: scale(0.98); }
+        
+        .bank-card-bg-icon {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            color: rgba(255,255,255,0.05);
+            transform: rotate(-15deg);
+            pointer-events: none;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-chip {
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(135deg, #d4af37 0%, #f2e3b6 50%, #d4af37 100%);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        .card-chip::before { content: ''; position: absolute; top: 12px; left: 0; width: 100%; height: 1px; background: rgba(0,0,0,0.3); }
+        .card-chip::after { content: ''; position: absolute; top: 22px; left: 0; width: 100%; height: 1px; background: rgba(0,0,0,0.3); }
+
+        .card-nfc { font-size: 24px; color: rgba(255,255,255,0.7); transform: rotate(90deg); }
+
+        .card-balance-container {
+            margin-top: 10px;
+        }
+        
+        .card-balance-label { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        
+        .card-balance-value { 
+            font-family: 'Share Tech Mono', monospace; 
+            font-size: 28px; 
+            letter-spacing: 1px; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .card-logo {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            font-size: 24px;
+            opacity: 0.8;
+            font-weight: 800; font-style: italic;
+        }
+
+        /* Active Miners List */
+        .active-miner { 
+            background: linear-gradient(135deg, #f6f8f9, #e5ebee); border: 1px solid #ccc; 
+            border-radius: 12px; padding: 12px 15px; margin-bottom: 10px; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .active-miner-left { display: flex; align-items: center; gap: 12px; }
+        .active-miner-icon { font-size: 24px; }
+        .active-miner-name { font-weight: 800; font-size: 14px; text-transform: capitalize; color: #333; }
+        .active-miner-status { font-size: 10px; color: #4CAF50; font-weight: 600; }
+        .active-miner-timer { 
+            font-weight: 700; font-family: monospace; font-size: 14px; 
+            color: #fff; background: #0088cc; padding: 4px 8px; border-radius: 8px; 
+        }
+
+        /* Buttons & Inputs */
+        .submit-btn { 
+            width: 100%; padding: 15px; border: none; border-radius: 15px; 
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); 
+            color: white; font-weight: 800; font-size: 16px; cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4); margin-top: 10px;
+        }
+        .submit-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        .submit-btn:active { transform: scale(0.95); }
+        .custom-input, .link-input { 
+            width: 100%; padding: 14px; border: 2px solid #ffd166; border-radius: 12px; 
+            margin-bottom: 15px; text-align: center; font-size: 16px; outline: none; background: #fff; 
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(5px);
         }
         .modal-content {
-            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            max-width: 400px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            background: white; border-radius: 25px; padding: 25px; width: 90%; max-width: 380px;
+            text-align: center; position: relative; border: 4px solid #ffd166;
+            animation: popIn 0.3s ease; max-height: 90vh; overflow-y: auto;
         }
-        .modal-overlay.active .modal-content {
-            transform: translateY(0);
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: #ff6b6b; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+
+        /* 1 Ta Ustunli Paketlar */
+        .quantity-options { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 15px 0; }
+        .quantity-btn { 
+            padding: 15px; border: 2px solid #ffd166; background: white; border-radius: 12px; 
+            font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; 
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .modal-header {
-            padding: 24px 24px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
+        .quantity-btn:active { background: #fff8e1; transform: scale(0.98); }
+
+        /* Shop Styles */
+        .shop-grid { display: grid; gap: 10px; margin-top: 10px; }
+        .shop-item {
+            background: #f8f9fa; padding: 15px; border-radius: 15px; border: 2px solid #eee;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;
         }
-        .modal-body {
-            padding: 20px;
+        .shop-item:active { transform: scale(0.98); border-color: #ff6b6b; }
+        .shop-price { background: #ffd166; padding: 5px 10px; border-radius: 8px; font-weight: bold; font-size: 12px; }
+
+        /* Navigation */
+        .navigation {
+            display: flex; background: white; height: 75px; border-top: 2px solid #ffd166;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); padding-bottom: 5px; position: absolute; bottom: 0; width: 100%; z-index: 20;
         }
-        .modal-footer {
-            padding: 16px 20px 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
+        .nav-btn {
+            flex: 1; border: none; background: none; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: #888; cursor: pointer; transition: 0.3s;
         }
-        .info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .nav-btn.active { color: #ff6b6b; }
+        .nav-btn.active .nav-icon { transform: translateY(-3px); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; }
+        .nav-btn span { font-size: 10px; font-weight: 600; }
+
+        /* Notification Toast */
+        .notification { 
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-200%); 
+            padding: 15px 25px; border-radius: 15px; background: #4CAF50; color: white; 
+            font-weight: 600; z-index: 2000; transition: transform 0.5s; box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+            display: flex; align-items: center; gap: 10px; min-width: 250px; justify-content: center;
         }
-        .info-item:last-child {
-            border-bottom: none;
-        }
-        .info-icon {
-            flex-shrink: 0;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(0, 150, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .info-content h4 {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: rgba(255,255,255,0.95);
-            font-size: 16px;
-        }
-        .info-content p {
-            color: rgba(255,255,255,0.8);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .highlight-text {
-            color: #0096ff;
-            font-weight: 600;
+        .notification.error { background: #ff5252; }
+        .notification.show { transform: translateX(-50%) translateY(0); }
+
+        /* Loader */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #ff6b6b; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Floating Elements */
+        .floating-coins { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .coin { position: absolute; font-size: 24px; opacity: 0; animation: float 15s linear infinite; }
+        @keyframes float { 0% { transform: translateY(110vh); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-10vh); opacity: 0; } }
+        
+        /* Admin Section Style */
+        .adm-section {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
         }
         
-        /* User info modal */
-        .user-info-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1001;
+        /* Admin Search Styles */
+        .input-group {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            gap: 8px;
+            margin-bottom: 15px;
         }
-        .user-info-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .user-info-content {
-            background: linear-gradient(135deg, rgba(20,20,20,0.98), rgba(30,30,30,0.98));
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            max-width: 400px;
-            width: 100%;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-        .user-info-modal.active .user-info-content {
-            transform: translateY(0);
-        }
-        .user-info-header {
-            padding: 24px 24px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-        }
-        .user-info-body {
-            padding: 20px;
-        }
-        .user-info-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .user-info-item:last-child {
-            border-bottom: none;
-        }
-        .user-info-label {
-            font-weight: 600;
-            color: rgba(255,255,255,0.7);
-            width: 100px;
-            flex-shrink: 0;
-        }
-        .user-info-value {
-            color: #fff;
+        .input-group .custom-input {
+            margin-bottom: 0;
             flex: 1;
-            word-break: break-all;
+            text-align: left;
+            padding-left: 15px;
         }
-        
-        /* Telefon uchun optimallashtirishlar */
-        @media (max-width: 420px) { 
-            .leaderboard-list{ max-height:300px } 
-            .leader-avatar{ width:40px; height:40px }
-            
-            /* Modal optimallashtirish */
-            .modal-overlay {
-                padding: 16px;
-            }
-            .modal-content {
-                max-width: 100%;
-                max-height: 85vh;
-                border-radius: 20px;
-            }
-            .modal-header {
-                padding: 20px 20px 12px;
-            }
-            .modal-header .text-6xl {
-                font-size: 4rem;
-            }
-            .modal-header h2 {
-                font-size: 1.5rem;
-                line-height: 1.3;
-            }
-            .modal-header p {
-                font-size: 14px;
-            }
-            .modal-body {
-                padding: 16px;
-            }
-            .modal-footer {
-                padding: 12px 16px 16px;
-            }
-            .info-item {
-                padding: 10px 0;
-            }
-            .info-icon {
-                width: 32px;
-                height: 32px;
-                font-size: 18px;
-            }
-            .info-content h4 {
-                font-size: 15px;
-                line-height: 1.3;
-            }
-            .info-content p {
-                font-size: 13px;
-                line-height: 1.4;
-            }
-            .btn-primary {
-                padding: 16px;
-                font-size: 16px;
-                font-weight: 600;
-            }
-            
-            /* Reward notification mobile */
-            .reward-notification {
-                min-width: 250px;
-                padding: 12px 16px;
-            }
-            .reward-amount {
-                font-size: 1.5rem;
-            }
+        .search-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        
-        @media (max-width: 360px) {
-            .modal-header .text-6xl {
-                font-size: 3.5rem;
-            }
-            .modal-header h2 {
-                font-size: 1.3rem;
-            }
-            .info-icon {
-                width: 28px;
-                height: 28px;
-                font-size: 16px;
-            }
-            .info-content h4 {
-                font-size: 14px;
-            }
-            .info-content p {
-                font-size: 12px;
-            }
+        .search-btn:active { transform: scale(0.95); }
+
+        /* Admin Info Box */
+        .user-info-box {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #0d47a1;
+            text-align: left;
+            display: none; 
         }
-        
-        @media (max-height: 700px) {
-            .modal-content {
-                max-height: 85vh;
-            }
-            .modal-body {
-                max-height: 45vh;
-                overflow-y: auto;
-            }
+
+        /* Referral Item Style */
+        .ref-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
         }
-        
-        @media (max-height: 600px) {
-            .modal-content {
-                max-height: 90vh;
-            }
-            .modal-body {
-                max-height: 40vh;
-            }
-            .modal-header {
-                padding: 16px 16px 12px;
-            }
-        }
+        .ref-item:last-child { border-bottom: none; }
+        .ref-item:hover { background: #f9f9f9; }
+        .ref-icon { color: #888; font-size: 14px; }
+        .ref-name { font-weight: 700; color: #333; font-size: 14px; }
     </style>
 </head>
-<body class="h-full gradient-bg text-white overflow-auto">
-    <!-- Reward Notification -->
-    <div id="reward-notification" class="reward-notification">
-        <div class="reward-icon">🎉</div>
-        <div class="reward-content">
-            <div class="reward-title">Tabriklaymiz!</div>
-            <div class="reward-amount" id="reward-amount">+1 💎</div>
-            <div class="reward-subtitle" id="reward-subtitle">Reklama to'liq ko'rildi</div>
+<body>
+    <div class="notification" id="notif"></div>
+    <div class="floating-coins" id="floatingCoins"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-content">
+                <div class="balances-group">
+                    <div class="balance-item b-diamond" id="uDiamond">💎 0</div>
+                    <div class="balance-item b-coin" id="uCoin">🪙 0.<span class="small-decimal">0000</span></div>
+                </div>
+                
+                <div class="header-actions">
+                    <!-- SHOP BUTTON -->
+                    <button class="icon-btn-header" onclick="window.openShop()">
+                        <i class="fas fa-shopping-cart"></i>
+                    </button>
+                    <!-- ADMIN BUTTON -->
+                    <button class="icon-btn-header" id="adminBtn" onclick="window.openAdmin()" style="display:none; background:#333; color:gold; border-color:gold;">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. SERVICES PAGE -->
+        <div class="main-content page-content" id="servicesPage">
+            <div class="service-grid">
+                <button class="service-btn instagram" onclick="openModal('instagram-views')"><div class="service-icon" style="color:#E4405F"><i class="fab fa-instagram"></i></div><div class="service-text">Instagram Ko'rishlar</div></button>
+                <button class="service-btn instagram" onclick="openModal('instagram-shares')"><div class="service-icon" style="color:#E4405F"><i class="fas fa-share-alt"></i></div><div class="service-text">Instagram Jo'natishlar</div></button>
+                <button class="service-btn telegram" onclick="openModal('telegram-views')"><div class="service-icon" style="color:#0088cc"><i class="fab fa-telegram"></i></div><div class="service-text">Telegram Ko'rishlar</div></button>
+                <button class="service-btn telegram" onclick="openModal('telegram-reactions')"><div class="service-icon" style="color:#0088cc"><i class="fas fa-heart"></i></div><div class="service-text">Telegram Reaksiya</div></button>
+                <button class="service-btn tiktok" onclick="openModal('tiktok-views')"><div class="service-icon" style="color:#000"><i class="fab fa-tiktok"></i></div><div class="service-text">TikTok Ko'rishlar</div></button>
+            </div>
+        </div>
+
+        <!-- 2. EARN PAGE -->
+        <div class="main-content page-content" id="earnPage">
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchTab('earn', 'ads', this)">Reklama</button>
+                <button class="tab-btn" onclick="switchTab('earn', 'promo', this)">Kod</button>
+                <button class="tab-btn" onclick="switchTab('earn', 'ref', this)">Do'stlar</button>
+            </div>
+
+            <div id="earn-ads" class="earn-sec">
+                <div class="ad-container" style="background:white; padding:25px; border-radius:20px; text-align:center;">
+                    <div style="font-size:50px; margin-bottom:10px;">📺</div>
+                    <p style="color:#666; margin-bottom:20px;">Reklama ko'rib olmos ishlang!</p>
+                    <button class="submit-btn" id="watchAdBtn">Ko'rish (+1 💎)</button>
+                </div>
+            </div>
+
+            <div id="earn-promo" class="earn-sec" style="display:none">
+                <div class="ad-container" style="background:white; padding:25px; border-radius:20px;">
+                    <h3 style="color:#ff6b6b; margin-bottom:10px;">Promokod</h3>
+                    <input type="text" id="promoInput" class="custom-input" placeholder="CODE..." style="text-transform:uppercase">
+                    <button class="submit-btn" onclick="activatePromo()">Ishlatish</button>
+                </div>
+            </div>
+
+            <div id="earn-ref" class="earn-sec" style="display:none">
+                <div class="ad-container" style="background:white; padding:25px; border-radius:20px;">
+                    <h3 style="color:#0088cc; margin-bottom:10px;">Referal</h3>
+                    <div class="ref-box" style="background:#f0f4f8; padding:15px; border-radius:10px; border:2px dashed #0088cc; margin-bottom:15px; font-size:20px; font-weight:800;">
+                        <span id="myRefCode">...</span>
+                    </div>
+                    <button class="submit-btn" onclick="copyRef()">Koddan Nusxa Olish</button>
+                    <div id="refList" style="margin-top:15px; max-height:250px; overflow-y:auto; border:1px solid #eee; border-radius:10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. MINING PAGE -->
+        <div class="main-content page-content" id="swapPage">
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchTab('mining', 'coin', this)">🪙 Tanga Mayning</button>
+                <button class="tab-btn" onclick="switchTab('mining', 'som', this)">🇺🇿 So'm Mayning</button>
+            </div>
+
+            <!-- COIN MINING -->
+            <div id="mining-coin" class="mining-sec">
+                <div class="miner-grid">
+                    <!-- Standard -->
+                    <div class="miner-card standard" onclick="buyMiner('standard')">
+                        <div class="miner-left">
+                            <div class="miner-img">💻</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Standart</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-diamond">50 💎</div>
+                    </div>
+                    <!-- Pro -->
+                    <div class="miner-card pro" onclick="buyMiner('pro')">
+                        <div class="miner-left">
+                            <div class="miner-img">🚀</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Pro</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-diamond">100 💎</div>
+                    </div>
+                    <!-- Ultra -->
+                    <div class="miner-card ultra" onclick="buyMiner('ultra')">
+                        <div class="miner-left">
+                            <div class="miner-img">⚡</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Ultra</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-diamond">500 💎</div>
+                    </div>
+                    <!-- Dragon -->
+                    <div class="miner-card dragon" onclick="buyMiner('dragon')">
+                        <div class="miner-left">
+                            <div class="miner-img">🐲</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Dragon</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-diamond">2000 💎</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOM MINING -->
+            <div id="mining-som" class="mining-sec" style="display:none">
+                <!-- BANK CARD STYLE WALLET -->
+                <div class="bank-card" onclick="openWithdraw()">
+                    <i class="fas fa-wallet bank-card-bg-icon"></i>
+                    
+                    <div class="card-top">
+                        <div class="card-chip"></div>
+                        <i class="fas fa-wifi card-nfc"></i>
+                    </div>
+                    
+                    <div class="card-balance-container">
+                        <div class="card-balance-label">Sizning Balansingiz</div>
+                        <div class="card-balance-value" id="pageSomBalance">0.<span class="small-decimal">0000</span> UZS</div>
+                    </div>
+                    
+                    <div class="card-logo" style="bottom:15px; right:20px; font-weight:bold; font-style:italic;">WALLET</div>
+                </div>
+
+                <div class="miner-grid">
+                    <!-- Kore -->
+                    <div class="miner-card standard" onclick="buyMiner('kore')">
+                        <div class="miner-left">
+                            <div class="miner-img">🛠</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Kore</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-coin">100 🪙</div>
+                    </div>
+                    <!-- Power -->
+                    <div class="miner-card pro" onclick="buyMiner('power')">
+                        <div class="miner-left">
+                            <div class="miner-img">🔋</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Power</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-coin">300 🪙</div>
+                    </div>
+                    <!-- Turbo -->
+                    <div class="miner-card ultra" onclick="buyMiner('turbo')">
+                        <div class="miner-left">
+                            <div class="miner-img">🏎</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Turbo</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-coin">1000 🪙</div>
+                    </div>
+                    <!-- Titan -->
+                    <div class="miner-card dragon" onclick="buyMiner('titan')">
+                        <div class="miner-left">
+                            <div class="miner-img">🤖</div>
+                            <div class="miner-info">
+                                <div class="miner-name">Titan</div>
+                                <div class="miner-time">Muddat: 24 soat</div>
+                            </div>
+                        </div>
+                        <div class="miner-price price-coin">3000 🪙</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin:25px 0 10px 10px; font-size:15px; color:#333;">Faol Maynerlar</h3>
+            <div id="activeMinersList"></div>
+        </div>
+
+        <!-- 4. PRO PAGE -->
+        <div class="main-content page-content" id="proPage">
+            <div class="service-grid">
+                <button class="service-btn instagram" onclick="openModal('instagram-like')"><div class="service-icon" style="color:#E4405F"><i class="fas fa-heart"></i></div><div class="service-text">Instagram Like</div></button>
+                <button class="service-btn instagram" onclick="openModal('instagram-followers')"><div class="service-icon" style="color:#E4405F"><i class="fas fa-users"></i></div><div class="service-text">Instagram Obunachi</div></button>
+                <button class="service-btn instagram" onclick="openModal('instagram-story-like')"><div class="service-icon" style="color:#E4405F"><i class="fas fa-history"></i></div><div class="service-text">Instagram Storis Like</div></button>
+                <button class="service-btn telegram" onclick="openModal('telegram-followers')"><div class="service-icon" style="color:#0088cc"><i class="fas fa-users"></i></div><div class="service-text">Telegram Obunachi</div></button>
+                <button class="service-btn telegram" onclick="openModal('telegram-story-views')"><div class="service-icon" style="color:#0088cc"><i class="fas fa-eye"></i></div><div class="service-text">Telegram Storis Ko'rish</div></button>
+                <button class="service-btn tiktok" onclick="openModal('tiktok-followers')"><div class="service-icon" style="color:#000"><i class="fas fa-users"></i></div><div class="service-text">TikTok Obunachi</div></button>
+                <button class="service-btn tiktok" onclick="openModal('tiktok-like')"><div class="service-icon" style="color:#000"><i class="fas fa-heart"></i></div><div class="service-text">TikTok Like</div></button>
+                <button class="service-btn youtube" onclick="openModal('youtube-like')"><div class="service-icon" style="color:#FF0000"><i class="fab fa-youtube"></i></div><div class="service-text">YouTube Like</div></button>
+                
+                <button class="service-btn special" onclick="openModal('telegram-stars')"><div class="service-icon" style="color:#FF9800"><i class="fas fa-star"></i></div><div class="service-text">Telegram Stars</div></button>
+                <button class="service-btn special" onclick="openModal('telegram-gifts')"><div class="service-icon" style="color:#FF9800"><i class="fas fa-gift"></i></div><div class="service-text">Telegram Gifts</div></button>
+                <button class="service-btn special" onclick="openModal('telegram-premium')"><div class="service-icon" style="color:#FF9800"><i class="fab fa-telegram"></i></div><div class="service-text">Telegram Premium</div></button>
+                <button class="service-btn special" onclick="openModal('telegram-number')"><div class="service-icon" style="color:#FF9800"><i class="fas fa-phone"></i></div><div class="service-text">Telegram Raqam</div></button>
+                <button class="service-btn game" onclick="openModal('pubg-donat')"><div class="service-icon" style="color:#9C27B0"><i class="fas fa-gamepad"></i></div><div class="service-text">PUBG 60 UC</div></button>
+                <button class="service-btn game" onclick="openModal('freefire-donat')"><div class="service-icon" style="color:#9C27B0"><i class="fas fa-fire"></i></div><div class="service-text">FreeFire 110</div></button>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="navigation">
+            <button class="nav-btn active" onclick="nav('servicesPage', this)"><div class="nav-icon"><i class="fas fa-rocket"></i></div><span>Xizmatlar</span></button>
+            <button class="nav-btn" onclick="nav('earnPage', this)"><div class="nav-icon"><i class="fas fa-gem"></i></div><span>Ishlash</span></button>
+            <button class="nav-btn" onclick="nav('swapPage', this)"><div class="nav-icon"><i class="fas fa-exchange-alt"></i></div><span>Mayning</span></button>
+            <button class="nav-btn" onclick="nav('proPage', this)"><div class="nav-icon"><i class="fas fa-crown"></i></div><span>Pro</span></button>
         </div>
     </div>
 
-    <div id="app" class="min-h-full w-full">
-        <div id="loading" class="flex items-center justify-center min-h-screen p-4">
-            <div class="text-center slide-up">
-                <div class="text-7xl mb-6 float-animation diamond-icon">💎</div>
-                <div class="w-20 h-20 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-6"></div>
-                <p class="text-xl font-semibold text-white/90">RekchiAi olmoslari</p>
-                <p class="text-white/60 mt-2">Yuklanmoqda...</p>
-            </div>
+    <!-- MODALS -->
+    
+    <!-- Service Modal -->
+    <div class="modal" id="mainModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="document.getElementById('mainModal').style.display='none'">×</button>
+            <h3 id="modalTitle" style="margin-bottom:20px; color:#ff6b6b">Xizmat</h3>
+            <div id="modalBody"></div>
+            <div id="modalFooter" style="margin-top:10px;"></div>
+            <div class="loader" id="loader"></div>
         </div>
+    </div>
 
-        <!-- Welcome Modal -->
-        <div id="welcome-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="text-6xl mb-4 float-animation diamond-icon">💎</div>
-                    <h2 class="text-2xl font-bold text-white/90 mb-2">RekchiAi olmoslari</h2>
-                    <p class="text-white/60">Mini appga xush kelibsiz!</p>
-                </div>
-                
-                <div class="modal-body">
-                    <div class="space-y-4">
-                        <div class="info-item">
-                            <div class="info-icon">💎</div>
-                            <div class="info-content">
-                                <h4>Olmoslar yeg'ishingiz mumkin!</h4>
-                                <p>Bu joyda siz reklama ko'rib va bosib <span class="highlight-text">olmoslar</span> yeg'ishingiz mumkin.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <div class="info-icon">🎥</div>
-                            <div class="info-content">
-                                <h4>Har bir reklama uchun 1 olmos!</h4>
-                                <p>Har bir reklama to'liq ko'rganingizda <span class="highlight-text">1 olmos</span> olasiz. Limit yo'q!</p>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <div class="info-icon">⚡</div>
-                            <div class="info-content">
-                                <h4>Cheksiz imkoniyat!</h4>
-                                <p>Siz cheksiz reklama ko'rib, cheksiz olmos yeg'ishingiz mumkin!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button id="modal-ok-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-300">
-                        Tushundim
-                    </button>
-                </div>
+    <!-- Shop Modal -->
+    <div class="modal" id="shopModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="document.getElementById('shopModal').style.display='none'">×</button>
+            <h3 style="margin-bottom:15px; color:#ff6b6b">Do'kon</h3>
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="setShop('diamond', this)">💎 Olmos</button>
+                <button class="tab-btn" onclick="setShop('coin', this)">🪙 Tanga</button>
             </div>
+            <div id="shopList" class="shop-grid"></div>
+
         </div>
-        
-        <!-- User Info Modal (Admin uchun) -->
-        <div id="user-info-modal" class="user-info-modal">
-            <div class="user-info-content">
-                <div class="user-info-header">
-                    <h2 class="text-xl font-bold text-white/90 mb-2">Foydalanuvchi ma'lumotlari</h2>
-                    <p class="text-white/60 text-sm">Admin panel</p>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="document.getElementById('adminModal').style.display='none'">×</button>
+            <h3 style="color:gold; margin-bottom:15px;">Admin Panel</h3>
+            <div id="adminContent">
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchAdminTab('promo', this)">Promo</button>
+                    <button class="tab-btn" onclick="switchAdminTab('channel', this)">Kanal</button>
+                    <button class="tab-btn" onclick="switchAdminTab('deduct', this)">Ayirish</button>
                 </div>
                 
-                <div class="user-info-body">
-                    <div class="user-info-item">
-                        <span class="user-info-label">Ism:</span>
-                        <span class="user-info-value" id="info-name">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">Username:</span>
-                        <span class="user-info-value" id="info-username">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">ID:</span>
-                        <span class="user-info-value" id="info-id">-</span>
-                    </div>
-                    <div class="user-info-item">
-                        <span class="user-info-label">Olmoslar:</span>
-                        <span class="user-info-value" id="info-diamonds"> 0 💎</span>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button id="close-user-info-btn" class="btn-primary w-full text-white font-bold py-3 px-6 rounded-2xl text-base transition-all duration-300">
-                        Yopish
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="content" class="hidden">
-            <div class="sticky top-0 z-50 top-bar border-b border-white/5">
-                <div class="max-w-lg mx-auto px-4 py-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-3xl diamond-icon">💎</div>
-                            <div>
-                                <h1 class="text-xl font-bold text-white/90">RekchiAi olmoslari</h1>
-                                <p class="text-xs text-white/60">Cheksiz olmos ishlash</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-2 diamond-count px-4 py-2 rounded-full pulse-glow">
-                            <span id="diamond-count" class="text-2xl font-bold text-yellow-400">0</span>
-                            <span class="text-xl diamond-icon">💎</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="max-w-lg mx-auto px-4 py-6 space-y-4 content-container">
-                <div id="earn-section" class="content-section active">
-                    <div class="app-card p-5 slide-up">
-                        <div class="flex items-center space-x-4">
-                            <div id="user-avatar" class="avatar-container user-avatar"></div>
-                            <div class="flex-1">
-                                <h3 id="user-name" class="font-bold text-lg text-white/90">Foydalanuvchi</h3>
-                                <p id="user-id" class="text-white/50 text-sm">ID: Loading...</p>
-                                <p id="user-username" class="text-white/60 text-xs mt-1">@username</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="app-card p-6 slide-up" style="animation-delay:0.1s;">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center space-x-3">
-                                <div class="text-3xl">💎</div>
-                                <div>
-                                    <h2 class="text-xl font-bold text-white/90">Reklama ko'ring</h2>
-                                    <p class="text-white/60 text-sm">Cheksiz olmos ishlash, har biri uchun 1 olmos</p>
-                                </div>
-                            </div>
-                            <div class="reward-badge px-3 py-1.5 rounded-full">
-                                <span class="text-green-400 font-bold text-sm">+1 💎</span>
-                            </div>
-                        </div>
-
-                        <!-- Reklama holati -->
-                        <div id="ad-status" class="min-h-[60px] mb-4 transition-all duration-300">
-                            <div id="ad-timer-container" class="hidden">
-                                <div class="flex items-center justify-center mb-2">
-                                    <div class="w-64 bg-gray-800 rounded-full h-2.5">
-                                        <div id="ad-timer-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                                    </div>
-                                </div>
-                                <p id="ad-timer-text" class="text-center text-white/60 text-sm"></p>
-                            </div>
-                        </div>
-
-                        <button id="watch-ad-btn" class="btn-primary w-full text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 text-lg transition-all duration-300">
-                            <span class="text-2xl">▶️</span>
-                            <span>Reklamani boshlash</span>
-                        </button>
-                        
-                        <p class="text-center text-white/40 text-sm mt-4">
-                            Reklama to'liq ko'rilgandan so'ng <span class="text-green-400">+1 olmos</span> olasiz
-                        </p>
-                    </div>
+                <div id="adm-promo" class="adm-section">
+                    <input id="admCode" class="custom-input" placeholder="Kod nomi">
+                    <input id="admAmt" type="number" class="custom-input" placeholder="Miqdor">
+                    <select id="admType" class="custom-input"><option value="diamond">Olmos</option><option value="coin">Tanga</option></select>
+                    <input id="admMax" type="number" class="custom-input" placeholder="Limit">
+                    <button class="submit-btn" onclick="admAddPromo()">Yaratish</button>
                 </div>
 
-                <div id="leaderboard-section" class="content-section">
-                    <div class="leaderboard-wrapper slide-up">
-                        <div class="leaderboard-card">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="text-lg font-bold">Reytinglar</h3>
-                                    <p class="text-xs text-white/60">Umumiy olmoslar bo'yicha top 10</p>
-                                </div>
-                            </div>
-
-                            <div id="leaderboard-list" class="leaderboard-list" aria-live="polite">
-                                <div class="text-white/60 text-sm">Yuklanmoqda...</div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="adm-channel" class="adm-section" style="display:none;">
+                    <div id="admChanList" style="max-height:100px; overflow-y:auto; margin-bottom:10px; border:1px solid #eee;"></div>
+                    <input id="admChanInput" class="custom-input" placeholder="@username">
+                    <button class="submit-btn" onclick="admAddChan()">Qo'shish</button>
                 </div>
 
-                <div id="admin-panel" class="hidden app-card p-6 border-2 border-yellow-500/20 slide-up" style="animation-delay:0.3s;">
-                    <div class="flex items-center space-x-3 mb-6">
-                        <div class="text-3xl">👑</div>
-                        <h2 class="text-xl font-bold text-white/90">Admin Panel</h2>
-                    </div>
-
-                    <div class="admin-card rounded-2xl p-5 mb-6">
-                        <div class="flex items-center space-x-2 mb-4">
-                            <div class="text-xl">📈</div>
-                            <h3 class="font-bold text-white/90">Umumiy statistika</h3>
-                        </div>
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-users">0</p>
-                                <p class="text-xs text-white/60 mt-1">Foydalanuvchi</p>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-yellow-400" id="admin-total-diamonds">0</p>
-                                <p class="text-xs text-white/60 mt-1">Olmoslar</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="text-xl">⚡</div>
-                        <h3 class="font-bold text-white/90">Admin Amallar</h3>
+                <!-- DEDUCT SECTION -->
+                <div id="adm-deduct" class="adm-section" style="display:none;">
+                    <h4 style="margin-bottom:10px; color:#333;">So'm Ayirish</h4>
+                    
+                    <div class="input-group">
+                        <input id="admDedTarget" class="custom-input" placeholder="ID yoki Username (@siz)" style="margin-bottom:0;">
+                        <button class="search-btn" onclick="admSearchUser()"><i class="fas fa-search"></i></button>
                     </div>
                     
-                    <div class="admin-actions space-y-3 mb-6">
-                        <button id="force-refresh-btn" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-xl text-base transition-all duration-300 flex items-center justify-center space-x-2">
-                            <span class="text-xl">🔄</span>
-                            <span>Mini Appni Yangilash</span>
-                        </button>
-                        
-                        <button id="kick-all-users-btn" class="btn-danger w-full text-white font-bold py-3 px-4 rounded-xl text-base transition-all duration-300 flex items-center justify-center space-x-2">
-                            <span class="text-xl">👢</span>
-                            <span>Barchani Chiqarish</span>
-                        </button>
-                    </div>
+                    <!-- Topilgan user ma'lumoti -->
+                    <div id="admUserInfo" class="user-info-box"></div>
 
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="text-xl">👥</div>
-                        <h3 class="font-bold text-white/90">Foydalanuvchilar</h3>
-                    </div>
-                    <div id="users-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
+                    <input id="admDedAmount" type="number" class="custom-input" placeholder="Summa (so'm)">
+                    <button class="submit-btn" style="background:red;" onclick="admDeductSom()">Ayirish</button>
                 </div>
-            </div>
-
-            <div class="menu-container">
-                <nav class="menu-nav">
-                    <button class="menu-item active" data-section="earn-section" id="menu-earn">
-                        <span class="menu-icon">💎</span>
-                        <span class="menu-label">Olmos ishlash</span>
-                    </button>
-                    <button class="menu-item" data-section="leaderboard-section" id="menu-leaderboard">
-                        <span class="menu-icon">🏆</span>
-                        <span class="menu-label">Reytinglar</span>
-                    </button>
-                </nav>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    <!-- Withdraw Modal -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="document.getElementById('withdrawModal').style.display='none'">×</button>
+            <h3 style="color:#4CAF50; margin-bottom:15px;">Pul Yechish</h3>
+            <p style="font-size:12px; color:#666;">Minimal: 10,000 UZS</p>
+            <input type="number" id="wAmt" class="custom-input" placeholder="Summa">
+            <button class="submit-btn" style="background:#4CAF50" onclick="withdraw()">Yechish (Admin)</button>
+        </div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAFzNDoLlxHEpJOuZO8nhc-D2SmUId2dEc",
-            authDomain: "rekchi-2dc2f.firebaseapp.com",
-            databaseURL: "https://rekchi-2dc2f-default-rtdb.firebaseio.com",
-            projectId: "rekchi-2dc2f",
-            storageBucket: "rekchi-2dc2f.firebasestorage.app",
-            messagingSenderId: "352655860270",
-            appId: "1:352655860270:web:e071c82f4b911c21c0b5bf",
-            measurementId: "G-4WVC8S5V3R"
-        };
-        const firebaseApp = initializeApp(firebaseConfig);
-        const db = getDatabase(firebaseApp);
+    <!-- Sub Modal -->
+    <div class="modal" id="subModal" style="display:none; z-index:2000">
+        <div class="modal-content">
+            <h3 style="color:#ff6b6b; margin-bottom:10px;">Ilovadan foydalanish uchun kanalga obuna bo'ling va tekshirishni bosing :</h3>
+            <div id="subList" style="text-align:center; margin-bottom:15px;"></div>
+            <button class="submit-btn" onclick="checkSubs()" style="background:#4CAF50;">Tekshirish</button>
+        </div>
+    </div>
 
-        const ADMIN_IDS = ['7500103239', '7104718080'];
-        const REWARD_AMOUNT = 1; // 1 olmos har bir reklama uchun
-        const BOT_API_ADD_URL = 'https://68ed1ab05ca4e.myxvest1.ru/add_balance.php';
-        const BOT_API_GET_URL = 'https://68ed1ab05ca4e.myxvest1.ru/get_balance.php';
-        const BOT_API_KEY = '4564123:hkjhfadfhieapkdnga';
+<script>
+    // --- CONFIGURATION ---
+    const BACKEND_URL = 'https://68ed1ab05ca4e.myxvest1.ru/manage_balance.php'; 
+    const ADMIN_URL = 'https://t.me/Sarvarxon_Anvarovich';
+    const ADMIN_GIFT = 'https://t.me/behruz_aura';
+    
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const userId = tg.initDataUnsafe?.user?.id || '123456789';
+    const username = tg.initDataUnsafe?.user?.username || 'Guest';
+
+    let user = { d: 0, c: 0, s: 0, ref: '' };
+    let curService = null;
+    let selQty = 0;
+    let selPrice = 0;
+    let shopType = 'diamond';
+    let activeMinersList = []; // For local simulation
+
+    // Miner Rates per second
+    const MINER_INFO = {
+        'standard': { type: 'c', rate: 12 / 86400, icon: '💻' },
+        'pro':      { type: 'c', rate: 25 / 86400, icon: '🚀' },
+        'ultra':    { type: 'c', rate: 130 / 86400, icon: '⚡' },
+        'dragon':   { type: 'c', rate: 550 / 86400, icon: '🐲' },
+        'kore':     { type: 's', rate: 3000 / 86400, icon: '🛠' },
+        'power':    { type: 's', rate: 9000 / 86400, icon: '🔋' },
+        'turbo':    { type: 's', rate: 30000 / 86400, icon: '🏎' },
+        'titan':    { type: 's', rate: 90000 / 86400, icon: '🤖' }
+    };
+
+    // --- SERVICES DATA (Aniq paketlar bilan) ---
+    const services = {
+        'instagram-views': { 
+            name: 'Instagram Ko\'rishlar', id: 278, min: 100, price: 0.03, 
+            packages: [ { qty: 100, price: 3 },{ qty: 200, price: 6 }, { qty: 500, price: 15 }, { qty: 1000, price: 30 } ], currency: 'diamond', placeholder: 'Post Linki' },
+        'instagram-shares': { name: 'Instagram Jo\'natishlar', id: 292, min: 10, price: 0.14, packages: [ { qty: 20, price: 3 }, { qty: 50, price: 7 }, { qty: 100, price: 14 } ], currency: 'diamond', placeholder: 'Post Linki' },
+        'telegram-views': { name: 'Telegram Ko\'rishlar', id: 58, min: 100, price: 0.025, packages: [ { qty: 200, price: 5 }, { qty: 500, price: 13 }, { qty: 1000, price: 25 } ], currency: 'diamond', placeholder: 'Post Linki' },
+        'telegram-reactions': { name: 'Telegram Reaksiya', id: 74, min: 10, price: 0.2, packages: [ { qty: 10, price: 2 }, { qty: 20, price: 4 }, { qty: 50, price: 10 } ], currency: 'diamond', placeholder: 'Post Linki' },
+        'tiktok-views': { name: 'TikTok Ko\'rishlar', id: 410, min: 100, price: 0.025, packages: [ { qty: 200, price: 5 }, { qty: 500, price: 13 }, { qty: 1000, price: 25 } ], currency: 'diamond', placeholder: 'Video Linki' },
         
-        // Adsonar AD unit
-        const ADSONAR_AD_UNIT = "rekchiai";
-
-        let currentUser = null;
-        let allUsers = [];
-        let isAdmin = false;
-        let botBalance = 0;
-        let isWatchingAd = false;
-        let hasShownWelcomeModal = false;
-        let adTimerInterval = null;
-        let adDuration = 0;
-        let adStartTime = 0;
-
-        // ========== REWARD NOTIFICATION FUNCTIONS ==========
-        function showRewardNotification(amount, subtitle = "Reklama to'liq ko'rildi") {
-            const notification = document.getElementById('reward-notification');
-            const rewardAmount = document.getElementById('reward-amount');
-            const rewardSubtitle = document.getElementById('reward-subtitle');
-            
-            rewardAmount.textContent = `+${amount} 💎`;
-            rewardSubtitle.textContent = subtitle;
-            
-            notification.classList.remove('active');
-            void notification.offsetWidth;
-            notification.classList.add('active');
-            
-            setTimeout(() => {
-                notification.classList.remove('active');
-            }, 3000);
-        }
-
-        // Format date
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            try {
-                const date = new Date(dateString);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                return `${day}.${month}.${year} ${hours}:${minutes}`;
-            } catch (e) {
-                return '-';
-            }
-        }
-
-        // Helpers
-        async function getTelegramProfilePhoto(userId, username) {
-            try {
-                const tg = window.Telegram?.WebApp;
-                if (tg?.initDataUnsafe?.user?.photo_url) return tg.initDataUnsafe.user.photo_url;
-                if (username) return `https://t.me/i/userpic/320/${username}.jpg`;
-                return createFullGradientAvatar(userId);
-            } catch (e) {
-                return createFullGradientAvatar(userId);
-            }
-        }
+        'instagram-like': { name: 'Instagram Like', id: 577, min: 10, price: 0.2, packages: [ { qty: 10, price: 2 }, { qty: 20, price: 4 }, { qty: 50, price: 10 }, { qty: 100, price: 20 } ], currency: 'coin', placeholder: 'Post Linki' },
+        'instagram-followers': { name: 'Instagram Obunachi', id: 218, min: 10, price: 0.8, packages: [ { qty: 10, price: 8 }, { qty: 20, price: 16 }, { qty: 50, price: 40 }, { qty: 100, price: 80 } ], currency: 'coin', placeholder: 'Username' },
+        'instagram-story-like': { name: 'Instagram Storis Like', id: 1158, min: 10, price: 0.2, packages: [ { qty: 10, price: 2 }, { qty: 20, price: 4 }, { qty: 50, price: 10 }, { qty: 100, price: 20 } ], currency: 'coin', placeholder: 'Story Link' },
+        'telegram-followers': { name: 'Telegram Obunachi', id: 1477, min: 500, price: 0.8, packages: [ { qty: 500, price: 400 }, { qty: 600, price: 480 }, { qty: 700, price: 560 }, { qty: 800, price: 640 } ], currency: 'coin', placeholder: 'Kanal Linki' },
+        'telegram-story-views': { name: 'Telegram Storis Ko\'rish', id: 1115, min: 10, price: 0.1, packages: [ { qty: 10, price: 1 }, { qty: 20, price: 2 }, { qty: 50, price: 5 }, { qty: 100, price: 10 } ], currency: 'coin', placeholder: 'Story Link' },
+        'tiktok-followers': { name: 'TikTok Obunachi', id: 1420, min: 10, price: 0.8, packages: [ { qty: 10, price: 8 }, { qty: 20, price: 16 }, { qty: 50, price: 40 }, { qty: 100, price: 80 } ], currency: 'coin', placeholder: 'Profil Linki' },
+        'tiktok-like': { name: 'TikTok Like', id: 1470, min: 20, price: 0.05, packages: [ { qty: 20, price: 1 }, { qty: 40, price: 2 }, { qty: 100, price: 5 }, { qty: 500, price: 25 } ], currency: 'coin', placeholder: 'Video Linki' },
+        'youtube-like': { name: 'YouTube Like', id: 1498, min: 10, price: 0.2, packages: [ { qty: 10, price: 2 }, { qty: 20, price: 4 }, { qty: 50, price: 10 }, { qty: 100, price: 20 } ], currency: 'coin', placeholder: 'Video Linki' },
+        'telegram-stars': { name: 'Telegram Stars', id: 467, min: 50, price: 5, packages: [ { qty: 50, price: 250 }, { qty: 100, price: 500 }, { qty: 150, price: 750 } ], currency: 'coin', placeholder: 'Username' },
         
-        function createFullGradientAvatar(userId) {
-            const gradients = [['#FF6B6B','#FF8E53'],['#4ECDC4','#44A08D'],['#FFD93D','#FF6B6B'],['#6BC5D2','#4A9CC2'],['#9D50BB','#6E48AA'],['#00C9FF','#92FE9D'],['#FF9A9E','#FAD0C4'],['#A18CD1','#FBC2EB'],['#667eea','#764ba2'],['#f093fb','#f5576c']];
-            const idx = (userId||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0) % gradients.length;
-            const [c1,c2] = gradients[idx];
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><linearGradient id="g${userId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100%" height="100%" rx="128" fill="url(#g${userId})"/></svg>`;
-            return 'data:image/svg+xml;base64,' + btoa(svg);
-        }
+        'telegram-premium': { name: 'Telegram Premium', price: 1125, type: 'admin', currency: 'coin', link: ADMIN_URL, msg: 'Premium kerak' },
+        'telegram-gifts': { name: 'Telegram Gifts', price: 99, type: 'admin', currency: 'coin', link: ADMIN_GIFT, msg: 'Gifts kerak' },
+        'telegram-number': { name: 'Telegram Raqam', price: 399, type: 'admin', currency: 'coin', link: ADMIN_URL, msg: 'Raqam kerak' },
+        'pubg-donat': { name: 'Pubg 60 UC', price: 325, type: 'admin', currency: 'coin', link: ADMIN_URL, msg: 'PUBG 60 UC kerak' },
+        'freefire-donat': { name: 'FreeFire 110 almaz', price: 375, type: 'admin', currency: 'coin', link: ADMIN_URL, msg: 'FreeFire 110 Almaz kerak' }
+    };
 
-        function escapeHtml(str) { 
-            if (!str) return ''; 
-            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
-        }
+    // --- API WRAPPER ---
+    async function api(action, data = {}) {
+        try {
+            let body = { action, user_id: userId, username: username, ...data };
+            let headers = {
+                'Content-Type': 'application/json',
+                'X-Telegram-Data': tg.initData 
+            };
+            body.key = '4564123:hkjhfadfhieapkdnga';
+            let req = await fetch(BACKEND_URL, { method: 'POST', headers, body: JSON.stringify(body) });
+            return await req.json();
+        } catch (e) { return { success: false, message: 'Internet xatosi' }; }
+    }
 
-        // Ad timer functions
-        function startAdTimer(durationSeconds = 10) {
-            clearAdTimer();
-            adDuration = durationSeconds;
-            adStartTime = Date.now();
-            
-            const timerContainer = document.getElementById('ad-timer-container');
-            const timerBar = document.getElementById('ad-timer-bar');
-            const timerText = document.getElementById('ad-timer-text');
-            
-            if (timerContainer) timerContainer.classList.remove('hidden');
-            
-            adTimerInterval = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - adStartTime) / 1000);
-                const remaining = Math.max(0, adDuration - elapsed);
-                const percentage = Math.min(100, (elapsed / adDuration) * 100);
-                
-                if (timerBar) timerBar.style.width = `${percentage}%`;
-                if (timerText) timerText.textContent = `Qolgan vaqt: ${remaining} soniya`;
-                
-                if (elapsed >= adDuration) {
-                    clearAdTimer();
-                    if (timerContainer) timerContainer.classList.add('hidden');
-                }
-            }, 1000);
-        }
+    // --- INIT ---
+    window.onload = async () => {
+        await fetchBalance();
+        checkSubs();
+        loadMiners();
+        loadRefs();
+        createCoins();
         
-        function clearAdTimer() {
-            if (adTimerInterval) {
-                clearInterval(adTimerInterval);
-                adTimerInterval = null;
-            }
-            
-            const timerContainer = document.getElementById('ad-timer-container');
-            if (timerContainer) timerContainer.classList.add('hidden');
-        }
+        // Backend Update (every 10s)
+        setInterval(fetchBalance, 10000); 
+        
+        // Frontend Simulation (every 0.1s)
+        startMiningSimulation();
+        // Timer countdown loop (every 1s)
+        setInterval(startMinerTimer, 1000);
+    };
 
-        // Modal functions
-        function showWelcomeModal() {
-            if (hasShownWelcomeModal) return;
+    async function fetchBalance() {
+        let res = await api('get_balance');
+        if(res.success) {
+            user.d = parseInt(res.diamonds); 
+            user.c = parseFloat(res.coins); 
+            user.s = parseFloat(res.som_balance); 
+            user.ref = res.referral_code;
+            updateUI();
             
-            const modal = document.getElementById('welcome-modal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            const firstVisit = localStorage.getItem('rekchiai_first_visit');
-            if (!firstVisit) {
-                hasShownWelcomeModal = true;
-            }
-        }
-
-        function hideWelcomeModal() {
-            const modal = document.getElementById('welcome-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            
-            localStorage.setItem('rekchiai_first_visit', 'true');
-        }
-
-        // User Info Modal functions
-        function showUserInfoModal(userData) {
-            const modal = document.getElementById('user-info-modal');
-            
-            document.getElementById('info-name').textContent = userData.first_name || 'Foydalanuvchi';
-            document.getElementById('info-username').textContent = userData.username ? `@${userData.username}` : 'Yo\'q';
-            document.getElementById('info-id').textContent = userData.user_id || '-';
-            document.getElementById('info-diamonds').textContent = `${userData.diamonds || 0} 💎`;
-            
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function hideUserInfoModal() {
-            const modal = document.getElementById('user-info-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Init Telegram
-        function initTelegram() {
-            if (window.Telegram?.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-                window.Telegram.WebApp.setBackgroundColor('#0f0f0f');
-                window.Telegram.WebApp.setHeaderColor('#0f0f0f');
-                const tg = window.Telegram.WebApp;
-                const user = tg.initDataUnsafe?.user;
-                if (user) {
-                    currentUser = {
-                        user_id: user.id.toString(),
-                        username: user.username || '',
-                        first_name: user.first_name || 'Foydalanuvchi',
-                        last_name: user.last_name || '',
-                        photo_url: user.photo_url || null,
-                        language_code: user.language_code || 'uz'
-                    };
-                    isAdmin = ADMIN_IDS.includes(currentUser.user_id);
-                } else {
-                    currentUser = { 
-                        user_id: 'web_' + Date.now(), 
-                        username: 'foydalanuvchi', 
-                        first_name: 'Foydalanuvchi', 
-                        last_name:'', 
-                        photo_url:null, 
-                        language_code:'uz' 
-                    };
-                }
-            } else {
-                currentUser = { 
-                    user_id: 'web_' + Date.now(), 
-                    username: 'foydalanuvchi', 
-                    first_name: 'Foydalanuvchi', 
-                    last_name:'', 
-                    photo_url:null, 
-                    language_code:'uz' 
-                };
+            if(res.is_admin === 1) {
+                document.getElementById('adminBtn').style.display = 'flex';
             }
         }
+    }
 
-        // Load/create user in Firebase
-        async function loadOrCreateUser() {
-            if (!currentUser) return null;
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                if (!snapshot.exists()) {
-                    const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
-                    const now = new Date();
-                    
-                    const newUser = {
-                        user_id: currentUser.user_id,
-                        username: currentUser.username || '',
-                        first_name: currentUser.first_name || 'Foydalanuvchi',
-                        last_name: currentUser.last_name || '',
-                        photo_url: profilePhoto,
-                        language_code: currentUser.language_code || 'uz',
-                        diamonds: 0,
-                        created_at: now.toISOString(),
-                        updated_at: now.toISOString(),
-                        last_refresh: now.toISOString()
-                    };
-                    await set(userRef, newUser);
-                    return newUser;
-                } else {
-                    let userData = snapshot.val();
-                    
-                    if (userData.force_refresh) {
-                        location.reload();
-                        return userData;
+    function updateUI() {
+        document.getElementById('uDiamond').innerText = `💎 ${user.d}`;
+        let cStr = user.c.toFixed(4).split('.');
+        document.getElementById('uCoin').innerHTML = `🪙 ${cStr[0]}.<span class="small-decimal">${cStr[1]}</span>`;
+        let sStr = user.s.toFixed(4).split('.');
+        document.getElementById('pageSomBalance').innerHTML = `${sStr[0]}.<span class="small-decimal">${sStr[1]}</span> UZS`;
+        
+        document.getElementById('myRefCode').innerText = user.ref;
+    }
+
+    // --- REAL-TIME SIMULATION ---
+    function startMiningSimulation() {
+        setInterval(() => {
+            let coinInc = 0;
+            let somInc = 0;
+            
+            activeMinersList.forEach(m => {
+                if(m.time_left > 0) {
+                    let info = MINER_INFO[m.type];
+                    if(info) {
+                        let step = info.rate / 10;
+                        if(info.type === 'c') coinInc += step;
+                        if(info.type === 's') somInc += step;
                     }
-                    
-                    const now = new Date();
-                    
-                    if (!userData.photo_url) {
-                        const profilePhoto = await getTelegramProfilePhoto(currentUser.user_id, currentUser.username);
-                        const updates = { 
-                            photo_url: profilePhoto, 
-                            username: currentUser.username || userData.username, 
-                            first_name: currentUser.first_name || userData.first_name, 
-                            updated_at: now.toISOString(),
-                            last_refresh: now.toISOString()
-                        };
-                        await update(userRef, updates);
-                        userData = { ...userData, ...updates };
-                    }
-                    
-                    return userData;
                 }
-            } catch (err) {
-                console.error('loadOrCreateUser error', err);
-                return null;
+            });
+
+            if(coinInc > 0 || somInc > 0) {
+                user.c += coinInc;
+                user.s += somInc;
+                updateUI();
             }
-        }
-        
-        async function updateUserData(updates) {
-            if (!currentUser) return false;
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                await update(userRef, { ...updates, updated_at: new Date().toISOString() });
-                return true;
-            } catch (err) {
-                console.error('updateUserData error', err);
-                return false;
-            }
-        }
+        }, 100);
+    }
 
-        // BONUS BERISH
-        async function giveBonusToUser() {
-            try {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
-
-                const now = new Date();
-                
-                const newDiamonds = (userData.diamonds || 0) + REWARD_AMOUNT;
-
-                const updates = { 
-                    diamonds: newDiamonds,
-                    updated_at: now.toISOString(),
-                    last_reward: now.toISOString()
-                };
-                
-                const ok = await updateUserData(updates);
-                if (!ok) throw new Error('Firebase yangilashida xatolik');
-                
-                try { 
-                    await addToBotBalance(REWARD_AMOUNT);
-                } catch(e){ 
-                    console.warn('Bot add failed', e); 
-                }
-
-                renderLeaderboardsMain();
-                await fetchBotBalance();
-
-                // Reward notificationni ko'rsatish
-                showRewardNotification(REWARD_AMOUNT, "Reklama to'liq ko'rildi");
-                
-                resetWatchButton();
-                
-                // Ad holatini yangilash
-                updateAdStatus('success', "Reklama to'liq ko'rildi! +1 olmos qo'shildi");
-                
-            } catch (err) {
-                console.error('Bonus berishda xatolik', err);
-                showRewardNotification(0, "Xatolik yuz berdi");
-                resetWatchButton();
-                updateAdStatus('error', "Xatolik yuz berdi");
-            }
-        }
-
-        function resetWatchButton() {
-            const btn = document.getElementById('watch-ad-btn');
-            isWatchingAd = false;
-            
-            btn.disabled = false;
-            btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-            
-            // Timerlarni tozalash
-            clearAdTimer();
-        }
-
-        function updateAdStatus(type, message) {
-            const adStatus = document.getElementById('ad-status');
-            if (!adStatus) return;
-            
+    // --- TIMER ---
+    function startMinerTimer() {
+        if(activeMinersList.length > 0) {
             let html = '';
-            
-            switch(type) {
-                case 'loading':
-                    html = `
-                        <div class="text-center p-4">
-                            <div class="w-10 h-10 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
-                            <p class="text-white/80 text-sm">${message || "Reklama yuklanmoqda..."}</p>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'success':
-                    html = `
-                        <div class="text-center p-4 slide-up">
-                            <div class="text-4xl text-green-400 mb-3 animate-pulse">✅</div>
-                            <p class="text-white/90 font-semibold">${message || "Reklama to'liq ko'rildi!"}</p>
-                            <p class="text-green-400 text-sm mt-1">+${REWARD_AMOUNT} olmos qo'shildi</p>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'error':
-                    html = `
-                        <div class="text-center p-4 slide-up">
-                            <div class="text-4xl text-red-400 mb-3">❌</div>
-                            <p class="text-white/90 font-semibold">${message || "Reklama xatosi"}</p>
-                            <p class="text-white/60 text-sm mt-1">Iltimos, qayta urinib ko'ring</p>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'incomplete':
-                    html = `
-                        <div class="text-center p-4 slide-up">
-                            <div class="text-4xl text-yellow-400 mb-3">⚠️</div>
-                            <p class="text-white/90 font-semibold">${message || "Reklama to'liq ko'rilmadi"}</p>
-                            <p class="text-white/60 text-sm mt-1">Reklamani to'liq ko'ring</p>
-                        </div>
-                    `;
-                    break;
-                    
-                default:
-                    html = '';
-            }
-            
-            adStatus.innerHTML = html;
-            
-            // Agar success yoki error bo'lsa, 3 soniyadan keyin tozalash
-            if (type === 'success' || type === 'error' || type === 'incomplete') {
-                setTimeout(() => {
-                    adStatus.innerHTML = '';
-                }, 3000);
-            }
-        }
+            activeMinersList.forEach(m => {
+                if(m.time_left > 0) m.time_left--;
+                let info = MINER_INFO[m.type] || { icon: '❓' };
+                let tStr = m.time_left > 0 ? new Date(m.time_left * 1000).toISOString().substr(11, 8) : "Tugadi";
 
-        // Server bot API calls
-        async function addToBotBalance(amount) {
-            if (!currentUser) throw new Error('No user');
-            const body = new URLSearchParams({ key: BOT_API_KEY, user_id: currentUser.user_id, amount: amount });
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-            const resp = await fetch(BOT_API_ADD_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
-                body: body.toString(), 
-                signal: controller.signal 
+                html += `
+                <div class="active-miner">
+                    <div class="active-miner-left">
+                        <span class="active-miner-icon">${info.icon}</span>
+                        <div>
+                            <div class="active-miner-name">${m.type}</div>
+                            <div class="active-miner-status">Ishlamoqda...</div>
+                        </div>
+                    </div>
+                    <div class="active-miner-timer">${tStr}</div>
+                </div>`;
             });
-            clearTimeout(timeoutId);
-            if (!resp.ok) { 
-                const txt = await resp.text().catch(() => null); 
-                console.warn('addToBotBalance non-OK', resp.status, txt); 
-                return { success: false, message: 'HTTP ' + resp.status }; 
-            }
-            return await resp.json();
+            document.getElementById('activeMinersList').innerHTML = html;
+        } else {
+             document.getElementById('activeMinersList').innerHTML = '<p style="text-align:center; color:#999; padding:10px;">Faol mayner yo\'q</p>';
         }
+    }
 
-        async function fetchBotBalance() {
-            if (!currentUser) return;
-            try {
-                const url = new URL(BOT_API_GET_URL);
-                url.searchParams.set('key', BOT_API_KEY);
-                url.searchParams.set('user_id', currentUser.user_id);
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                const resp = await fetch(url.toString(), { 
-                    method: 'GET', 
-                    headers: { 'Accept': 'application/json' }, 
-                    signal: controller.signal 
+    // --- MINING ---
+    async function loadMiners() {
+        let res = await api('get_miners');
+        if(res.success) { 
+            activeMinersList = res.miners; 
+            startMinerTimer(); // Initial render
+        }
+    }
+
+    async function buyMiner(type) {
+        if(!confirm(type.toUpperCase() + " sotib olasizmi?")) return;
+        let res = await api('buy_miner', {miner_type: type});
+        notif(res.success, res.message);
+        if(res.success) {
+            fetchBalance();
+            loadMiners();
+        }
+    }
+
+    // --- NAVIGATION ---
+    window.nav = (page, btn) => {
+        document.querySelectorAll('.page-content').forEach(e => e.style.display='none');
+        document.getElementById(page).style.display='block';
+        document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+        btn.classList.add('active');
+        if(page === 'swapPage') loadMiners();
+    };
+
+    window.switchTab = (grp, target, btn) => {
+        document.querySelectorAll(`.${grp}-sec`).forEach(e => e.style.display='none');
+        document.getElementById(`${grp}-${target}`).style.display='block';
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    };
+
+    window.switchAdminTab = (target, btn) => {
+        document.querySelectorAll('.adm-section').forEach(e => e.style.display='none');
+        document.getElementById(`adm-${target}`).style.display='block';
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    };
+
+    // --- SERVICES ---
+    window.openModal = (key) => {
+        curService = services[key];
+        if(!curService) return;
+        
+        let m = document.getElementById('mainModal');
+        let b = document.getElementById('modalBody');
+        let f = document.getElementById('modalFooter');
+        let l = document.getElementById('loader');
+
+        // TUZATISH: Har safar ochilganda ko'rinishni qayta tiklash
+        m.style.display = 'flex';
+        b.style.display = 'block';
+        f.style.display = 'block';
+        l.style.display = 'none';
+
+        document.getElementById('modalTitle').innerText = (curService.name || key).toUpperCase();
+        f.innerHTML = '';
+
+        if(curService.type === 'admin') {
+            b.innerHTML = `
+                <div style="background:#fff3e0; padding:15px; border-radius:10px; color:#e65100; font-weight:bold; margin-bottom:10px;">
+                    Narxi: ${curService.price} 🪙
+                </div>
+            `;
+            f.innerHTML = `<button class="submit-btn" onclick="buyAdmin()">Sotib Olish</button>`;
+        } else {
+            let symbol = curService.currency === 'diamond' ? '💎' : '🪙';
+            let html = `<div class="quantity-options">`;
+            
+            if(curService.packages) {
+                curService.packages.forEach(pkg => {
+                    html += `
+                    <div class="quantity-btn" onclick="selQtyFunc(${pkg.qty}, ${pkg.price})">
+                        <span>${pkg.qty} ta</span>
+                        <span style="color:${symbol === '💎' ? '#ff6b6b' : '#ff8e53'}">${pkg.price} ${symbol}</span>
+                    </div>`;
                 });
-                clearTimeout(timeoutId);
-                if (!resp.ok) { 
-                    console.warn('fetchBotBalance non-OK', resp.status); 
-                    return; 
-                }
-                const json = await resp.json();
-                if (json && json.success) {
-                    botBalance = parseInt(json.balance || 0) || 0;
-                    document.getElementById('diamond-count').textContent = `${botBalance}`;
-                } else {
-                    console.warn('fetchBotBalance returned error', json);
-                }
-            } catch (err) {
-                console.warn('fetchBotBalance error', err);
             }
+            html += `</div>
+            <button class="quantity-btn" style="width:100%; justify-content:center;" onclick="customQty()">Boshqa miqdor</button>`;
+            
+            b.innerHTML = html;
+        }
+    };
+
+    window.selQtyFunc = (q, p) => { selQty = q; selPrice = p; askLink(); };
+    
+    window.customQty = () => {
+        let b = document.getElementById('modalBody');
+        b.innerHTML = `
+            <p>Miqdor (Min: ${curService.min})</p>
+            <input type="number" class="custom-input" placeholder="0" oninput="calcPrice(this.value)">
+            <div id="pricePreview" style="font-weight:bold; color:#ff6b6b; margin-top:10px;"></div>
+        `;
+        document.getElementById('modalFooter').innerHTML = `<button id="custBtn" class="submit-btn" disabled onclick="askLink()">Davom etish</button>`;
+    };
+
+    window.calcPrice = (val) => {
+        let q = parseInt(val);
+        let btn = document.getElementById('custBtn');
+        if(!q || q < curService.min) {
+            document.getElementById('pricePreview').innerText = `Min: ${curService.min}`;
+            btn.disabled = true;
+            return;
+        }
+        let p = Math.ceil(q * curService.price);
+        let sym = curService.currency === 'diamond' ? '💎' : '🪙';
+        selQty = q; selPrice = p;
+        document.getElementById('pricePreview').innerText = `Narxi: ${p} ${sym}`;
+        btn.disabled = false;
+        btn.innerText = `Davom etish (${p} ${sym})`;
+    };
+
+    window.askLink = () => {
+        let bal = curService.currency === 'diamond' ? user.d : user.c;
+        if(bal < selPrice) { notif(false, 'Mablag\' yetarli emas'); return; }
+        
+        document.getElementById('modalBody').innerHTML = `
+            <div style="font-weight:bold; margin-bottom:10px;">Buyurtma: ${selQty} ta</div>
+            <input type="text" id="targetLink" class="custom-input" placeholder="${curService.placeholder}">
+        `;
+        document.getElementById('modalFooter').innerHTML = `<button class="submit-btn" onclick="submitOrder(this)">Buyurtma Berish</button>`;
+    };
+
+    async function submitOrder(btn) {
+        let link = document.getElementById('targetLink').value;
+        if(!link) return notif(false, 'Link kiriting');
+        
+        // Stars uchun @ qo'shish
+        if(curService.id === 467 && !link.includes('@') && !link.startsWith('http')) {
+             link = '@' + link;
+        } else if(curService.id !== 218 && curService.id !== 467 && !link.startsWith('http')) {
+             link = 'https://' + link;
         }
 
-        // Admin funksiyalari
-        async function forceRefreshAllUsers() {
-            try {
-                const usersRef = ref(db, 'users');
-                const snapshot = await get(usersRef);
-                if (snapshot.exists()) {
-                    const users = snapshot.val();
-                    const updates = {};
-                    
-                    Object.keys(users).forEach(userId => {
-                        updates[`${userId}/force_refresh`] = true;
-                        updates[`${userId}/last_refresh`] = new Date().toISOString();
-                    });
-                    
-                    await update(ref(db, 'users'), updates);
-                    
-                    setTimeout(async () => {
-                        const removeUpdates = {};
-                        Object.keys(users).forEach(userId => {
-                            removeUpdates[`${userId}/force_refresh`] = null;
-                        });
-                        await update(ref(db, 'users'), removeUpdates);
-                    }, 5000);
-                    
-                    return { success: true, message: `${Object.keys(users).length} ta foydalanuvchi yangilandi` };
-                }
-                return { success: false, message: 'Foydalanuvchilar topilmadi' };
-            } catch (err) {
-                console.error('forceRefreshAllUsers error', err);
-                return { success: false, message: 'Xatolik: ' + err.message };
-            }
+        // Himoya: Double click oldini olish
+        btn.disabled = true;
+
+        document.getElementById('modalBody').style.display='none';
+        document.getElementById('modalFooter').style.display='none';
+        document.getElementById('loader').style.display='block';
+
+        let res = await api('order', {service_id: curService.id, link: link, quantity: selQty, price: selPrice, currency: curService.currency});
+        
+        document.getElementById('loader').style.display='none';
+        
+        if(res.success) {
+            notif(true, 'Qabul qilindi!');
+            document.getElementById('mainModal').style.display='none';
+            fetchBalance();
+        } else {
+            notif(false, res.message);
+            // Xatolik bo'lsa qayta ko'rsatish
+            document.getElementById('modalBody').style.display='block';
+            document.getElementById('modalFooter').style.display='block';
+            btn.disabled = false;
+        }
+    }
+
+    async function buyAdmin() {
+        if(user.c < curService.price) return notif(false, 'Tanga yetarli emas');
+        let msg = `${curService.msg}\n(ID: ${userId}, Balans: ${user.c})`;
+        window.open(`${curService.link}?text=${encodeURIComponent(msg)}`, '_blank');
+        document.getElementById('mainModal').style.display='none';
+    }
+
+    // --- SHOP ---
+    window.openShop = () => {
+        document.getElementById('shopModal').style.display='flex';
+        setShop('diamond', document.querySelector('.tab-btn'));
+    };
+
+    window.setShop = (type, btn) => {
+        shopType = type;
+        if(btn) {
+            btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
         
-        async function kickAllUsers() {
-            try {
-                const usersRef = ref(db, 'users');
-                const snapshot = await get(usersRef);
-                if (snapshot.exists()) {
-                    const users = snapshot.val();
-                    const userCount = Object.keys(users).length;
-                    
-                    await remove(usersRef);
-                    
-                    return { success: true, message: `${userCount} ta foydalanuvchi chiqarildi` };
-                }
-                return { success: false, message: 'Foydalanuvchilar topilmadi' };
-            } catch (err) {
-                console.error('kickAllUsers error', err);
-                return { success: false, message: 'Xatolik: ' + err.message };
-            }
+        let pkgs = type === 'diamond' ? 
+            [{a:500, p:21000}, {a:1000, p:39000}, {a:2000, p:75000}, {a:3000, p:99000}] : 
+            [{a:1000, p:15000}, {a:5000, p:60000}];
+        
+        let sym = type === 'diamond' ? '💎' : '🪙';
+        let html = '';
+        pkgs.forEach(pkg => {
+            html += `
+            <div class="shop-item" onclick="buyPkg(${pkg.a}, ${pkg.p}, '${sym}')">
+                <div style="font-weight:bold; color:#333;">${pkg.a} ${sym}</div>
+                <div class="shop-price">${pkg.p.toLocaleString()} so'm</div>
+            </div>`;
+        });
+        document.getElementById('shopList').innerHTML = html;
+        document.getElementById('customShopBtn').style.display='none';
+        document.getElementById('customShopInput').value='';
+        document.getElementById('customShopPreview').innerText='';
+    };
+
+    window.buyPkg = (a, p, s) => {
+        let msg = `Assalomu aleykum, ${a} ${s} sotib olmoqchiman ${p.toLocaleString()} so'm.`;
+        window.open(`${ADMIN_GIFT}?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    window.calcCustomShop = (val) => {
+        let a = parseInt(val);
+        let btn = document.getElementById('customShopBtn');
+        let prev = document.getElementById('customShopPreview');
+        
+        if(!a || a < 300) { prev.innerText = 'Min: 300'; btn.style.display='none'; return; }
+        
+        let rate = 42; 
+        if(shopType === 'coin') rate = 15;
+        
+        let price = Math.ceil(a * rate);
+        prev.innerText = `Narxi: ${price.toLocaleString()} so'm`;
+        btn.style.display='block';
+        btn.onclick = () => buyPkg(a, price, shopType === 'diamond' ? '💎' : '🪙');
+    };
+
+    // --- WITHDRAW ---
+    window.openWithdraw = () => { document.getElementById('withdrawModal').style.display='flex'; };
+    async function withdraw() {
+        let amt = document.getElementById('wAmt').value;
+        if(!amt) return notif(false, 'Summa kiritilmadi');
+        let res = await api('withdraw', {amount: amt});
+        notif(res.success, res.message);
+        if(res.success) {
+            fetchBalance();
+            document.getElementById('withdrawModal').style.display='none';
+            window.open(`${ADMIN_GIFT}?text=${encodeURIComponent("Pul yechish so'rovi: " + amt + " so'm.")}`, '_blank');
         }
+    }
 
-        // Subscribe to all users for leaderboard + admin
-        function subscribeToUsers() {
-            const usersRef = ref(db, 'users');
-            onValue(usersRef, (snapshot) => {
-                allUsers = [];
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    Object.keys(data).forEach(k => {
-                        allUsers.push(data[k]);
-                    });
-                }
-                updateAdminPanel();
-                renderLeaderboardsMain();
-            }, (err) => console.error('subscribeToUsers error', err));
+    // --- ADMIN SEARCH & DEDUCT ---
+    async function admSearchUser() {
+        let t = document.getElementById('admDedTarget').value;
+        if(!t) return notif(false, 'ID yoki Username kiriting');
+        
+        let res = await api('admin_get_user_info', { target: t });
+        
+        if(res.success) {
+            let div = document.getElementById('admUserInfo');
+            div.style.display = 'block';
+            div.innerHTML = `Topildi: <b>${res.username}</b><br>Balans: <span style="color:green; font-weight:bold">${res.som_balance} so'm</span>`;
+        } else {
+            notif(false, 'Foydalanuvchi topilmadi');
         }
+    }
 
-        // Render leaderboards into the standalone leaderboard section
-        function renderLeaderboardsMain() {
-            const listEl = document.getElementById('leaderboard-list');
-            if (!listEl) return;
+    async function admDeductSom() {
+        let target = document.getElementById('admDedTarget').value;
+        let amount = document.getElementById('admDedAmount').value;
+        if(!target || !amount) return notif(false, 'Ma\'lumot yetarli emas');
+        
+        let res = await api('admin_deduct_som', { target: target, amount: amount });
+        if(res.success) {
+            notif(true, 'Balansdan muvaffaqiyatli ayrildi');
+            document.getElementById('admDedAmount').value = '';
+            document.getElementById('admUserInfo').style.display = 'none';
+        } else {
+            notif(false, res.message);
+        }
+    }
 
-            const mapped = allUsers.map(u => {
-                const diamonds = parseInt(u.diamonds || 0);
-                
-                return {
-                    id: u.user_id,
-                    name: u.first_name || 'Foydalanuvchi',
-                    username: u.username || '',
-                    photo_url: u.photo_url || '',
-                    overallCount: diamonds,
-                    user_data: u
-                };
+    // --- EARN (ADS, PROMO, REF) ---
+    document.getElementById('watchAdBtn').onclick = () => {
+        if(!window.Sonar) return notif(false, 'Ad yuklanmadi');
+        window.Sonar.show({ adUnit: "rekchiai", onReward: async () => {
+            let res = await api('add', {amount:1});
+            if(res.success) { fetchBalance(); notif(true, '+1 💎'); }
+        }});
+    };
+
+    async function activatePromo() {
+        let c = document.getElementById('promoInput').value;
+        if(!c) return;
+        let res = await api('activate_code', {code: c});
+        notif(res.success, res.message);
+        if(res.success) document.getElementById('promoInput').value = '';
+        fetchBalance();
+    }
+
+    function copyRef() { navigator.clipboard.writeText(user.ref); notif(true, 'Nusxalandi'); }
+    
+    // TUZATILDI: Referal ro'yxatini toza va vaqtsiz chiqarish
+    async function loadRefs() {
+        let res = await api('get_referrals');
+        let h = '';
+        if(res.success && res.referrals.length > 0) {
+            res.referrals.forEach(r => {
+                // XSS himoyasi uchun
+                let safeName = r.username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                h += `
+                <div class="ref-item">
+                    <i class="fas fa-user ref-icon"></i>
+                    <div class="ref-name">${safeName}</div>
+                </div>`;
             });
-
-            const sorted = mapped.sort((a,b) => b.overallCount - a.overallCount);
-
-            const top = sorted.slice(0,10);
-            if (top.length === 0) {
-                listEl.innerHTML = `<div class="text-white/60 text-sm">Hozircha ma'lumot yo'q.</div>`;
-                return;
-            }
-
-            listEl.innerHTML = top.map((u,i) => {
-                const clickHandler = isAdmin ? `onclick="handleLeaderboardItemClick('${u.id}')"` : '';
-                
-                return `
-                <div class="leaderboard-item" ${clickHandler} data-user-id="${u.id}">
-                    <div class="leader-rank">${i+1}</div>
-                    <div class="leader-avatar">
-                        ${u.photo_url ? `<img src="${u.photo_url}" alt="${escapeHtml(u.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\' style=\\'width:100%;height:100%\\'></div>'">` : `<div class="gradient-avatar" style="width:100%;height:100%"></div>`}
-                    </div>
-                    <div class="leader-meta">
-                        <div class="leader-name">${escapeHtml(u.name)}</div>
-                        <div class="leader-username">${u.username ? '@'+escapeHtml(u.username) : ''}</div>
-                    </div>
-                    <div class="leader-count">${u.overallCount} 💎</div>
-                </div>
-            `}).join('');
+        } else { 
+            h = '<div style="padding:15px; text-align:center; color:#999;">Hali referallar yo\'q</div>'; 
         }
+        document.getElementById('refList').innerHTML = h;
+    }
 
-        // Leaderboard item bosilganda (faqat admin uchun)
-        function handleLeaderboardItemClick(userId) {
-            if (!isAdmin) return;
-            
-            const userData = allUsers.find(u => u.user_id === userId);
-            if (userData) {
-                showUserInfoModal(userData);
-            }
+    // --- ADMIN ---
+    window.openAdmin = async () => {
+        document.getElementById('adminModal').style.display='flex';
+        let res = await api('admin_get_channels');
+        if(res.success) {
+            let h = '';
+            res.channels.forEach(c => h += `<div style="display:flex; justify-content:space-between;"><span>${c.channel_name}</span><button onclick="admDelChan(${c.id})" style="color:red">X</button></div>`);
+            document.getElementById('admChanList').innerHTML = h;
         }
+    };
+    async function admAddPromo() {
+        let d = { code: document.getElementById('admCode').value, amount: document.getElementById('admAmt').value, type: document.getElementById('admType').value, max_uses: document.getElementById('admMax').value };
+        await api('admin_add_promo', d);
+        notif(true, 'OK');
+    }
+    async function admAddChan() {
+        await api('admin_add_channel', {channel_input: document.getElementById('admChanInput').value});
+        notif(true, 'OK');
+        window.openAdmin();
+    }
+    async function admDelChan(id) {
+        await api('admin_delete_channel', {db_id: id});
+        window.openAdmin();
+    }
 
-        // Admin panel render
-        function updateAdminPanel() {
-            const totalUsers = allUsers.length;
-            const totalDiamonds = allUsers.reduce((s,u)=> s + (parseInt(u.diamonds||0)), 0);
-            
-            document.getElementById('admin-total-users').textContent = totalUsers;
-            document.getElementById('admin-total-diamonds').textContent = totalDiamonds;
-
-            const usersList = document.getElementById('users-list');
-            if (!usersList) return;
-            
-            usersList.innerHTML = allUsers
-                .sort((a,b)=> (parseInt(b.diamonds||0)) - (parseInt(a.diamonds||0)))
-                .slice(0,20)
-                .map(u => {
-                    const diamonds = parseInt(u.diamonds || 0);
-                    
-                    const clickHandler = isAdmin ? `onclick="showUserInfoModal(${JSON.stringify(u).replace(/"/g, '&quot;')})"` : '';
-                    
-                    return `
-                    <div class="app-card p-4 hover:bg-white/5 transition-all duration-300" ${clickHandler} style="cursor: ${isAdmin ? 'pointer' : 'default'}">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar-container">
-                                    ${u.photo_url ? `<img src="${u.photo_url}" alt="${(u.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">` : `<div class="gradient-avatar"></div>`}
-                                </div>
-                                <div>
-                                    <p class="font-bold text-sm text-white/90">${u.first_name || 'Foydalanuvchi'}</p>
-                                    <p class="text-xs text-white/50">${u.username ? '@'+u.username : '@nousername'}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-bold text-yellow-400">${diamonds} 💎</p>
-                            </div>
-                        </div>
-                    </div>
-                `}).join('');
-        }
-
-        // ADSONAR REWARDED REKLAMA - Dokumentatsiyaga muvofiq
-        async function showAdSonarAd() {
-            return new Promise((resolve, reject) => {
-                try {
-                    if (!window.Sonar) {
-                        console.error('AdSonar not loaded');
-                        reject({ success: false, error: 'AdSonar not loaded' });
-                        return;
-                    }
-                    
-                    console.log('AdSonar show function called');
-                    
-                    window.Sonar.show({
-                        adUnit: ADSONAR_AD_UNIT,
-                        loader: true,
-                        
-                        onStart: () => {
-                            console.log('Reklama yuklanmoqda...');
-                            updateAdStatus('loading', "Reklama yuklanmoqda...");
-                            startAdTimer(10);
-                        },
-                        
-                        onShow: () => {
-                            console.log('Reklama koʻrsatilmoqda...');
-                            updateAdStatus('loading', "Reklama ko'rsatilmoqda...");
-                        },
-                        
-                        onError: (error) => {
-                            console.log('Reklama xatosi:', error);
-                            clearAdTimer();
-                            resolve({ success: false, message: 'Reklama xatosi: ' + (error || 'Noma\'lum xato') });
-                        },
-
-                        onClose: () => {
-                            console.log('Reklama yopildi');
-                            clearAdTimer();
-                            // Reklama yopilganda, agar reward kelmagan bo'lsa, incomplete deb belgilash
-                            setTimeout(() => {
-                                if (!isWatchingAd) return; // Agar tugma allaqachon tiklanga bo'lsa
-                                resolve({ success: false, message: 'Reklama to\'liq ko\'rilmadi' });
-                            }, 100);
-                        },
-
-                        onReward: () => {
-                            console.log('Mukofot berilishi kerak - reklama to\'liq ko\'rildi');
-                            clearAdTimer();
-                            // Reklama to'liq ko'rilganda bonusni berish
-                            resolve({ success: true, message: 'Reklama to\'liq ko\'rildi' });
-                        },
-                    }).then((result) => {
-                        console.log('AdSonar show result:', result);
-                        if (result && result.status === 'error') {
-                            console.error('Reklama koʻrsatishda xatolik:', result.message);
-                            clearAdTimer();
-                            resolve({ success: false, message: result.message });
-                        }
-                    }).catch((error) => {
-                        console.error('Reklama catch xatosi:', error);
-                        clearAdTimer();
-                        reject({ success: false, error: error });
-                    });
-                    
-                } catch (e) {
-                    console.error('Reklama funksiya xatosi:', e);
-                    clearAdTimer();
-                    reject({ success: false, error: e });
-                }
-            });
-        }
-
-        // REWARDED REKLAMANI KO'RSATISH
-        async function watchAd() {
-            if (!currentUser || isWatchingAd) return;
-            
-            const btn = document.getElementById('watch-ad-btn');
-            
-            isWatchingAd = true;
-            btn.disabled = true;
-            btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-            
-            updateAdStatus('loading', "Reklama yuklanmoqda...");
-            
-            try {
-                const result = await showAdSonarAd();
-                
-                if (result.success) {
-                    // Reklama muvaffaqiyatli ko'rilgan, bonus berish
-                    console.log('Reklama muvaffaqiyatli, bonus berilmoqda...');
-                    await giveBonusToUser();
-                } else {
-                    // Reklama xatosi yoki to'liq ko'rilmadi
-                    console.log('Reklama muvaffaqiyatsiz:', result.message);
-                    showRewardNotification(0, result.message || "Reklama to'liq ko'rilmadi");
-                    updateAdStatus('incomplete', result.message || "Reklama to'liq ko'rilmadi");
-                    resetWatchButton();
-                }
-                
-            } catch (err) {
-                console.error('Reklama xatosi:', err);
-                showRewardNotification(0, "Reklama xatosi yoki to'liq ko'rilmadi");
-                updateAdStatus('error', "Reklama xatosi");
-                resetWatchButton();
-            }
-        }
-
-        // UI bindings (menu + leaderboard tabs)
-        function bindUI() {
-            document.getElementById('watch-ad-btn')?.addEventListener('click', watchAd);
-            
-            document.getElementById('modal-ok-btn')?.addEventListener('click', hideWelcomeModal);
-            
-            document.getElementById('close-user-info-btn')?.addEventListener('click', hideUserInfoModal);
-
-            document.getElementById('menu-earn')?.addEventListener('click', () => switchSection('earn-section', 'menu-earn'));
-            document.getElementById('menu-leaderboard')?.addEventListener('click', () => switchSection('leaderboard-section', 'menu-leaderboard'));
-            
-            document.getElementById('force-refresh-btn')?.addEventListener('click', async () => {
-                if (!isAdmin) return;
-                
-                const btn = document.getElementById('force-refresh-btn');
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-                
-                try {
-                    const result = await forceRefreshAllUsers();
-                    
-                    if (result.success) {
-                        alert(`✅ ${result.message}`);
-                    } else {
-                        alert(`❌ ${result.message}`);
-                    }
-                } catch (err) {
-                    alert('❌ Xatolik yuz berdi');
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
+    // --- SUBS ---
+    async function checkSubs() {
+        let res = await api('check_subs');
+        if(!res.success) return;
+        if(!res.all_subscribed) {
+            let h = '';
+            res.channels.forEach(c => {
+                let status = c.is_subscribed ? '✅' : '❌';
+                let link = c.link.startsWith('http') ? c.link : `https://t.me/${c.link.replace('@','')}`;
+                if (!c.is_subscribed) {
+                     h += `<a href="${link}" target="_blank" class="submit-btn" style="text-decoration:none; display:flex; justify-content:center; align-items:center; margin-bottom:10px; background:#0088cc;">📢 Obuna bo'lish</a>`;
                 }
             });
             
-            document.getElementById('kick-all-users-btn')?.addEventListener('click', async () => {
-                if (!isAdmin) return;
-                
-                if (!confirm('Haqiqatan ham barcha foydalanuvchilarni chiqarmoqchimisiz?\nBu amalni bekor qilib bo\'lmaydi!')) {
-                    return;
-                }
-                
-                const btn = document.getElementById('kick-all-users-btn');
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = '<div class="w-6 h-6 border-3 border-white/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>';
-                
-                try {
-                    const result = await kickAllUsers();
-                    
-                    if (result.success) {
-                        alert(`✅ ${result.message}`);
-                        location.reload();
-                    } else {
-                        alert(`❌ ${result.message}`);
-                    }
-                } catch (err) {
-                    alert('❌ Xatolik yuz berdi');
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                }
-            });
-        }
-
-        function switchSection(sectionId, menuButtonId) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
-            if (menuButtonId) document.getElementById(menuButtonId).classList.add('active');
-            if (sectionId === 'leaderboard-section') renderLeaderboardsMain();
-        }
-
-        // Update user UI (avatar, name)
-        function updateUI(user) {
-            if (!user) return;
-            const avatarDiv = document.getElementById('user-avatar');
-            if (user.photo_url) {
-                avatarDiv.innerHTML = `<img src="${user.photo_url}" alt="${(user.first_name||'Foydalanuvchi')}" class="avatar-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'gradient-avatar\\'></div>'">`;
+            if (h !== '') {
+                document.getElementById('subList').innerHTML = h;
+                document.getElementById('subModal').style.display='flex';
             } else {
-                avatarDiv.innerHTML = '<div class="gradient-avatar"></div>';
+                document.getElementById('subModal').style.display='none';
             }
-            document.getElementById('user-name').textContent = user.first_name || 'Foydalanuvchi';
-            document.getElementById('user-id').textContent = `ID: ${user.user_id}`;
-            document.getElementById('user-username').textContent = user.username ? `@${user.username}` : '@nousername';
-            document.getElementById('diamond-count').textContent = `${botBalance}`;
+        } else {
+            document.getElementById('subModal').style.display='none';
         }
+    }
 
-        // App init
-        async function initializeAppMain() {
-            initTelegram();
-            bindUI();
-
-            // Reklama holatini tiklash (agar oldingi sessiyada bloklangan bo'lsa)
-            isWatchingAd = false;
-            const btn = document.getElementById('watch-ad-btn');
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<span class="text-2xl">▶️</span><span>Reklamani boshlash</span>';
-            }
-
-            const user = await loadOrCreateUser();
-            if (user) {
-                const userRef = ref(db, 'users/' + currentUser.user_id);
-                onValue(userRef, (snap) => { 
-                    if (snap.exists()) {
-                        const userData = snap.val();
-                        updateUI(userData);
-                    }
-                });
-
-                subscribeToUsers();
-
-                if (isAdmin) document.getElementById('admin-panel').classList.remove('hidden');
-            }
-
-            if (currentUser) {
-                await fetchBotBalance();
-                setInterval(fetchBotBalance, 30000);
-            }
-
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('content').classList.remove('hidden');
-            
-            setTimeout(() => {
-                showWelcomeModal();
-            }, 500);
+    // --- UTILS ---
+    function notif(success, msg) {
+        let n = document.getElementById('notif');
+        n.innerText = msg;
+        n.className = success ? 'notification show' : 'notification error show';
+        setTimeout(() => n.className = 'notification', 3000);
+    }
+    async function checkNotifs() {
+        let res = await api('get_notifications');
+        if(res.success && res.notifications) res.notifications.forEach(m => notif(true, m));
+    }
+    function createCoins() {
+        const con = document.getElementById('floatingCoins');
+        const icons = ['💎','🪙','⭐'];
+        for(let i=0; i<15; i++) {
+            let el = document.createElement('div');
+            el.className = 'coin';
+            el.innerText = icons[Math.floor(Math.random()*icons.length)];
+            el.style.left = Math.random()*100 + '%';
+            el.style.animationDelay = Math.random()*20 + 's';
+            con.appendChild(el);
         }
-
-        // Global function for leaderboard item click
-        window.handleLeaderboardItemClick = handleLeaderboardItemClick;
-        window.showUserInfoModal = showUserInfoModal;
-
-        // start
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAppMain);
-        else initializeAppMain();
-    </script>
+    }
+</script>
 </body>
 </html>
