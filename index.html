@@ -1000,6 +1000,7 @@
         try {
             let res = await api('order', {
                 service_id: curService.id, 
+                service_name: curService.name, // <-- YANGI: Xizmat nomini qo'shish
                 link: link, 
                 quantity: selQty, 
                 price: selPrice, 
