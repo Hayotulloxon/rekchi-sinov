@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RekchiAi Ultimate</title>
-    <!-- Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- AdSonar Script -->
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
 
     <style>
@@ -112,7 +109,7 @@
         .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 12px; font-weight: 600; color: #666; cursor: pointer; transition: 0.3s; font-size: 13px; }
         .tab-btn.active { background: white; color: #ff6b6b; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* MINER CARDS (1 USTUN) */
+        /* MINER CARDS */
         .miner-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         
         .miner-card { 
@@ -136,7 +133,7 @@
         .price-diamond { color: #ff6b6b; background: #ffebee; }
         .price-coin { color: #ff8e53; background: #fff3e0; }
 
-        /* --- BANK CARD STYLE --- */
+        /* BANK CARD STYLE */
         .bank-card {
             background: linear-gradient(135deg, #1c1c1c 0%, #2c3e50 100%);
             border-radius: 20px;
@@ -251,7 +248,7 @@
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .close-btn { position: absolute; top: 15px; right: 15px; background: #ff6b6b; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 
-        /* 1 Ta Ustunli Paketlar */
+        /* Quantity Options */
         .quantity-options { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 15px 0; }
         .quantity-btn { 
             padding: 15px; border: 2px solid #ffd166; background: white; border-radius: 12px; 
@@ -361,6 +358,118 @@
         .ref-item:hover { background: #f9f9f9; }
         .ref-icon { color: #888; font-size: 14px; }
         .ref-name { font-weight: 700; color: #333; font-size: 14px; }
+        
+        /* Ad Settings Styles */
+        .ad-settings-card {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #2196F3;
+            margin-bottom: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(33, 150, 243, 0.2);
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .setting-label {
+            font-weight: 600;
+            color: #1565C0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .setting-value {
+            font-weight: 800;
+            color: #0D47A1;
+            font-size: 16px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .ad-progress {
+            margin-top: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .ad-progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .ad-limit-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Ad Status */
+        .ad-status-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ffd166;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .ad-status-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .ad-countdown {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: #ff6b6b;
+            font-weight: 700;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -377,11 +486,9 @@
                 </div>
                 
                 <div class="header-actions">
-                    <!-- SHOP BUTTON -->
                     <button class="icon-btn-header" onclick="window.openShop()">
                         <i class="fas fa-shopping-cart"></i>
                     </button>
-                    <!-- ADMIN BUTTON -->
                     <button class="icon-btn-header" id="adminBtn" onclick="window.openAdmin()" style="display:none; background:#333; color:gold; border-color:gold;">
                         <i class="fas fa-cog"></i>
                     </button>
@@ -411,8 +518,23 @@
             <div id="earn-ads" class="earn-sec">
                 <div class="ad-container" style="background:white; padding:25px; border-radius:20px; text-align:center;">
                     <div style="font-size:50px; margin-bottom:10px;">📺</div>
-                    <p style="color:#666; margin-bottom:20px;">Reklama ko'rib olmos ishlang!</p>
-                    <button class="submit-btn" id="watchAdBtn">Ko'rish (+1 💎)</button>
+                    <p style="color:#666; margin-bottom:10px;">Reklama ko'rib olmos ishlang!</p>
+                    
+                    <!-- Ad Status Card -->
+                    <div class="ad-status-card">
+                        <div class="ad-status-icon" id="adStatusIcon">📊</div>
+                        <div style="font-weight:700; font-size:18px; margin-bottom:5px;" id="adStatusText">Tayyor</div>
+                        <div class="ad-limit-info">
+                            <span id="adViewsCount">0</span>
+                            <span id="adLimitInfo">/ <span id="dailyLimitValue">10</span> ta</span>
+                        </div>
+                        <div class="ad-progress">
+                            <div id="adProgressBar" class="ad-progress-bar" style="width:0%"></div>
+                        </div>
+                        <div class="ad-countdown" id="adCountdown"></div>
+                    </div>
+                    
+                    <button class="submit-btn" id="watchAdBtn">Reklamani Ko'rish (+<span id="adBonusAmount">1</span> 💎)</button>
                 </div>
             </div>
 
@@ -426,7 +548,7 @@
 
             <div id="earn-ref" class="earn-sec" style="display:none">
                 <div class="ad-container" style="background:white; padding:25px; border-radius:20px;">
-                    <h3 style="color:#0088cc; margin-bottom:10px;">Yangi do'stingiz sizni kodni promakod bo'limiga kiritsa :  do'stingizga 5 💎 olmos, sizga 20 💎 olmos beriladi.</h3>
+                    <h3 style="color:#0088cc; margin-bottom:10px;">Yangi do'stingiz sizni kodni promakod bo'limiga kiritsa: do'stingizga 5 💎 olmos, sizga 20 💎 olmos beriladi.</h3>
                     <div class="ref-box" style="background:#f0f4f8; padding:15px; border-radius:10px; border:2px dashed #0088cc; margin-bottom:15px; font-size:20px; font-weight:800;">
                         <span id="myRefCode">...</span>
                     </div>
@@ -446,7 +568,6 @@
             <!-- COIN MINING -->
             <div id="mining-coin" class="mining-sec">
                 <div class="miner-grid">
-                    <!-- Standard -->
                     <div class="miner-card standard" onclick="buyMiner('standard')">
                         <div class="miner-left">
                             <div class="miner-img">💻</div>
@@ -457,7 +578,6 @@
                         </div>
                         <div class="miner-price price-diamond">50 💎</div>
                     </div>
-                    <!-- Pro -->
                     <div class="miner-card pro" onclick="buyMiner('pro')">
                         <div class="miner-left">
                             <div class="miner-img">🚀</div>
@@ -468,7 +588,6 @@
                         </div>
                         <div class="miner-price price-diamond">100 💎</div>
                     </div>
-                    <!-- Ultra -->
                     <div class="miner-card ultra" onclick="buyMiner('ultra')">
                         <div class="miner-left">
                             <div class="miner-img">⚡</div>
@@ -479,7 +598,6 @@
                         </div>
                         <div class="miner-price price-diamond">500 💎</div>
                     </div>
-                    <!-- Dragon -->
                     <div class="miner-card dragon" onclick="buyMiner('dragon')">
                         <div class="miner-left">
                             <div class="miner-img">🐲</div>
@@ -495,7 +613,6 @@
 
             <!-- SOM MINING -->
             <div id="mining-som" class="mining-sec" style="display:none">
-                <!-- BANK CARD STYLE WALLET -->
                 <div class="bank-card" onclick="openWithdraw()">
                     <i class="fas fa-wallet bank-card-bg-icon"></i>
                     
@@ -513,7 +630,6 @@
                 </div>
 
                 <div class="miner-grid">
-                    <!-- Kore -->
                     <div class="miner-card standard" onclick="buyMiner('kore')">
                         <div class="miner-left">
                             <div class="miner-img">🛠</div>
@@ -524,7 +640,6 @@
                         </div>
                         <div class="miner-price price-coin">100 🪙</div>
                     </div>
-                    <!-- Power -->
                     <div class="miner-card pro" onclick="buyMiner('power')">
                         <div class="miner-left">
                             <div class="miner-img">🔋</div>
@@ -535,7 +650,6 @@
                         </div>
                         <div class="miner-price price-coin">300 🪙</div>
                     </div>
-                    <!-- Turbo -->
                     <div class="miner-card ultra" onclick="buyMiner('turbo')">
                         <div class="miner-left">
                             <div class="miner-img">🏎</div>
@@ -546,7 +660,6 @@
                         </div>
                         <div class="miner-price price-coin">1000 🪙</div>
                     </div>
-                    <!-- Titan -->
                     <div class="miner-card dragon" onclick="buyMiner('titan')">
                         <div class="miner-left">
                             <div class="miner-img">🤖</div>
@@ -617,7 +730,6 @@
                 <button class="tab-btn" onclick="setShop('coin', this)">🪙 Tanga</button>
             </div>
             <div id="shopList" class="shop-grid"></div>
-
         </div>
     </div>
 
@@ -631,6 +743,7 @@
                     <button class="tab-btn active" onclick="switchAdminTab('promo', this)">Promo</button>
                     <button class="tab-btn" onclick="switchAdminTab('channel', this)">Kanal</button>
                     <button class="tab-btn" onclick="switchAdminTab('deduct', this)">Ayirish</button>
+                    <button class="tab-btn" onclick="switchAdminTab('adsettings', this)">Reklama</button>
                 </div>
                 
                 <div id="adm-promo" class="adm-section">
@@ -647,7 +760,6 @@
                     <button class="submit-btn" onclick="admAddChan()">Qo'shish</button>
                 </div>
 
-                <!-- DEDUCT SECTION -->
                 <div id="adm-deduct" class="adm-section" style="display:none;">
                     <h4 style="margin-bottom:10px; color:#333;">So'm Ayirish</h4>
                     
@@ -656,11 +768,37 @@
                         <button class="search-btn" onclick="admSearchUser()"><i class="fas fa-search"></i></button>
                     </div>
                     
-                    <!-- Topilgan user ma'lumoti -->
                     <div id="admUserInfo" class="user-info-box"></div>
 
                     <input id="admDedAmount" type="number" class="custom-input" placeholder="Summa (so'm)">
                     <button class="submit-btn" style="background:red;" onclick="admDeductSom()">Ayirish</button>
+                </div>
+                
+                <!-- REKLAMA SOZLAMALARI -->
+                <div id="adm-adsettings" class="adm-section" style="display:none;">
+                    <h4 style="margin-bottom:15px; color:#333;">📊 Reklama Sozlamalari</h4>
+                    
+                    <div id="adSettingsContainer" style="margin-bottom:20px;">
+                        <!-- Sozlamalar shu yerda ko'rsatiladi -->
+                    </div>
+                    
+                    <div class="ad-setting-form" style="margin-top:20px; padding-top:20px; border-top:2px dashed #4CAF50;">
+                        <h5 style="color:#0088cc; margin-bottom:15px;">⚙️ Sozlamalarni Yangilash</h5>
+                        
+                        <input type="number" id="adminAdBonus" class="custom-input" placeholder="Bonus miqdori (💎)" min="1" max="100" value="1">
+                        <input type="number" id="adminAdLimit" class="custom-input" placeholder="Kunlik limit (ta)" min="1" max="100" value="10">
+                        
+                        <button class="submit-btn" style="background:#4CAF50; margin-top:15px;" onclick="saveAdSettings()">
+                            <i class="fas fa-save"></i> Sozlamalarni Saqlash
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top:25px; padding:15px; background:#f8f9fa; border-radius:12px;">
+                        <h5 style="color:#9C27B0; margin-bottom:15px;">📈 Reklama Statistika</h5>
+                        <div id="adStatsContainer" class="stats-grid">
+                            <!-- Statistika shu yerda -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -702,9 +840,11 @@
     let selQty = 0;
     let selPrice = 0;
     let shopType = 'diamond';
-    let activeMinersList = []; // For local simulation
+    let activeMinersList = [];
+    let adSettings = { bonus_amount: 1, daily_limit: 10 };
+    let adStats = { today_views: 0, daily_limit: 10 };
+    let adLimitResetTime = null;
 
-    // Miner Rates per second
     const MINER_INFO = {
         'standard': { type: 'c', rate: 12 / 86400, icon: '💻' },
         'pro':      { type: 'c', rate: 25 / 86400, icon: '🚀' },
@@ -716,7 +856,6 @@
         'titan':    { type: 's', rate: 90000 / 86400, icon: '🤖' }
     };
 
-    // --- SERVICES DATA (Aniq paketlar bilan) ---
     const services = {
         'instagram-views': { 
             name: 'Instagram Ko\'rishlar', id: 278, min: 100, price: 0.025, 
@@ -743,7 +882,6 @@
         'freefire-donat': { name: 'FreeFire 110 almaz', price: 375, type: 'admin', currency: 'coin', link: ADMIN_URL, msg: 'Assalomu aleykum FreeFire 110 Almaz kerak Narxi:375 tanga' }
     };
 
-    // --- API WRAPPER ---
     async function api(action, data = {}) {
         try {
             let body = { action, user_id: userId, username: username, ...data };
@@ -757,22 +895,127 @@
         } catch (e) { return { success: false, message: 'Internet xatosi' }; }
     }
 
-    // --- INIT ---
-    window.onload = async () => {
-        await fetchBalance();
-        checkSubs();
-        loadMiners();
-        loadRefs();
-        createCoins();
+    async function updateAdStatus() {
+        try {
+            console.log('Updating ad status...');
+            
+            let res = await api('check_ad_limit');
+            
+            if(res.success) {
+                // Ma'lumotlarni olish
+                let today_views = parseInt(res.today_views) || 0;
+                let daily_limit = parseInt(res.daily_limit) || 10;
+                let bonus_amount = parseInt(res.bonus_amount) || 1;
+                
+                // O'zgaruvchilarni yangilash
+                adStats.today_views = today_views;
+                adStats.daily_limit = daily_limit;
+                adSettings.bonus_amount = bonus_amount;
+                
+                // Progress bar yangilash
+                let progressPercent = 0;
+                if (daily_limit > 0) {
+                    progressPercent = (today_views / daily_limit) * 100;
+                }
+                progressPercent = Math.min(progressPercent, 100);
+                document.getElementById('adProgressBar').style.width = progressPercent + '%';
+                
+                // Elementlarni yangilash
+                document.getElementById('adViewsCount').textContent = today_views;
+                document.getElementById('dailyLimitValue').textContent = daily_limit;
+                document.getElementById('adBonusAmount').textContent = bonus_amount;
+                
+                // Tugma matnini yangilash
+                document.getElementById('watchAdBtn').innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
+                
+                // VAQTNI YANGILASH FUNKSIYASI (alohida)
+                updateCountdownTimer();
+                
+                // Tugma va statusni yangilash
+                let btn = document.getElementById('watchAdBtn');
+                let statusIcon = document.getElementById('adStatusIcon');
+                let statusText = document.getElementById('adStatusText');
+                
+                if(today_views >= daily_limit) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi (${today_views}/${daily_limit})`;
+                    btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
+                    statusIcon.textContent = '⏰';
+                    statusText.textContent = 'Limit tugadi';
+                    statusText.style.color = '#f44336';
+                } else {
+                    let remaining = daily_limit - today_views;
+                    btn.disabled = false;
+                    btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
+                    btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                    statusIcon.textContent = '📊';
+                    statusText.textContent = `${remaining} ta reklama qoldi`;
+                    statusText.style.color = '#4CAF50';
+                }
+                
+            } else {
+                // Agar limit tugagan bo'lsa
+                if (res.today_views !== undefined) {
+                    let today_views = parseInt(res.today_views) || 0;
+                    document.getElementById('adViewsCount').textContent = today_views;
+                }
+                
+                if (res.daily_limit !== undefined) {
+                    let daily_limit = parseInt(res.daily_limit) || 10;
+                    document.getElementById('dailyLimitValue').textContent = daily_limit;
+                }
+                
+                if (res.bonus_amount !== undefined) {
+                    let bonus_amount = parseInt(res.bonus_amount) || 1;
+                    document.getElementById('adBonusAmount').textContent = bonus_amount;
+                }
+                
+                let btn = document.getElementById('watchAdBtn');
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fas fa-lock"></i> ${res.message || 'Limit tugadi'}`;
+                btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
+                
+                document.getElementById('adProgressBar').style.width = '100%';
+                
+                // Vaqtni yangilash
+                updateCountdownTimer();
+            }
+        } catch(e) {
+            console.log('Ad status update error:', e);
+        }
+    }
+
+    // YANGI FUNKSIYA: Qolgan vaqtni har 1 sekundda yangilash
+    function updateCountdownTimer() {
+        // Hozirgi vaqt
+        let now = new Date();
         
-        // Backend Update (every 10s)
-        setInterval(fetchBalance, 10000); 
+        // Ertangi kunning 00:00:00
+        let tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
         
-        // Frontend Simulation (every 0.1s)
-        startMiningSimulation();
-        // Timer countdown loop (every 1s)
-        setInterval(startMinerTimer, 1000);
-    };
+        // Qolgan vaqtni hisoblash
+        let timeLeft = tomorrow - now;
+        
+        // Soat, daqiqa, soniya ga aylantirish
+        let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        // Formatlash
+        let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Ko'rsatish
+        document.getElementById('adCountdown').textContent = `Limit yangilanadi: ${timeString}`;
+        
+        // Agar vaqt tugagan bo'lsa (1 soniyadan kam qolgan)
+        if (timeLeft < 1000) {
+            console.log('Time is up! Resetting...');
+            // Avtomatik yangilash
+            location.reload();
+        }
+    }
 
     async function fetchBalance() {
         let res = await api('get_balance');
@@ -799,32 +1042,20 @@
         document.getElementById('myRefCode').innerText = user.ref;
     }
 
-    // --- REAL-TIME SIMULATION ---
     function startMiningSimulation() {
-        setInterval(() => {
-            let coinInc = 0;
-            let somInc = 0;
-            
-            activeMinersList.forEach(m => {
-                if(m.time_left > 0) {
-                    let info = MINER_INFO[m.type];
-                    if(info) {
-                        let step = info.rate / 10;
-                        if(info.type === 'c') coinInc += step;
-                        if(info.type === 's') somInc += step;
-                    }
+        activeMinersList.forEach(m => {
+            if(m.time_left > 0) {
+                let info = MINER_INFO[m.type];
+                if(info) {
+                    let step = info.rate / 10;
+                    if(info.type === 'c') user.c += step;
+                    if(info.type === 's') user.s += step;
                 }
-            });
-
-            if(coinInc > 0 || somInc > 0) {
-                user.c += coinInc;
-                user.s += somInc;
-                updateUI();
             }
-        }, 100);
+        });
+        updateUI();
     }
 
-    // --- TIMER ---
     function startMinerTimer() {
         if(activeMinersList.length > 0) {
             let html = '';
@@ -851,12 +1082,11 @@
         }
     }
 
-    // --- MINING ---
     async function loadMiners() {
         let res = await api('get_miners');
         if(res.success) { 
             activeMinersList = res.miners; 
-            startMinerTimer(); // Initial render
+            startMinerTimer();
         }
     }
 
@@ -870,13 +1100,13 @@
         }
     }
 
-    // --- NAVIGATION ---
     window.nav = (page, btn) => {
         document.querySelectorAll('.page-content').forEach(e => e.style.display='none');
         document.getElementById(page).style.display='block';
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
         btn.classList.add('active');
         if(page === 'swapPage') loadMiners();
+        if(page === 'earnPage') updateAdStatus();
     };
 
     window.switchTab = (grp, target, btn) => {
@@ -893,7 +1123,6 @@
         btn.classList.add('active');
     };
 
-    // --- SERVICES ---
     window.openModal = (key) => {
         curService = services[key];
         if(!curService) return;
@@ -903,7 +1132,6 @@
         let f = document.getElementById('modalFooter');
         let l = document.getElementById('loader');
 
-        // TUZATISH: Har safar ochilganda ko'rinishni qayta tiklash
         m.style.display = 'flex';
         b.style.display = 'block';
         f.style.display = 'block';
@@ -982,17 +1210,13 @@
         let link = document.getElementById('targetLink').value.trim();
         if(!link) return notif(false, 'Iltimos, havolani kiriting');
         
-        // Havola formatini tahrirlash
         if(curService.id === 467 && !link.includes('@') && !link.startsWith('http')) {
             link = '@' + link;
         } else if(curService.id !== 218 && curService.id !== 467 && !link.startsWith('http')) {
             link = link;
         }
     
-        // Himoya: Double click oldini olish
         btn.disabled = true;
-    
-        // Loaderni ko'rsatish
         document.getElementById('modalBody').style.display = 'none';
         document.getElementById('modalFooter').style.display = 'none';
         document.getElementById('loader').style.display = 'block';
@@ -1000,7 +1224,7 @@
         try {
             let res = await api('order', {
                 service_id: curService.id, 
-                service_name: curService.name, // <-- YANGI: Xizmat nomini qo'shish
+                service_name: curService.name,
                 link: link, 
                 quantity: selQty, 
                 price: selPrice, 
@@ -1014,10 +1238,8 @@
                 document.getElementById('mainModal').style.display = 'none';
                 fetchBalance();
             } else {
-                // Backend xatolik xabarini tahlil qilish
                 let errorMessage = res.message || 'Noma\'lum xatolik yuz berdi';
                 
-                // Xatolik xabarlarini tushunarli qilish
                 if (errorMessage.includes('duplicate') || 
                     errorMessage.includes('qaytarildi') ||
                     errorMessage.includes('faol')) {
@@ -1032,13 +1254,10 @@
                           errorMessage.includes('minimal')) {
                     errorMessage = '❌ Minimal miqdor: ' + curService.min;
                 } else {
-                    // Umumiy xatolik xabari
                     errorMessage = '❌ Xatolik: ' + errorMessage;
                 }
                 
                 notif(false, errorMessage);
-                
-                // Formani qayta ko'rsatish
                 document.getElementById('modalBody').style.display = 'block';
                 document.getElementById('modalFooter').style.display = 'block';
                 btn.disabled = false;
@@ -1046,8 +1265,6 @@
         } catch (error) {
             document.getElementById('loader').style.display = 'none';
             notif(false, '🌐 Internet aloqasi xatosi. Iltimos, internetingizni tekshiring.');
-            
-            // Formani qayta ko'rsatish
             document.getElementById('modalBody').style.display = 'block';
             document.getElementById('modalFooter').style.display = 'block';
             btn.disabled = false;
@@ -1061,7 +1278,6 @@
         document.getElementById('mainModal').style.display='none';
     }
 
-    // --- SHOP ---
     window.openShop = () => {
         document.getElementById('shopModal').style.display='flex';
         setShop('diamond', document.querySelector('.tab-btn'));
@@ -1088,9 +1304,6 @@
             </div>`;
         });
         document.getElementById('shopList').innerHTML = html;
-        document.getElementById('customShopBtn').style.display='none';
-        document.getElementById('customShopInput').value='';
-        document.getElementById('customShopPreview').innerText='';
     };
 
     window.buyPkg = (a, p, s) => {
@@ -1098,23 +1311,6 @@
         window.open(`${ADMIN_GIFT}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
-    window.calcCustomShop = (val) => {
-        let a = parseInt(val);
-        let btn = document.getElementById('customShopBtn');
-        let prev = document.getElementById('customShopPreview');
-        
-        if(!a || a < 300) { prev.innerText = 'Min: 300'; btn.style.display='none'; return; }
-        
-        let rate = 42; 
-        if(shopType === 'coin') rate = 15;
-        
-        let price = Math.ceil(a * rate);
-        prev.innerText = `Narxi: ${price.toLocaleString()} so'm`;
-        btn.style.display='block';
-        btn.onclick = () => buyPkg(a, price, shopType === 'diamond' ? '💎' : '🪙');
-    };
-
-    // --- WITHDRAW ---
     window.openWithdraw = () => { document.getElementById('withdrawModal').style.display='flex'; };
     async function withdraw() {
         let amt = document.getElementById('wAmt').value;
@@ -1128,7 +1324,6 @@
         }
     }
 
-    // --- ADMIN SEARCH & DEDUCT ---
     async function admSearchUser() {
         let t = document.getElementById('admDedTarget').value;
         if(!t) return notif(false, 'ID yoki Username kiriting');
@@ -1159,13 +1354,49 @@
         }
     }
 
-    // --- EARN (ADS, PROMO, REF) ---
-    document.getElementById('watchAdBtn').onclick = () => {
-        if(!window.Sonar) return notif(false, 'Ad yuklanmadi');
-        window.Sonar.show({ adUnit: "rekchiai", onReward: async () => {
-            let res = await api('add', {amount:1});
-            if(res.success) { fetchBalance(); notif(true, '+1 💎'); }
-        }});
+    document.getElementById('watchAdBtn').onclick = async () => {
+        if(!window.Sonar) {
+            notif(false, 'Reklama yuklanmadi');
+            return;
+        }
+        
+        // First check limit
+        let limitCheck = await api('check_ad_limit');
+        
+        if(!limitCheck.success) {
+            notif(false, limitCheck.message);
+            return;
+        }
+        
+        // Show ad
+        window.Sonar.show({ 
+            adUnit: "rekchiai", 
+            onReward: async () => {
+                let res = await api('add');
+                if(res.success) { 
+                    fetchBalance(); 
+                    notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+                    
+                    // Yangi limit ma'lumotlarini olish
+                    let newLimit = await api('check_ad_limit');
+                    if(newLimit.success) {
+                        adStats.today_views = newLimit.today_views || 0;
+                        adStats.daily_limit = newLimit.daily_limit || 10;
+                        
+                        // Progress bar yangilash
+                        let progressPercent = (adStats.today_views / adStats.daily_limit) * 100;
+                        document.getElementById('adProgressBar').style.width = Math.min(progressPercent, 100) + '%';
+                        document.getElementById('adViewsCount').textContent = adStats.today_views;
+                    }
+                    
+                    // Butun vaziyatni yangilash
+                    updateAdStatus();
+                } else {
+                    notif(false, res.message);
+                    updateAdStatus();
+                }
+            }
+        });
     };
 
     async function activatePromo() {
@@ -1179,13 +1410,11 @@
 
     function copyRef() { navigator.clipboard.writeText(user.ref); notif(true, 'Nusxalandi'); }
     
-    // TUZATILDI: Referal ro'yxatini toza va vaqtsiz chiqarish
     async function loadRefs() {
         let res = await api('get_referrals');
         let h = '';
         if(res.success && res.referrals.length > 0) {
             res.referrals.forEach(r => {
-                // XSS himoyasi uchun
                 let safeName = r.username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 h += `
                 <div class="ref-item">
@@ -1199,9 +1428,12 @@
         document.getElementById('refList').innerHTML = h;
     }
 
-    // --- ADMIN ---
     window.openAdmin = async () => {
         document.getElementById('adminModal').style.display='flex';
+        
+        await loadAdSettings();
+        await loadAdStats();
+        
         let res = await api('admin_get_channels');
         if(res.success) {
             let h = '';
@@ -1209,22 +1441,118 @@
             document.getElementById('admChanList').innerHTML = h;
         }
     };
+
+    async function loadAdSettings() {
+        let res = await api('admin_get_ad_settings');
+        let container = document.getElementById('adSettingsContainer');
+        
+        if(res.success && res.settings) {
+            let settings = res.settings;
+            adSettings = settings;
+            
+            container.innerHTML = `
+                <div class="ad-settings-card">
+                    <div class="setting-item">
+                        <span class="setting-label"><i class="fas fa-gem"></i> Bonus miqdori:</span>
+                        <span class="setting-value">${settings.bonus_amount} 💎</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label"><i class="fas fa-chart-bar"></i> Kunlik limit:</span>
+                        <span class="setting-value">${settings.daily_limit} ta</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label"><i class="fas fa-calendar"></i> Sozlangan sana:</span>
+                        <span class="setting-value">${new Date(settings.updated_at).toLocaleDateString('uz-UZ')}</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label"><i class="fas fa-power-off"></i> Holati:</span>
+                        <span class="setting-value" style="color:${settings.is_active ? '#4CAF50' : '#f44336'}">
+                            ${settings.is_active ? '✅ Faol' : '❌ Nofaol'}
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('adminAdBonus').value = settings.bonus_amount;
+            document.getElementById('adminAdLimit').value = settings.daily_limit;
+        } else {
+            container.innerHTML = '<p style="color:#999; text-align:center;">Sozlamalar yuklanmadi</p>';
+        }
+    }
+
+    async function loadAdStats() {
+        let res = await api('admin_get_ad_stats');
+        let container = document.getElementById('adStatsContainer');
+        
+        if(res.success) {
+            let stats = res.stats;
+            container.innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-value">${stats.today_views || 0}</div>
+                    <div class="stat-label">Bugun ko'rilgan</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${stats.total_views || 0}</div>
+                    <div class="stat-label">Jami ko'rishlar</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${stats.total_bonus || 0}</div>
+                    <div class="stat-label">Jami bonus</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${stats.unique_users || 0}</div>
+                    <div class="stat-label">Foydalanuvchi</div>
+                </div>
+            `;
+        }
+    }
+
+    async function saveAdSettings() {
+        let bonusAmount = parseInt(document.getElementById('adminAdBonus').value);
+        let dailyLimit = parseInt(document.getElementById('adminAdLimit').value);
+        
+        if(!bonusAmount || bonusAmount < 1 || bonusAmount > 100) {
+            notif(false, 'Bonus miqdori 1-100 oralig\'ida bo\'lishi kerak');
+            return;
+        }
+        
+        if(!dailyLimit || dailyLimit < 1 || dailyLimit > 100) {
+            notif(false, 'Kunlik limit 1-100 oralig\'ida bo\'lishi kerak');
+            return;
+        }
+        
+        let res = await api('admin_update_ad_settings', {
+            bonus_amount: bonusAmount,
+            daily_limit: dailyLimit
+        });
+        
+        if(res.success) {
+            notif(true, '✅ Sozlamalar muvaffaqiyatli saqlandi');
+            await loadAdSettings();
+            await loadAdStats();
+            updateAdStatus();
+        } else {
+            notif(false, res.message);
+        }
+    }
+
     async function admAddPromo() {
         let d = { code: document.getElementById('admCode').value, amount: document.getElementById('admAmt').value, type: document.getElementById('admType').value, max_uses: document.getElementById('admMax').value };
         await api('admin_add_promo', d);
         notif(true, 'OK');
     }
+    
     async function admAddChan() {
         await api('admin_add_channel', {channel_input: document.getElementById('admChanInput').value});
         notif(true, 'OK');
         window.openAdmin();
     }
+    
     async function admDelChan(id) {
         await api('admin_delete_channel', {db_id: id});
         window.openAdmin();
     }
 
-    // --- SUBS ---
     async function checkSubs() {
         let res = await api('check_subs');
         if(!res.success) return;
@@ -1249,17 +1577,18 @@
         }
     }
 
-    // --- UTILS ---
     function notif(success, msg) {
         let n = document.getElementById('notif');
         n.innerText = msg;
         n.className = success ? 'notification show' : 'notification error show';
         setTimeout(() => n.className = 'notification', 3000);
     }
+    
     async function checkNotifs() {
         let res = await api('get_notifications');
         if(res.success && res.notifications) res.notifications.forEach(m => notif(true, m));
     }
+    
     function createCoins() {
         const con = document.getElementById('floatingCoins');
         const icons = ['💎','🪙','⭐'];
@@ -1272,6 +1601,34 @@
             con.appendChild(el);
         }
     }
+
+    // Har 10 sekundda reklama statusini yangilash
+    setInterval(updateAdStatus, 10000);
+
+    // Sayt yuklanganda reklama statusini yangilash
+    window.onload = async () => {
+        await fetchBalance();
+        checkSubs();
+        loadMiners();
+        loadRefs();
+        createCoins();
+        updateAdStatus(); // Dastlabki yangilash
+        
+        // 10 soniyada balans yangilash
+        setInterval(fetchBalance, 10000); 
+        
+        // Minerlar uchun
+        setInterval(startMiningSimulation, 100);
+        setInterval(startMinerTimer, 1000);
+        
+        // REKLAMA STATUSI: Har 5 soniyada API orqali yangilash
+        setInterval(updateAdStatus, 5000);
+        
+        // VAQTNI: Har 1 soniyada yangilash (vaqt hisobi)
+        setInterval(updateCountdownTimer, 1000);
+        
+        console.log('App loaded successfully!');
+    };
 </script>
 </body>
 </html>
