@@ -1742,64 +1742,117 @@
     const AdController = window.Adsgram?.init({ blockId: "21365" });
 
     document.getElementById('watchAdBtn').onclick = async () => {
-        // Avval limitni tekshirish
-        let limitCheck = await api('check_ad_limit');
-        
-        if(!limitCheck.success) {
-            notif(false, limitCheck.message);
-            return;
-        }
-        
-        // Qaysi platforma bo'yicha reklama ko'rsatishni ichki hisoblash
-        let adSource = '';
-        
-        if (limitCheck.adsgram_remaining > 0) {
-            // Adsgram platformasi
-            adSource = 'adsgram';
-            if(!AdController) {
-                notif(false, 'Reklama yuklanmadi');
-                return;
-            }
-        } else if (limitCheck.sonar_remaining > 0) {
-            // Sonar platformasi
-            adSource = 'sonar';
-            if(!window.Sonar) {
-                notif(false, 'Reklama yuklanmadi');
-                return;
-            }
-        } else {
-            notif(false, 'Bugungi barcha reklama limitlari tugagan');
-            return;
-        }
-        
-        // Tugmani vaqtincha o'chirish
         let btn = document.getElementById('watchAdBtn');
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...`;
         
-        // Platformaga qarab reklama ko'rsatish
-        if (adSource === 'adsgram') {
-            AdController.show().then(async () => {
-                let res = await api('add', { source: 'adsgram' });
-                handleAdResponse(res);
-            }).catch((result) => {
-                if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
+        // Tugmani vaqtincha o'chirish (lekin matni o'zgarmasligi kerak)
+        btn.disabled = true;
+        
+        try {
+            // Limitni tekshirish
+            let limitCheck = await api('check_ad_limit');
+            
+            if(!limitCheck.success) {
+                notif(false, limitCheck.message);
                 btn.disabled = false;
-                btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
-            });
-        } else if (adSource === 'sonar') {
-            window.Sonar.show({ 
-                adUnit: "rekchiai", 
-                onReward: async () => {
-                    let res = await api('add', { source: 'sonar' });
-                    handleAdResponse(res);
-                },
-                onError: (error) => {
+                return;
+            }
+            
+            if(limitCheck.today_views >= limitCheck.daily_limit) {
+                notif(false, 'Bugungi limit tugagan');
+                btn.disabled = false;
+                return;
+            }
+            
+            // Qaysi platforma bo'yicha reklama ko'rsatishni aniqlash
+            let adSource = '';
+            
+            if (limitCheck.adsgram_remaining > 0) {
+                adSource = 'adsgram';
+            } else if (limitCheck.sonar_remaining > 0) {
+                adSource = 'sonar';
+            } else {
+                notif(false, 'Bugungi barcha reklama limitlari tugagan');
+                btn.disabled = false;
+                return;
+            }
+            
+            // Platformalarni tekshirish
+            if (adSource === 'adsgram' && !AdController) {
+                notif(false, 'Reklama yuklanmadi');
+                btn.disabled = false;
+                return;
+            }
+            
+            if (adSource === 'sonar' && !window.Sonar) {
+                notif(false, 'Reklama yuklanmadi');
+                btn.disabled = false;
+                return;
+            }
+            
+            // Reklama ko'rsatish
+            if (adSource === 'adsgram') {
+                // Adsgram reklamasi
+                AdController.show().then(async () => {
+                    // Reklama ko'rilgandan keyin API ga xabar berish
+                    let res = await api('add', { source: 'adsgram' });
+                    
+                    if(res.success) { 
+                        fetchBalance(); 
+                        notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+                        updateAdStatus();
+                    } else {
+                        notif(false, res.message || 'Bonus qo\'shilmadi');
+                    }
+                    
+                    // Tugmani qayta faollashtirish
+                    btn.disabled = false;
+                    
+                }).catch((error) => {
+                    console.error('Adsgram xatosi:', error);
                     notif(false, 'Reklama xatosi');
                     btn.disabled = false;
-                    btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
-                }
-            });
+                });
+                
+            } else if (adSource === 'sonar') {
+                // Sonar reklamasi
+                window.Sonar.show({ 
+                    adUnit: "rekchiai", 
+                    onReward: async () => {
+                        try {
+                            let res = await api('add', { source: 'sonar' });
+                            if(res.success) { 
+                                fetchBalance(); 
+                                notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+                                updateAdStatus();
+                            } else {
+                                notif(false, res.message || 'Bonus qo\'shilmadi');
+                            }
+                        } catch (apiError) {
+                            console.error('API xatosi:', apiError);
+                            notif(false, 'Server xatosi');
+                        }
+                        
+                        // Tugmani qayta faollashtirish
+                        btn.disabled = false;
+                    },
+                    onError: (error) => {
+                        console.error('Sonar xatosi:', error);
+                        notif(false, 'Reklama xatosi');
+                        btn.disabled = false;
+                    },
+                    onClose: () => {
+                        // Agar reklama yopilsa, lekin onReward chaqirilmasa
+                        setTimeout(() => {
+                            btn.disabled = false;
+                        }, 1000);
+                    }
+                });
+            }
+            
+        } catch (error) {
+            console.error('Umumiy xatolik:', error);
+            notif(false, 'Xatolik yuz berdi');
+            btn.disabled = false;
         }
     };
 
