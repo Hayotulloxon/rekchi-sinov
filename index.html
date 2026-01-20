@@ -1189,76 +1189,46 @@
             let res = await api('check_ad_limit');
             
             if(res.success) {
-                let today_views = parseInt(res.today_views) || 0;
-                let daily_limit = parseInt(res.daily_limit) || 10;
+                let total_today = parseInt(res.today_views) || 0;
+                let total_limit = parseInt(res.daily_limit) || 10;
                 let bonus_amount = parseInt(res.bonus_amount) || 1;
                 
-                adStats.today_views = today_views;
-                adStats.daily_limit = daily_limit;
-                adSettings.bonus_amount = bonus_amount;
-                
-                let progressPercent = 0;
-                if (daily_limit > 0) progressPercent = (today_views / daily_limit) * 100;
+                // Progress barlarni yangilash (faqat umumiy progress)
+                let progressPercent = (total_today / total_limit) * 100;
                 progressPercent = Math.min(progressPercent, 100);
-                document.getElementById('adProgressBar').style.width = progressPercent + '%';
                 
-                document.getElementById('adViewsCount').textContent = today_views;
-                document.getElementById('dailyLimitValue').textContent = daily_limit;
+                document.getElementById('adProgressBar').style.width = progressPercent + '%';
+                document.getElementById('adViewsCount').textContent = total_today;
+                document.getElementById('dailyLimitValue').textContent = total_limit;
                 document.getElementById('adBonusAmount').textContent = bonus_amount;
                 
-                document.getElementById('watchAdBtn').innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
-                
-                updateCountdownTimer();
-                
+                // Tugma matnini soddalashtirish
                 let btn = document.getElementById('watchAdBtn');
                 let statusIcon = document.getElementById('adStatusIcon');
                 let statusText = document.getElementById('adStatusText');
                 
-                if(today_views >= daily_limit) {
+                if(total_today >= total_limit) {
                     btn.disabled = true;
-                    btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi (${today_views}/${daily_limit})`;
+                    btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi`;
                     btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
                     statusIcon.textContent = '⏰';
                     statusText.textContent = 'Limit tugadi';
                     statusText.style.color = '#f44336';
                 } else {
-                    let remaining = daily_limit - today_views;
                     btn.disabled = false;
                     btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                     statusIcon.textContent = '📊';
-                    statusText.textContent = `${remaining} ta reklama qoldi`;
+                    statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
                     statusText.style.color = '#4CAF50';
                 }
                 
-            } else {
-                if (res.today_views !== undefined) {
-                    let today_views = parseInt(res.today_views) || 0;
-                    document.getElementById('adViewsCount').textContent = today_views;
-                }
-                
-                if (res.daily_limit !== undefined) {
-                    let daily_limit = parseInt(res.daily_limit) || 10;
-                    document.getElementById('dailyLimitValue').textContent = daily_limit;
-                }
-                
-                if (res.bonus_amount !== undefined) {
-                    let bonus_amount = parseInt(res.bonus_amount) || 1;
-                    document.getElementById('adBonusAmount').textContent = bonus_amount;
-                }
-                
-                let btn = document.getElementById('watchAdBtn');
-                btn.disabled = true;
-                btn.innerHTML = `<i class="fas fa-lock"></i> ${res.message || 'Limit tugadi'}`;
-                btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
-                
-                document.getElementById('adProgressBar').style.width = '100%';
-                
                 updateCountdownTimer();
             }
-        } catch(e) {}
+        } catch(e) {
+            console.error('Ad status error:', e);
+        }
     }
-
     function updateCountdownTimer() {
         let now = new Date();
         let tomorrow = new Date(now);
@@ -1772,11 +1742,7 @@
     const AdController = window.Adsgram?.init({ blockId: "21365" });
 
     document.getElementById('watchAdBtn').onclick = async () => {
-        if(!window.Sonar && !AdController) {
-            notif(false, 'Reklama yuklanmadi');
-            return;
-        }
-        
+        // Avval limitni tekshirish
         let limitCheck = await api('check_ad_limit');
         
         if(!limitCheck.success) {
@@ -1784,60 +1750,75 @@
             return;
         }
         
-        if(AdController) {
+        // Qaysi platforma bo'yicha reklama ko'rsatishni ichki hisoblash
+        let adSource = '';
+        
+        if (limitCheck.adsgram_remaining > 0) {
+            // Adsgram platformasi
+            adSource = 'adsgram';
+            if(!AdController) {
+                notif(false, 'Reklama yuklanmadi');
+                return;
+            }
+        } else if (limitCheck.sonar_remaining > 0) {
+            // Sonar platformasi
+            adSource = 'sonar';
+            if(!window.Sonar) {
+                notif(false, 'Reklama yuklanmadi');
+                return;
+            }
+        } else {
+            notif(false, 'Bugungi barcha reklama limitlari tugagan');
+            return;
+        }
+        
+        // Tugmani vaqtincha o'chirish
+        let btn = document.getElementById('watchAdBtn');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...`;
+        
+        // Platformaga qarab reklama ko'rsatish
+        if (adSource === 'adsgram') {
             AdController.show().then(async () => {
-                let res = await api('add');
-                if(res.success) { 
-                    fetchBalance(); 
-                    notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
-                    
-                    let newLimit = await api('check_ad_limit');
-                    if(newLimit.success) {
-                        adStats.today_views = newLimit.today_views || 0;
-                        adStats.daily_limit = newLimit.daily_limit || 10;
-                        
-                        let progressPercent = (adStats.today_views / adStats.daily_limit) * 100;
-                        document.getElementById('adProgressBar').style.width = Math.min(progressPercent, 100) + '%';
-                        document.getElementById('adViewsCount').textContent = adStats.today_views;
-                    }
-                    
-                    updateAdStatus();
-                } else {
-                    notif(false, res.message);
-                    updateAdStatus();
-                }
+                let res = await api('add', { source: 'adsgram' });
+                handleAdResponse(res);
             }).catch((result) => {
                 if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
+                btn.disabled = false;
+                btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
             });
-        } else if(window.Sonar) {
+        } else if (adSource === 'sonar') {
             window.Sonar.show({ 
                 adUnit: "rekchiai", 
                 onReward: async () => {
-                    let res = await api('add');
-                    if(res.success) { 
-                        fetchBalance(); 
-                        notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
-                        
-                        let newLimit = await api('check_ad_limit');
-                        if(newLimit.success) {
-                            adStats.today_views = newLimit.today_views || 0;
-                            adStats.daily_limit = newLimit.daily_limit || 10;
-                            
-                            let progressPercent = (adStats.today_views / adStats.daily_limit) * 100;
-                            document.getElementById('adProgressBar').style.width = Math.min(progressPercent, 100) + '%';
-                            document.getElementById('adViewsCount').textContent = adStats.today_views;
-                        }
-                        
-                        updateAdStatus();
-                    } else {
-                        notif(false, res.message);
-                        updateAdStatus();
-                    }
+                    let res = await api('add', { source: 'sonar' });
+                    handleAdResponse(res);
+                },
+                onError: (error) => {
+                    notif(false, 'Reklama xatosi');
+                    btn.disabled = false;
+                    btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
                 }
             });
         }
     };
 
+    // Helper funksiya
+    async function handleAdResponse(res) {
+        let btn = document.getElementById('watchAdBtn');
+        
+        if(res.success) { 
+            fetchBalance(); 
+            notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+            updateAdStatus();
+        } else {
+            notif(false, res.message);
+            updateAdStatus();
+        }
+        
+        // Tugmani qayta faollashtirish
+        btn.disabled = false;
+    }
     async function activatePromo() {
         let c = document.getElementById('promoInput').value;
         if(!c) return;
