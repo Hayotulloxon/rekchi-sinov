@@ -7,6 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
@@ -23,6 +24,21 @@
         .app-container {
             max-width: 450px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column;
             background: white; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        /* Loader Style */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* HEADER */
@@ -291,6 +307,59 @@
         .notification.show { transform: translateX(-50%) translateY(0); }
 
         /* Loader */
+        /* Loading Styles */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Bigger loader for orders */
+        .orders-loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+
+        /* Skeleton Loading */
+        .skeleton-order {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            height: 120px;
+        }
+
+        @keyframes loading {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Orders loader specific */
+        #ordersList .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 107, 107, 0.1);
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #ff6b6b; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -307,7 +376,20 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 10px;
         }
-        
+        /* Balance Loading Animation */
+        .balance-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff6b6b;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
         /* Admin Search Styles */
         .input-group {
             display: flex;
@@ -470,6 +552,200 @@
             font-weight: 700;
             margin-top: 5px;
         }
+
+        /* PROMO CODE LIST */
+        .promo-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .promo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .promo-item:last-child {
+            border-bottom: none;
+        }
+        
+        .promo-info {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .promo-code {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .promo-details {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .delete-promo-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-promo-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* MY ORDERS STYLES */
+        .orders-tab-container {
+            display: flex;
+            background: #eee;
+            padding: 5px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        
+        .orders-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+        
+        .orders-tab.active {
+            background: white;
+            color: #ff6b6b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 2px solid #f0f0f0;
+            position: relative;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .order-id {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .order-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-completed {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status-processing {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .status-pending {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .status-cancelled {
+            background: #f44336;
+            color: white;
+        }
+        
+        .status-refunded {
+            background: #9C27B0;
+            color: white;
+        }
+        
+        .order-details {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        
+        .order-service {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .order-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .order-link {
+            font-size: 12px;
+            color: #0088cc;
+            word-break: break-all;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .order-action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .refill-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
@@ -520,7 +796,6 @@
                     <div style="font-size:50px; margin-bottom:10px;">📺</div>
                     <p style="color:#666; margin-bottom:10px;">Reklama ko'rib olmos ishlang!</p>
                     
-                    <!-- Ad Status Card -->
                     <div class="ad-status-card">
                         <div class="ad-status-icon" id="adStatusIcon">📊</div>
                         <div style="font-weight:700; font-size:18px; margin-bottom:5px;" id="adStatusText">Tayyor</div>
@@ -565,7 +840,6 @@
                 <button class="tab-btn" onclick="switchTab('mining', 'som', this)">🇺🇿 So'm Mayning</button>
             </div>
 
-            <!-- COIN MINING -->
             <div id="mining-coin" class="mining-sec">
                 <div class="miner-grid">
                     <div class="miner-card standard" onclick="buyMiner('standard')">
@@ -611,7 +885,6 @@
                 </div>
             </div>
 
-            <!-- SOM MINING -->
             <div id="mining-som" class="mining-sec" style="display:none">
                 <div class="bank-card" onclick="openWithdraw()">
                     <i class="fas fa-wallet bank-card-bg-icon"></i>
@@ -698,12 +971,35 @@
             </div>
         </div>
 
+        <!-- 5. MY ORDERS PAGE -->
+        <!-- 5. MY ORDERS PAGE -->
+        <!-- 5. MY ORDERS PAGE -->
+        <div class="main-content page-content" id="ordersPage">
+            <div class="orders-tab-container">
+                <button class="orders-tab active" onclick="switchOrdersTab('all', this)">Barchasi</button>
+                <button class="orders-tab" onclick="switchOrdersTab('processing', this)">Bajarilmoqda</button>
+                <button class="orders-tab" onclick="switchOrdersTab('completed', this)">Tugatilgan</button>
+                <button class="orders-tab" onclick="switchOrdersTab('cancelled', this)">Bekor qilingan</button>
+            </div>
+            
+            <!-- Loading container -->
+            <div id="ordersLoading" class="loading-container" style="display: none;">
+                <div class="loader"></div>
+                <p class="loading-text">Buyurtmalar yuklanmoqda...</p>
+            </div>
+            
+            <!-- Orders container -->
+            <div id="ordersContainer">
+                <div id="ordersList"></div>
+            </div>
+        </div>
         <!-- NAVIGATION -->
         <div class="navigation">
             <button class="nav-btn active" onclick="nav('servicesPage', this)"><div class="nav-icon"><i class="fas fa-rocket"></i></div><span>Xizmatlar</span></button>
             <button class="nav-btn" onclick="nav('earnPage', this)"><div class="nav-icon"><i class="fas fa-gem"></i></div><span>Ishlash</span></button>
             <button class="nav-btn" onclick="nav('swapPage', this)"><div class="nav-icon"><i class="fas fa-exchange-alt"></i></div><span>Mayning</span></button>
             <button class="nav-btn" onclick="nav('proPage', this)"><div class="nav-icon"><i class="fas fa-crown"></i></div><span>Pro</span></button>
+            <button class="nav-btn" onclick="nav('ordersPage', this)"><div class="nav-icon"><i class="fas fa-clipboard-list"></i></div><span>Buyurtmalarim</span></button>
         </div>
     </div>
 
@@ -752,6 +1048,8 @@
                     <select id="admType" class="custom-input"><option value="diamond">Olmos</option><option value="coin">Tanga</option></select>
                     <input id="admMax" type="number" class="custom-input" placeholder="Limit">
                     <button class="submit-btn" onclick="admAddPromo()">Yaratish</button>
+                    
+                    <div class="promo-list" id="adminPromoList"></div>
                 </div>
 
                 <div id="adm-channel" class="adm-section" style="display:none;">
@@ -774,13 +1072,10 @@
                     <button class="submit-btn" style="background:red;" onclick="admDeductSom()">Ayirish</button>
                 </div>
                 
-                <!-- REKLAMA SOZLAMALARI -->
                 <div id="adm-adsettings" class="adm-section" style="display:none;">
                     <h4 style="margin-bottom:15px; color:#333;">📊 Reklama Sozlamalari</h4>
                     
-                    <div id="adSettingsContainer" style="margin-bottom:20px;">
-                        <!-- Sozlamalar shu yerda ko'rsatiladi -->
-                    </div>
+                    <div id="adSettingsContainer" style="margin-bottom:20px;"></div>
                     
                     <div class="ad-setting-form" style="margin-top:20px; padding-top:20px; border-top:2px dashed #4CAF50;">
                         <h5 style="color:#0088cc; margin-bottom:15px;">⚙️ Sozlamalarni Yangilash</h5>
@@ -795,9 +1090,7 @@
                     
                     <div style="margin-top:25px; padding:15px; background:#f8f9fa; border-radius:12px;">
                         <h5 style="color:#9C27B0; margin-bottom:15px;">📈 Reklama Statistika</h5>
-                        <div id="adStatsContainer" class="stats-grid">
-                            <!-- Statistika shu yerda -->
-                        </div>
+                        <div id="adStatsContainer" class="stats-grid"></div>
                     </div>
                 </div>
             </div>
@@ -825,7 +1118,6 @@
     </div>
 
 <script>
-    // --- CONFIGURATION ---
     const BACKEND_URL = 'https://68ed1ab05ca4e.myxvest1.ru/manage_balance.php'; 
     const ADMIN_URL = 'https://t.me/Sarvarxon_Anvarovich';
     const ADMIN_GIFT = 'https://t.me/behruz_aura';
@@ -885,10 +1177,7 @@
     async function api(action, data = {}) {
         try {
             let body = { action, user_id: userId, username: username, ...data };
-            let headers = {
-                'Content-Type': 'application/json',
-                'X-Telegram-Data': tg.initData 
-            };
+            let headers = {'Content-Type': 'application/json', 'X-Telegram-Data': tg.initData };
             body.key = '4564123:hkjhfadfhieapkdnga';
             let req = await fetch(BACKEND_URL, { method: 'POST', headers, body: JSON.stringify(body) });
             return await req.json();
@@ -897,41 +1186,30 @@
 
     async function updateAdStatus() {
         try {
-            console.log('Updating ad status...');
-            
             let res = await api('check_ad_limit');
             
             if(res.success) {
-                // Ma'lumotlarni olish
                 let today_views = parseInt(res.today_views) || 0;
                 let daily_limit = parseInt(res.daily_limit) || 10;
                 let bonus_amount = parseInt(res.bonus_amount) || 1;
                 
-                // O'zgaruvchilarni yangilash
                 adStats.today_views = today_views;
                 adStats.daily_limit = daily_limit;
                 adSettings.bonus_amount = bonus_amount;
                 
-                // Progress bar yangilash
                 let progressPercent = 0;
-                if (daily_limit > 0) {
-                    progressPercent = (today_views / daily_limit) * 100;
-                }
+                if (daily_limit > 0) progressPercent = (today_views / daily_limit) * 100;
                 progressPercent = Math.min(progressPercent, 100);
                 document.getElementById('adProgressBar').style.width = progressPercent + '%';
                 
-                // Elementlarni yangilash
                 document.getElementById('adViewsCount').textContent = today_views;
                 document.getElementById('dailyLimitValue').textContent = daily_limit;
                 document.getElementById('adBonusAmount').textContent = bonus_amount;
                 
-                // Tugma matnini yangilash
                 document.getElementById('watchAdBtn').innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
                 
-                // VAQTNI YANGILASH FUNKSIYASI (alohida)
                 updateCountdownTimer();
                 
-                // Tugma va statusni yangilash
                 let btn = document.getElementById('watchAdBtn');
                 let statusIcon = document.getElementById('adStatusIcon');
                 let statusText = document.getElementById('adStatusText');
@@ -954,7 +1232,6 @@
                 }
                 
             } else {
-                // Agar limit tugagan bo'lsa
                 if (res.today_views !== undefined) {
                     let today_views = parseInt(res.today_views) || 0;
                     document.getElementById('adViewsCount').textContent = today_views;
@@ -977,47 +1254,34 @@
                 
                 document.getElementById('adProgressBar').style.width = '100%';
                 
-                // Vaqtni yangilash
                 updateCountdownTimer();
             }
-        } catch(e) {
-            console.log('Ad status update error:', e);
-        }
+        } catch(e) {}
     }
 
-    // YANGI FUNKSIYA: Qolgan vaqtni har 1 sekundda yangilash
     function updateCountdownTimer() {
-        // Hozirgi vaqt
         let now = new Date();
-        
-        // Ertangi kunning 00:00:00
         let tomorrow = new Date(now);
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0);
         
-        // Qolgan vaqtni hisoblash
         let timeLeft = tomorrow - now;
-        
-        // Soat, daqiqa, soniya ga aylantirish
         let hours = Math.floor(timeLeft / (1000 * 60 * 60));
         let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
         
-        // Formatlash
         let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
-        // Ko'rsatish
         document.getElementById('adCountdown').textContent = `Limit yangilanadi: ${timeString}`;
         
-        // Agar vaqt tugagan bo'lsa (1 soniyadan kam qolgan)
-        if (timeLeft < 1000) {
-            console.log('Time is up! Resetting...');
-            // Avtomatik yangilash
-            location.reload();
-        }
+        if (timeLeft < 1000) location.reload();
     }
 
     async function fetchBalance() {
+        // Loading ko'rsatish
+        document.getElementById('uDiamond').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        document.getElementById('uCoin').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
         let res = await api('get_balance');
         if(res.success) {
             user.d = parseInt(res.diamonds); 
@@ -1029,6 +1293,10 @@
             if(res.is_admin === 1) {
                 document.getElementById('adminBtn').style.display = 'flex';
             }
+        } else {
+            // Xato holatida standart qiymatlar
+            document.getElementById('uDiamond').innerText = '💎 0';
+            document.getElementById('uCoin').innerHTML = '🪙 0.<span class="small-decimal">0000</span>';
         }
     }
 
@@ -1105,8 +1373,10 @@
         document.getElementById(page).style.display='block';
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
         btn.classList.add('active');
+        
         if(page === 'swapPage') loadMiners();
         if(page === 'earnPage') updateAdStatus();
+        if(page === 'ordersPage') loadMyOrders();
     };
 
     window.switchTab = (grp, target, btn) => {
@@ -1116,11 +1386,169 @@
         btn.classList.add('active');
     };
 
+    window.switchOrdersTab = (type, btn) => {
+        // Barcha tablardan active klassini olib tashlash
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        // Joriy tabga active klassini qo'shish
+        btn.classList.add('active');
+        
+        // Buyurtmalarni filtrlash
+        loadMyOrders(type);
+    };
+    function translateStatus(status) {
+        const translations = {
+            'completed': 'Bajarildi',
+            'processing': 'Bajarilmoqda',
+            'pending': 'Kutilmoqda',
+            'cancelled': 'Bekor qilingan',
+            'refunded': 'Qaytarilgan',
+            'in progress': 'Bajarilmoqda',
+            'partial': 'Qisman bajarildi'
+        };
+        return translations[status] || status;
+    }
+
+    // Skeleton loading ko'rsatish
+    function showSkeletonLoading(count = 3) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+            <div class="skeleton-order"></div>
+            `;
+        }
+        document.getElementById('ordersList').innerHTML = html;
+    }
+
+    // Buyurtmalarni yuklash funksiyasi
+    async function loadMyOrders(filter = 'all') {
+        // Loading ko'rsatish
+        let container = document.getElementById('ordersList');
+        container.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; padding:50px 20px;">
+            <div class="loader" style="width:40px; height:40px;"></div>
+            <p style="margin-top:15px; color:#666; font-size:14px;">Buyurtmalar yuklanmoqda...</p>
+        </div>`;
+        
+        let res = await api('get_my_orders', {filter: filter});
+        
+        if(res.success && res.orders && res.orders.length > 0) {
+            let html = '';
+            res.orders.forEach(order => {
+                // Statusni o'zbek tiliga tarjima qilish
+                let originalStatus = order.status.toLowerCase(); // Kichik harfga o'tkazish
+                let statusText = translateStatus(originalStatus);
+                
+                // Status klassini aniqlash (asl status bo'yicha)
+                let statusClass = '';
+                if (originalStatus === 'completed' || originalStatus === 'bajarildi') {
+                    statusClass = 'status-completed';
+                    statusText = 'Bajarildi';
+                } else if (originalStatus === 'processing' || originalStatus === 'in progress' || originalStatus === 'bajarilmoqda') {
+                    statusClass = 'status-processing';
+                    statusText = 'Bajarilmoqda';
+                } else if (originalStatus === 'pending' || originalStatus === 'kutilmoqda') {
+                    statusClass = 'status-pending';
+                    statusText = 'Kutilmoqda';
+                } else if (originalStatus === 'cancelled' || originalStatus === 'bekor qilingan') {
+                    statusClass = 'status-cancelled';
+                    statusText = 'Bekor qilingan';
+                } else if (originalStatus === 'refunded' || originalStatus === 'qaytarilgan') {
+                    statusClass = 'status-refunded';
+                    statusText = 'Qaytarilgan';
+                } else if (originalStatus === 'partial' || originalStatus === 'qisman bajarildi') {
+                    statusClass = 'status-pending';
+                    statusText = 'Qisman bajarildi';
+                } else {
+                    statusClass = 'status-pending';
+                    statusText = originalStatus;
+                }
+                
+                // Valyuta belgisi
+                let currencySymbol = '';
+                if (order.currency === 'diamond' || order.currency === 'diamonds') {
+                    currencySymbol = '💎';
+                } else if (order.currency === 'coin' || order.currency === 'coins') {
+                    currencySymbol = '🪙';
+                } else {
+                    currencySymbol = order.currency || '';
+                }
+                
+                // Linkni qisqartirish (agar uzun bo'lsa)
+                let displayLink = order.link || '';
+                let fullLink = displayLink;
+                if (displayLink.length > 50) {
+                    displayLink = displayLink.substring(0, 50) + '...';
+                }
+                
+                // Sana formati
+                let displayDate = order.created_at || '';
+                if (displayDate) {
+                    try {
+                        let date = new Date(displayDate);
+                        if (!isNaN(date.getTime())) {
+                            displayDate = date.toLocaleDateString('uz-UZ', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        }
+                    } catch (e) {
+                        // Xatolik bo'lsa, asl sanani saqlash
+                    }
+                }
+                
+                html += `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">Buyurtma #${order.id}</div>
+                        <div class="order-status ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="order-details">
+                        <div class="order-service">${order.service_name || 'Noma\'lum xizmat'}</div>
+                        <div class="order-meta">
+                            <span>Miqdor: ${order.quantity || 0} ta</span>
+                            <span>Narx: ${order.price || 0} ${currencySymbol}</span>
+                        </div>
+                        <div class="order-meta">
+                            <span>Sana: ${displayDate}</span>
+                            <span>Buyurtma ID: ${order.api_order_id || '-'}</span>
+                        </div>
+                        ${fullLink ? `<div class="order-link" title="${fullLink}">Havola: ${displayLink}</div>` : ''}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+            <div class="no-orders">
+                <i class="fas fa-inbox" style="font-size:40px; margin-bottom:10px; color:#ccc;"></i>
+                <p style="color:#999; font-size:14px;">Hozircha buyurtmalar yo'q</p>
+                <p style="color:#666; font-size:12px; margin-top:10px;">Xizmatlardan foydalanish uchun "Xizmatlar" bo'limiga o'ting</p>
+            </div>`;
+        }
+}
+
+    async function refillOrder(orderId) {
+        let res = await api('refill_order', {order_id: orderId});
+        notif(res.success, res.message);
+        if(res.success) loadMyOrders();
+    }
+
+    async function cancelOrder(orderId) {
+        if(!confirm('Buyurtmani bekor qilishni tasdiqlaysizmi?')) return;
+        let res = await api('cancel_order', {order_id: orderId});
+        notif(res.success, res.message);
+        if(res.success) loadMyOrders();
+    }
+
     window.switchAdminTab = (target, btn) => {
         document.querySelectorAll('.adm-section').forEach(e => e.style.display='none');
         document.getElementById(`adm-${target}`).style.display='block';
         btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if(target === 'promo') loadAdminPromoCodes();
     };
 
     window.openModal = (key) => {
@@ -1210,11 +1638,8 @@
         let link = document.getElementById('targetLink').value.trim();
         if(!link) return notif(false, 'Iltimos, havolani kiriting');
         
-        if(curService.id === 467 && !link.includes('@') && !link.startsWith('http')) {
-            link = '@' + link;
-        } else if(curService.id !== 218 && curService.id !== 467 && !link.startsWith('http')) {
-            link = link;
-        }
+        if(curService.id === 467 && !link.includes('@') && !link.startsWith('http')) link = '@' + link;
+        else if(curService.id !== 218 && curService.id !== 467 && !link.startsWith('http')) link = link;
     
         btn.disabled = true;
         document.getElementById('modalBody').style.display = 'none';
@@ -1237,25 +1662,19 @@
                 notif(true, '✅ Buyurtma muvaffaqiyatli qabul qilindi!');
                 document.getElementById('mainModal').style.display = 'none';
                 fetchBalance();
+                loadMyOrders();
             } else {
                 let errorMessage = res.message || 'Noma\'lum xatolik yuz berdi';
                 
-                if (errorMessage.includes('duplicate') || 
-                    errorMessage.includes('qaytarildi') ||
-                    errorMessage.includes('faol')) {
+                if (errorMessage.includes('duplicate') || errorMessage.includes('qaytarildi') || errorMessage.includes('faol')) {
                     errorMessage = '⚠️ Sizda bu havola bo\'yicha faol buyurtma mavjud. Iltimos, bir necha daqiqadan keyin urinib ko\'ring yoki boshqa havola kiriting.';
-                } else if (errorMessage.includes('not enough') || 
-                          errorMessage.includes('yetarli')) {
+                } else if (errorMessage.includes('not enough') || errorMessage.includes('yetarli')) {
                     errorMessage = '❌ Balansingizda yetarli mablag\' mavjud emas. Iltimos, balansingizni to\'ldiring.';
-                } else if (errorMessage.includes('invalid') || 
-                          errorMessage.includes('link')) {
+                } else if (errorMessage.includes('invalid') || errorMessage.includes('link')) {
                     errorMessage = '❌ Noto\'g\'ri havola formati. Iltimos, to\'g\'ri havola kiriting.';
-                } else if (errorMessage.includes('minimum') || 
-                          errorMessage.includes('minimal')) {
+                } else if (errorMessage.includes('minimum') || errorMessage.includes('minimal')) {
                     errorMessage = '❌ Minimal miqdor: ' + curService.min;
-                } else {
-                    errorMessage = '❌ Xatolik: ' + errorMessage;
-                }
+                } else errorMessage = '❌ Xatolik: ' + errorMessage;
                 
                 notif(false, errorMessage);
                 document.getElementById('modalBody').style.display = 'block';
@@ -1334,9 +1753,7 @@
             let div = document.getElementById('admUserInfo');
             div.style.display = 'block';
             div.innerHTML = `Topildi: <b>${res.username}</b><br>Balans: <span style="color:green; font-weight:bold">${res.som_balance} so'm</span>`;
-        } else {
-            notif(false, 'Foydalanuvchi topilmadi');
-        }
+        } else notif(false, 'Foydalanuvchi topilmadi');
     }
 
     async function admDeductSom() {
@@ -1349,18 +1766,17 @@
             notif(true, 'Balansdan muvaffaqiyatli ayrildi');
             document.getElementById('admDedAmount').value = '';
             document.getElementById('admUserInfo').style.display = 'none';
-        } else {
-            notif(false, res.message);
-        }
+        } else notif(false, res.message);
     }
 
+    const AdController = window.Adsgram?.init({ blockId: "21365" });
+
     document.getElementById('watchAdBtn').onclick = async () => {
-        if(!window.Sonar) {
+        if(!window.Sonar && !AdController) {
             notif(false, 'Reklama yuklanmadi');
             return;
         }
         
-        // First check limit
         let limitCheck = await api('check_ad_limit');
         
         if(!limitCheck.success) {
@@ -1368,35 +1784,58 @@
             return;
         }
         
-        // Show ad
-        window.Sonar.show({ 
-            adUnit: "rekchiai", 
-            onReward: async () => {
+        if(AdController) {
+            AdController.show().then(async () => {
                 let res = await api('add');
                 if(res.success) { 
                     fetchBalance(); 
                     notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
                     
-                    // Yangi limit ma'lumotlarini olish
                     let newLimit = await api('check_ad_limit');
                     if(newLimit.success) {
                         adStats.today_views = newLimit.today_views || 0;
                         adStats.daily_limit = newLimit.daily_limit || 10;
                         
-                        // Progress bar yangilash
                         let progressPercent = (adStats.today_views / adStats.daily_limit) * 100;
                         document.getElementById('adProgressBar').style.width = Math.min(progressPercent, 100) + '%';
                         document.getElementById('adViewsCount').textContent = adStats.today_views;
                     }
                     
-                    // Butun vaziyatni yangilash
                     updateAdStatus();
                 } else {
                     notif(false, res.message);
                     updateAdStatus();
                 }
-            }
-        });
+            }).catch((result) => {
+                if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
+            });
+        } else if(window.Sonar) {
+            window.Sonar.show({ 
+                adUnit: "rekchiai", 
+                onReward: async () => {
+                    let res = await api('add');
+                    if(res.success) { 
+                        fetchBalance(); 
+                        notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+                        
+                        let newLimit = await api('check_ad_limit');
+                        if(newLimit.success) {
+                            adStats.today_views = newLimit.today_views || 0;
+                            adStats.daily_limit = newLimit.daily_limit || 10;
+                            
+                            let progressPercent = (adStats.today_views / adStats.daily_limit) * 100;
+                            document.getElementById('adProgressBar').style.width = Math.min(progressPercent, 100) + '%';
+                            document.getElementById('adViewsCount').textContent = adStats.today_views;
+                        }
+                        
+                        updateAdStatus();
+                    } else {
+                        notif(false, res.message);
+                        updateAdStatus();
+                    }
+                }
+            });
+        }
     };
 
     async function activatePromo() {
@@ -1428,11 +1867,45 @@
         document.getElementById('refList').innerHTML = h;
     }
 
+    async function loadAdminPromoCodes() {
+        let res = await api('admin_get_promos');
+        let container = document.getElementById('adminPromoList');
+        
+        if(res.success && res.promos && res.promos.length > 0) {
+            let html = '';
+            res.promos.forEach(promo => {
+                html += `
+                <div class="promo-item">
+                    <div class="promo-info">
+                        <div class="promo-code">${promo.code}</div>
+                        <div class="promo-details">${promo.reward_amount} ${promo.reward_type === 'diamond' ? '💎' : '🪙'} | ${promo.current_uses}/${promo.max_uses} foydalanish</div>
+                    </div>
+                    <button class="delete-promo-btn" onclick="deletePromoCode(${promo.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div style="text-align:center; color:#999; padding:10px;">Promokodlar topilmadi</div>';
+        }
+    }
+
+    async function deletePromoCode(id) {
+        if(!confirm('Bu promokodni o\'chirishni tasdiqlaysizmi?')) return;
+        let res = await api('admin_delete_promo', {promo_id: id});
+        if(res.success) {
+            notif(true, 'Promokod o\'chirildi');
+            loadAdminPromoCodes();
+        } else notif(false, res.message);
+    }
+
     window.openAdmin = async () => {
         document.getElementById('adminModal').style.display='flex';
         
         await loadAdSettings();
         await loadAdStats();
+        await loadAdminPromoCodes();
         
         let res = await api('admin_get_channels');
         if(res.success) {
@@ -1475,9 +1948,7 @@
             
             document.getElementById('adminAdBonus').value = settings.bonus_amount;
             document.getElementById('adminAdLimit').value = settings.daily_limit;
-        } else {
-            container.innerHTML = '<p style="color:#999; text-align:center;">Sozlamalar yuklanmadi</p>';
-        }
+        } else container.innerHTML = '<p style="color:#999; text-align:center;">Sozlamalar yuklanmadi</p>';
     }
 
     async function loadAdStats() {
@@ -1531,26 +2002,36 @@
             await loadAdSettings();
             await loadAdStats();
             updateAdStatus();
-        } else {
-            notif(false, res.message);
-        }
+        } else notif(false, res.message);
     }
 
     async function admAddPromo() {
         let d = { code: document.getElementById('admCode').value, amount: document.getElementById('admAmt').value, type: document.getElementById('admType').value, max_uses: document.getElementById('admMax').value };
-        await api('admin_add_promo', d);
-        notif(true, 'OK');
+        let res = await api('admin_add_promo', d);
+        if(res.success) {
+            notif(true, 'Promokod yaratildi');
+            document.getElementById('admCode').value = '';
+            document.getElementById('admAmt').value = '';
+            document.getElementById('admMax').value = '';
+            loadAdminPromoCodes();
+        } else notif(false, res.message);
     }
     
     async function admAddChan() {
-        await api('admin_add_channel', {channel_input: document.getElementById('admChanInput').value});
-        notif(true, 'OK');
-        window.openAdmin();
+        let res = await api('admin_add_channel', {channel_input: document.getElementById('admChanInput').value});
+        if(res.success) {
+            notif(true, 'Kanal qo\'shildi');
+            document.getElementById('admChanInput').value = '';
+            window.openAdmin();
+        } else notif(false, res.message);
     }
     
     async function admDelChan(id) {
-        await api('admin_delete_channel', {db_id: id});
-        window.openAdmin();
+        let res = await api('admin_delete_channel', {db_id: id});
+        if(res.success) {
+            notif(true, 'Kanal o\'chirildi');
+            window.openAdmin();
+        } else notif(false, res.message);
     }
 
     async function checkSubs() {
@@ -1559,7 +2040,6 @@
         if(!res.all_subscribed) {
             let h = '';
             res.channels.forEach(c => {
-                let status = c.is_subscribed ? '✅' : '❌';
                 let link = c.link.startsWith('http') ? c.link : `https://t.me/${c.link.replace('@','')}`;
                 if (!c.is_subscribed) {
                      h += `<a href="${link}" target="_blank" class="submit-btn" style="text-decoration:none; display:flex; justify-content:center; align-items:center; margin-bottom:10px; background:#0088cc;">📢 Obuna bo'lish</a>`;
@@ -1569,12 +2049,8 @@
             if (h !== '') {
                 document.getElementById('subList').innerHTML = h;
                 document.getElementById('subModal').style.display='flex';
-            } else {
-                document.getElementById('subModal').style.display='none';
-            }
-        } else {
-            document.getElementById('subModal').style.display='none';
-        }
+            } else document.getElementById('subModal').style.display='none';
+        } else document.getElementById('subModal').style.display='none';
     }
 
     function notif(success, msg) {
@@ -1602,32 +2078,21 @@
         }
     }
 
-    // Har 10 sekundda reklama statusini yangilash
     setInterval(updateAdStatus, 10000);
-
-    // Sayt yuklanganda reklama statusini yangilash
+    
     window.onload = async () => {
         await fetchBalance();
         checkSubs();
         loadMiners();
         loadRefs();
         createCoins();
-        updateAdStatus(); // Dastlabki yangilash
+        updateAdStatus();
         
-        // 10 soniyada balans yangilash
-        setInterval(fetchBalance, 10000); 
-        
-        // Minerlar uchun
+        setInterval(fetchBalance, 10000);
         setInterval(startMiningSimulation, 100);
         setInterval(startMinerTimer, 1000);
-        
-        // REKLAMA STATUSI: Har 5 soniyada API orqali yangilash
         setInterval(updateAdStatus, 5000);
-        
-        // VAQTNI: Har 1 soniyada yangilash (vaqt hisobi)
         setInterval(updateCountdownTimer, 1000);
-        
-        console.log('App loaded successfully!');
     };
 </script>
 </body>
