@@ -1400,7 +1400,9 @@
         </div>`;
         
         let res = await api('get_my_orders', {filter: filter});
-        
+        if(res.debug) {
+            console.log('DEBUG INFO:', res.debug);
+        }
         if(res.success && res.orders && res.orders.length > 0) {
             let html = '';
             res.orders.forEach(order => {
@@ -1418,8 +1420,8 @@
                     statusText = 'Bajarilmoqda';
                 } else if (originalStatus === 'pending' || originalStatus === 'kutilmoqda') {
                     statusClass = 'status-pending';
-                    statusText = 'Kutilmoqda';
-                } else if (originalStatus === 'cancelled' || originalStatus === 'bekor qilingan') {
+                    statusText = 'Bajarilmoqda';
+                } else if (originalStatus === 'canceled' || originalStatus === 'bekor qilingan') {
                     statusClass = 'status-cancelled';
                     statusText = 'Bekor qilingan';
                 } else if (originalStatus === 'refunded' || originalStatus === 'qaytarilgan') {
@@ -1498,8 +1500,7 @@
                 <p style="color:#666; font-size:12px; margin-top:10px;">Xizmatlardan foydalanish uchun "Xizmatlar" bo'limiga o'ting</p>
             </div>`;
         }
-}
-
+    }
     async function refillOrder(orderId) {
         let res = await api('refill_order', {order_id: orderId});
         notif(res.success, res.message);
