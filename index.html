@@ -9,6 +9,7 @@
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <!-- Rich (TelegramAds) kutubxonasi -->
+    <!-- Rich (TelegramAds) kutubxonasi -->
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
@@ -1868,7 +1869,33 @@
     }
 
     // Rich (TelegramAds) controller - TO'G'RI INITSIALIZATSIYA
+    // Rich (TelegramAds) controller - YANGILANGAN
     let RichAdsController = null;
+    let isRichInitialized = false;
+    
+    // Rich kutubxonasi yuklanguncha kutish
+    function initializeRichAds() {
+        if (typeof TelegramAdsController !== 'undefined' && !isRichInitialized) {
+            try {
+                RichAdsController = new TelegramAdsController();
+                isRichInitialized = true;
+                console.log('Rich Ads initialized successfully');
+            } catch (error) {
+                console.error('Rich Ads initialization failed:', error);
+                RichAdsController = null;
+            }
+        }
+    }
+    
+    // Darhol try qilish
+    initializeRichAds();
+    
+    // Agar yuklanmagan bo'lsa, kutish
+    if (!isRichInitialized) {
+        window.addEventListener('load', initializeRichAds);
+        // Yoki timeout bilan
+        setTimeout(initializeRichAds, 1000);
+    }
     
     // Rich kutubxonasi yuklanguncha kutish
     window.addEventListener('load', function() {
@@ -2037,12 +2064,12 @@
         }
         else if (adSource === 'rich') {
             // Rich mavjudligini tekshirish
-            if (!RichAdsController) {
-                notif(false, 'Rich Ads yuklanmagan, boshqa platformaga o\'tilmoqda...');
+            if (!RichAdsController || !isRichInitialized) {
+                console.warn('Rich Ads not available, switching to Sonar');
+                notif(false, 'Rich Ads yuklanmagan, Sonar ga o\'tilmoqda...');
                 
                 // Sonar ga o'tish
                 if (window.Sonar) {
-                    adSource = 'sonar';
                     let adShown = false;
                     
                     window.Sonar.show({ 
@@ -2085,46 +2112,83 @@
                 return;
             }
             
+            // Rich reklama ko'rsatish (to'g'ri API)
             let adShown = false;
             
             try {
-                RichAdsController.show({
-                    onReward: async () => {
-                        adShown = true;
-                        try {
-                            let res = await api('add', { source: 'rich' });
-                            await handleAdResponse(res);
-                        } catch (error) {
-                            notif(false, 'Internet aloqasi xatosi');
-                            btn.disabled = false;
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                        }
-                    },
-                    onError: (error) => {
-                        console.error('Rich Ad Error:', error);
-                        if (!adShown) {
-                            notif(false, 'Reklama yuklanmadi');
-                            btn.disabled = false;
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                        }
-                    },
-                    onClose: () => {
-                        if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
-                            notif(false, 'Reklamani to\'liq ko\'ring');
-                            btn.disabled = false;
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                // Rich ning to'g'ri API si
+                RichAdsController.show(
+                    "996799", // pubId
+                    "5842",   // appId
+                    {
+                        onReward: async () => {
+                            console.log('Rich Ad Reward received');
+                            adShown = true;
+                            try {
+                                let res = await api('add', { source: 'rich' });
+                                await handleAdResponse(res);
+                            } catch (error) {
+                                notif(false, 'Internet aloqasi xatosi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onError: (error) => {
+                            console.error('Rich Ad Error:', error);
+                            if (!adShown) {
+                                notif(false, 'Reklama yuklanmadi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onClose: () => {
+                            console.log('Rich Ad Closed');
+                            if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
+                                notif(false, 'Reklamani to\'liq ko\'ring');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
                         }
                     }
-                });
+                );
             } catch (error) {
                 console.error('Rich show() error:', error);
-                notif(false, 'Reklama ko\'rsatishda xatolik');
-                btn.disabled = false;
-                btn.innerHTML = originalHTML;
-                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                notif(false, 'Rich Ads ishlamadi, Sonar ga o\'tilmoqda...');
+                
+                // Fallback to Sonar
+                if (window.Sonar) {
+                    let adShown = false;
+                    window.Sonar.show({ 
+                        adUnit: "rekchiai", 
+                        onReward: async () => {
+                            adShown = true;
+                            try {
+                                let res = await api('add', { source: 'sonar' });
+                                await handleAdResponse(res);
+                            } catch (error) {
+                                notif(false, 'Internet aloqasi xatosi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onError: (error) => {
+                            if (!adShown) {
+                                notif(false, 'Reklama yuklanmadi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        }
+                    });
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                }
             }
         }
     };
