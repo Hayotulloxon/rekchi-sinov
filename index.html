@@ -791,7 +791,7 @@
                 <button class="tab-btn" onclick="switchTab('earn', 'ref', this)">Do'stlar</button>
             </div>
 
-            <div id="earn-ads" class="earn-sec">
+           <div id="earn-ads" class="earn-sec">
                 <div class="ad-container" style="background:white; padding:25px; border-radius:20px; text-align:center;">
                     <div style="font-size:50px; margin-bottom:10px;">📺</div>
                     <p style="color:#666; margin-bottom:10px;">Reklama ko'rib olmos ishlang!</p>
@@ -1969,7 +1969,7 @@
             });
         }
     };
-
+    // Helper funksiya
     // Helper funksiya
     // Helper funksiya
     // Helper funksiya
@@ -2139,7 +2139,6 @@
             document.getElementById('adminAdCooldown').value = settings.cooldown_seconds || 0;
         } else container.innerHTML = '<p style="color:#999; text-align:center;">Sozlamalar yuklanmadi</p>';
     }
-
     async function loadAdStats() {
         let res = await api('admin_get_ad_stats');
         let container = document.getElementById('adStatsContainer');
