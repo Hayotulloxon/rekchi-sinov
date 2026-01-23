@@ -800,8 +800,7 @@
                         <div class="ad-status-icon" id="adStatusIcon">📊</div>
                         <div style="font-weight:700; font-size:18px; margin-bottom:5px;" id="adStatusText">Tayyor</div>
                         <div class="ad-limit-info">
-                            <span id="adViewsCount">0</span>
-                            <span id="adLimitInfo">/ <span id="dailyLimitValue">10</span> ta</span>
+                            <span><span id="adViewsCount">0</span><span id="adLimitInfo"> / <span id="dailyLimitValue">10</span> ta</span></span>
                         </div>
                         <div class="ad-progress">
                             <div id="adProgressBar" class="ad-progress-bar" style="width:0%"></div>
@@ -1204,20 +1203,35 @@
                 let cooldown_left = parseInt(res.cooldown_left) || 0;
                 let cooldown_seconds = parseInt(res.cooldown_seconds) || 0;
                 
-                // Progress bar
+                // Progress bar va limit info
                 let progressPercent = 0;
-                if (!is_unlimited) {
-                    progressPercent = (total_today / total_limit) * 100;
-                    progressPercent = Math.min(progressPercent, 100);
-                }
-                
-                document.getElementById('adProgressBar').style.width = progressPercent + '%';
-                document.getElementById('adViewsCount').textContent = total_today;
+                let limitInfoDiv = document.querySelector('.ad-limit-info');
+                let progressDiv = document.querySelector('.ad-progress');
                 
                 if (is_unlimited) {
+                    // Cheksiz holatda progress bar va limit info yashirish
+                    if (progressDiv) progressDiv.style.display = 'none';
+                    if (limitInfoDiv) limitInfoDiv.style.display = 'none';
+                } else {
+                    // Limitli holatda ko'rsatish
+                    if (progressDiv) progressDiv.style.display = 'block';
+                    if (limitInfoDiv) limitInfoDiv.style.display = 'flex';
+                    
+                    progressPercent = (total_today / total_limit) * 100;
+                    progressPercent = Math.min(progressPercent, 100);
+                    document.getElementById('adProgressBar').style.width = progressPercent + '%';
+                }
+                
+                // Ko'rishlar sonini ko'rsatish
+                document.getElementById('adViewsCount').textContent = total_today;
+                
+                // Limit qiymatini ko'rsatish
+                if (is_unlimited) {
                     document.getElementById('dailyLimitValue').textContent = '∞';
+                    document.getElementById('adLimitInfo').style.display = 'none'; // "/ ∞ ta" yashirish
                 } else {
                     document.getElementById('dailyLimitValue').textContent = total_limit;
+                    document.getElementById('adLimitInfo').style.display = 'inline'; // "/ 10 ta" ko'rsatish
                 }
                 
                 document.getElementById('adBonusAmount').textContent = bonus_amount;
