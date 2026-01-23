@@ -14,29 +14,22 @@
     <script>
       let RichController;
       
+      // Rich SDK yuklanishini kutish
       window.addEventListener('load', () => {
         if (typeof TelegramAdsController !== 'undefined') {
-          try {
-            RichController = new TelegramAdsController();
-            window.RichController = RichController;
-            
-            RichController.initialize({
-              pubId: "996799",
-              appId: "5842",
-            }).then(() => {
-              console.log('✅ Rich SDK initialized');
-            }).catch((error) => {
-              console.warn('⚠️ Rich SDK init failed:', error);
-              // Rich ishlamasa, window.RichController ni null qilish
-              window.RichController = null;
-            });
-          } catch (error) {
-            console.error('❌ Rich SDK error:', error);
-            window.RichController = null;
-          }
+          RichController = new TelegramAdsController();
+          window.RichController = RichController; // Global qilish
+          
+          RichController.initialize({
+            pubId: "996799",
+            appId: "5842",
+          }).then(() => {
+            console.log('✅ Rich SDK initialized successfully');
+          }).catch((error) => {
+            console.error('❌ Rich SDK initialization failed:', error);
+          });
         } else {
           console.warn('⚠️ TelegramAdsController not found');
-          window.RichController = null;
         }
       });
     </script>
