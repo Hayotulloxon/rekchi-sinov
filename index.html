@@ -1945,14 +1945,14 @@
                 if(!window.Sonar) {
                     // Agar Sonar mavjud bo'lmasa, Rich ga o'tish
                     adSource = 'rich';
-                    if(!RichAdsController) {
+                    if(!window.RichController) {
                         notif(false, 'Reklama platformalari yuklanmadi');
                         return;
                     }
                 }
             } else {
                 adSource = 'rich';
-                if(!RichAdsController) {
+                if(!window.RichController) {
                     // Agar Rich mavjud bo'lmasa, Sonar ga o'tish
                     adSource = 'sonar';
                     if(!window.Sonar) {
