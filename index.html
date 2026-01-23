@@ -1272,6 +1272,7 @@
         }
     }
     // Cooldown taymerini boshlash
+    // Cooldown taymerini boshlash
     function startCooldownTimer(seconds, bonusAmount) {
         stopCooldownTimer(); // Avvalgi timerni to'xtatish
         
@@ -1282,6 +1283,10 @@
         function updateButton() {
             if (remainingSeconds <= 0) {
                 stopCooldownTimer();
+                // Tugmani ochish va statusni yangilash
+                btn.disabled = false;
+                btn.innerHTML = `Reklamani Ko'rish (+${bonusAmount} 💎)`;
+                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                 updateAdStatus(); // Statusni yangilash
                 return;
             }
@@ -1924,28 +1929,48 @@
 
     // Helper funksiya
     // Helper funksiya
+    // Helper funksiya
     async function handleAdResponse(res) {
         let btn = document.getElementById('watchAdBtn');
         
         if(res.success) { 
-            fetchBalance(); 
+            await fetchBalance(); 
             notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
             
-            // YANGI: Cooldown boshlash
+            // Cooldown borligini tekshirish
             let cooldownCheck = await api('check_ad_limit');
-            if (cooldownCheck.success && cooldownCheck.cooldown_left > 0) {
-                startCooldownTimer(cooldownCheck.cooldown_left, res.bonus || 1);
+            
+            if (cooldownCheck.success) {
+                if (cooldownCheck.cooldown_left > 0 && !cooldownCheck.can_watch) {
+                    // Cooldown bor - taymer boshlash
+                    startCooldownTimer(cooldownCheck.cooldown_left, cooldownCheck.bonus_amount);
+                } else if (!cooldownCheck.is_unlimited && cooldownCheck.today_views >= cooldownCheck.daily_limit) {
+                    // Limit tugagan
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi`;
+                    btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
+                    updateAdStatus();
+                } else {
+                    // Cooldown yo'q va limit tugamagan - tugmani ochish
+                    btn.disabled = false;
+                    btn.innerHTML = `Reklamani Ko'rish (+${cooldownCheck.bonus_amount} 💎)`;
+                    btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                    updateAdStatus();
+                }
             } else {
+                // Xatolik bo'lsa - tugmani oddiy holatga qaytarish
+                btn.disabled = false;
+                btn.innerHTML = `Reklamani Ko'rish`;
+                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                 updateAdStatus();
             }
         } else {
+            // Muvaffaqiyatsiz bo'lsa
             notif(false, res.message);
-            updateAdStatus();
-        }
-        
-        // Tugmani qayta faollashtirish (agar cooldown bo'lmasa)
-        if (!cooldownTimer) {
             btn.disabled = false;
+            btn.innerHTML = `Reklamani Ko'rish`;
+            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+            updateAdStatus();
         }
     }
     async function activatePromo() {
