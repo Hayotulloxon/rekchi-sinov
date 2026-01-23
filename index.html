@@ -1930,12 +1930,16 @@
     // Helper funksiya
     // Helper funksiya
     // Helper funksiya
+    // Helper funksiya
     async function handleAdResponse(res) {
         let btn = document.getElementById('watchAdBtn');
         
         if(res.success) { 
+            // Balansni yangilash
             await fetchBalance(); 
-            notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+            
+            // Muvaffaqiyatli xabar
+            notif(true, res.message || `+${res.bonus || 1} 💎 bonus qo'shildi`);
             
             // Cooldown borligini tekshirish
             let cooldownCheck = await api('check_ad_limit');
@@ -1966,7 +1970,7 @@
             }
         } else {
             // Muvaffaqiyatsiz bo'lsa
-            notif(false, res.message);
+            notif(false, res.message || 'Xatolik yuz berdi');
             btn.disabled = false;
             btn.innerHTML = `Reklamani Ko'rish`;
             btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
