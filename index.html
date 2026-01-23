@@ -12,24 +12,40 @@
     <!-- Rich (TelegramAds) kutubxonasi -->
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <script>
-      let RichController;
+      let RichController = null;
       
       // Rich SDK yuklanishini kutish
       window.addEventListener('load', () => {
         if (typeof TelegramAdsController !== 'undefined') {
-          RichController = new TelegramAdsController();
-          window.RichController = RichController; // Global qilish
-          
-          RichController.initialize({
-            pubId: "996799",
-            appId: "5842",
-          }).then(() => {
-            console.log('✅ Rich SDK initialized successfully');
-          }).catch((error) => {
-            console.error('❌ Rich SDK initialization failed:', error);
-          });
+          try {
+            RichController = new TelegramAdsController();
+            window.RichController = RichController; // Global qilish
+            
+            RichController.initialize({
+              pubId: "996799",
+              appId: "5842",
+            })
+            .then(() => {
+              console.log('✅ Rich SDK initialized successfully');
+            })
+            .catch((error) => {
+              console.warn('⚠️ Rich SDK init failed:', error.message || error);
+              window.RichController = null; // Rich ishlamasa null qilish
+            });
+          } catch (error) {
+            console.error('❌ Rich SDK critical error:', error.message || error);
+            window.RichController = null;
+          }
         } else {
-          console.warn('⚠️ TelegramAdsController not found');
+          console.warn('⚠️ TelegramAdsController kutubxonasi topilmadi');
+        }
+      });
+      
+      // Global error handler - "Ads not found" xatolarini yashirish
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.message && event.reason.message.includes('Ads not found')) {
+          console.warn('⚠️ Rich reklamalar topilmadi - bu normal hodisa');
+          event.preventDefault(); // Console ga chiqmasligini ta'minlash
         }
       });
     </script>
