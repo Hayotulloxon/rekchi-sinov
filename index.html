@@ -1878,6 +1878,7 @@
         
         // Tugmani vaqtincha o'chirish
         let btn = document.getElementById('watchAdBtn');
+        let originalHTML = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
         
@@ -1885,23 +1886,37 @@
         if (adSource === 'adsgram') {
             AdController.show().then(async () => {
                 let res = await api('add', { source: 'adsgram' });
-                handleAdResponse(res);
+                await handleAdResponse(res);
             }).catch((result) => {
-                if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
+                // Xatolik yuz bersa tugmani qayta tiklash
+                if(result.error) {
+                    notif(false, 'Reklama xatosi: ' + result.description);
+                } else {
+                    notif(false, 'Reklama bekor qilindi');
+                }
                 btn.disabled = false;
-                btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
+                btn.innerHTML = originalHTML;
             });
         } else if (adSource === 'sonar') {
             window.Sonar.show({ 
                 adUnit: "rekchiai", 
                 onReward: async () => {
                     let res = await api('add', { source: 'sonar' });
-                    handleAdResponse(res);
+                    await handleAdResponse(res);
                 },
                 onError: (error) => {
+                    // Xatolik yuz bersa tugmani qayta tiklash
                     notif(false, 'Reklama xatosi');
                     btn.disabled = false;
-                    btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
+                    btn.innerHTML = originalHTML;
+                },
+                onClose: () => {
+                    // Reklama yopilsa (to'liq ko'rilmagan bo'lsa)
+                    if (btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
+                        notif(false, 'Reklamani to\'liq ko\'ring');
+                        btn.disabled = false;
+                        btn.innerHTML = originalHTML;
+                    }
                 }
             });
         }
