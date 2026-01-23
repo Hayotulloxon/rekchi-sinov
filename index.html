@@ -2070,52 +2070,83 @@
                 return;
             }
             
-            // MUHIM: Rich API ni console da ko'rish
-            console.log('RichAdsController methods:', RichAdsController);
+            // Rich ning barcha metodlarini console da ko'rish
+            console.log('Rich Controller:', RichAdsController);
+            console.log('Rich methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(RichAdsController)));
             
             let adShown = false;
             
-            // Rich SDK rasmiy dokumentatsiyasiga ko'ra
             try {
-                RichAdsController.showAd({
-                    onOpen: () => {
-                        console.log('Rich Ad Opened');
-                    },
-                    onClose: () => {
-                        console.log('Rich Ad Closed');
-                        if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
-                            notif(false, 'Reklamani to\'liq ko\'ring');
-                            btn.disabled = false;
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                // Rich SDK turli variantlarini sinab ko'ramiz
+                if (typeof RichAdsController.show === 'function') {
+                    // Variant 1: show() metodi
+                    RichAdsController.show({
+                        onReward: async () => {
+                            console.log('Rich Ad Reward (show)');
+                            adShown = true;
+                            try {
+                                let res = await api('add', { source: 'rich' });
+                                await handleAdResponse(res);
+                            } catch (error) {
+                                notif(false, 'Internet aloqasi xatosi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onError: (error) => {
+                            console.error('Rich Ad Error:', error);
+                            if (!adShown) {
+                                notif(false, 'Reklama yuklanmadi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onClose: () => {
+                            console.log('Rich Ad Closed');
+                            if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
+                                notif(false, 'Reklamani to\'liq ko\'ring');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
                         }
-                    },
-                    onError: (error) => {
-                        console.error('Rich Ad Error:', error);
-                        if (!adShown) {
-                            notif(false, 'Reklama yuklanmadi');
-                            btn.disabled = false;
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                    });
+                } else if (typeof RichAdsController.displayAd === 'function') {
+                    // Variant 2: displayAd() metodi
+                    RichAdsController.displayAd({
+                        onComplete: async () => {
+                            console.log('Rich Ad Complete');
+                            adShown = true;
+                            try {
+                                let res = await api('add', { source: 'rich' });
+                                await handleAdResponse(res);
+                            } catch (error) {
+                                notif(false, 'Internet aloqasi xatosi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onError: (error) => {
+                            console.error('Rich Ad Error:', error);
+                            if (!adShown) {
+                                notif(false, 'Reklama yuklanmadi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
                         }
-                    },
-                    onReward: async () => {
-                        console.log('Rich Ad Reward received');
-                        adShown = true;
-                        try {
-                            let res = await api('add', { source: 'rich' });
-                            await handleAdResponse(res);
-                        } catch (error) {
-                            notif(false, 'Internet aloqasi xatosi');
-                            btn.disabled = false;
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                        }
-                    }
-                });
+                    });
+                } else {
+                    // Hech qanday metod topilmadi
+                    throw new Error('Rich Ads: No valid method found. Available methods: ' + 
+                        Object.getOwnPropertyNames(Object.getPrototypeOf(RichAdsController)).join(', '));
+                }
             } catch (error) {
-                console.error('Rich showAd() error:', error);
-                notif(false, 'Rich Ads ishlamadi, Sonar ga o\'tilmoqda...');
+                console.error('Rich API error:', error);
+                notif(false, 'Rich ishlamadi, Sonar ga o\'tilmoqda...');
                 
                 // Fallback to Sonar
                 if (window.Sonar) {
@@ -2129,6 +2160,22 @@
                                 await handleAdResponse(res);
                             } catch (error) {
                                 notif(false, 'Internet aloqasi xatosi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onError: (error) => {
+                            if (!adShown2) {
+                                notif(false, 'Reklama yuklanmadi');
+                                btn.disabled = false;
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                            }
+                        },
+                        onClose: () => {
+                            if (!adShown2 && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
+                                notif(false, 'Reklamani to\'liq ko\'ring');
                                 btn.disabled = false;
                                 btn.innerHTML = originalHTML;
                                 btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
