@@ -1895,13 +1895,7 @@
             return;
         }
         
-        // Tugmani vaqtincha o'chirish
-        let btn = document.getElementById('watchAdBtn');
-        let originalHTML = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
-        btn.style.background = 'linear-gradient(135deg, #9E9E9E, #757575)';
-        
+
         // Platformaga qarab reklama ko'rsatish
         if (adSource === 'adsgram') {
             AdController.show().then(async () => {
