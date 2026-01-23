@@ -1882,6 +1882,17 @@
             return;
         }
         
+        // MUHIM: Cheksiz rejimni tekshirish
+        let is_unlimited = limitCheck.is_unlimited || limitCheck.daily_limit == -1;
+        let total_limit = parseInt(limitCheck.daily_limit) || 10;
+        let total_today = parseInt(limitCheck.today_views) || 0;
+        
+        // Faqat cheksiz bo'lmasa limitni tekshirish
+        if (!is_unlimited && total_today >= total_limit) {
+            notif(false, 'Kunlik limit tugagan');
+            return;
+        }
+        
         // Platformani aniqlash
         let adSource = '';
         let adsgramViews = parseInt(limitCheck.adsgram_views) || 0;
@@ -1923,7 +1934,7 @@
             }
         }
         
-        // Tugmani o'chirish
+        // Tugmani vaqtincha o'chirish
         let btn = document.getElementById('watchAdBtn');
         let originalHTML = btn.innerHTML;
         btn.disabled = true;
@@ -1933,16 +1944,19 @@
         // Platformaga qarab reklama ko'rsatish
         if (adSource === 'adsgram') {
             AdController.show().then(async () => {
+                // Reklama muvaffaqiyatli ko'rildi
                 try {
                     let res = await api('add', { source: 'adsgram' });
                     await handleAdResponse(res);
                 } catch (error) {
+                    // API xatosi
                     notif(false, 'Internet aloqasi xatosi');
                     btn.disabled = false;
                     btn.innerHTML = originalHTML;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                 }
             }).catch((result) => {
+                // Reklama ko'rsatishda xatolik
                 if(result.error) {
                     notif(false, 'Reklama xatosi: ' + result.description);
                 } else if (result.done === false) {
@@ -1961,11 +1975,13 @@
             window.Sonar.show({ 
                 adUnit: "rekchiai", 
                 onReward: async () => {
+                    // Reklama muvaffaqiyatli ko'rildi
                     adShown = true;
                     try {
                         let res = await api('add', { source: 'sonar' });
                         await handleAdResponse(res);
                     } catch (error) {
+                        // API xatosi
                         notif(false, 'Internet aloqasi xatosi');
                         btn.disabled = false;
                         btn.innerHTML = originalHTML;
@@ -1973,6 +1989,7 @@
                     }
                 },
                 onError: (error) => {
+                    // Reklama xatosi
                     if (!adShown) {
                         notif(false, 'Reklama yuklanmadi');
                         btn.disabled = false;
@@ -1981,6 +1998,7 @@
                     }
                 },
                 onClose: () => {
+                    // Reklama yopildi (to'liq ko'rilmagan bo'lishi mumkin)
                     if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
                         notif(false, 'Reklamani to\'liq ko\'ring');
                         btn.disabled = false;
@@ -1991,12 +2009,17 @@
             });
         }
         else if (adSource === 'rich') {
+            let adShown = false;
+            
             RichAdsController.show({
                 onReward: async () => {
+                    // Reklama muvaffaqiyatli ko'rildi
+                    adShown = true;
                     try {
                         let res = await api('add', { source: 'rich' });
                         await handleAdResponse(res);
                     } catch (error) {
+                        // API xatosi
                         notif(false, 'Internet aloqasi xatosi');
                         btn.disabled = false;
                         btn.innerHTML = originalHTML;
@@ -2004,13 +2027,17 @@
                     }
                 },
                 onError: (error) => {
-                    notif(false, 'Reklama yuklanmadi');
-                    btn.disabled = false;
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                    // Reklama xatosi
+                    if (!adShown) {
+                        notif(false, 'Reklama yuklanmadi');
+                        btn.disabled = false;
+                        btn.innerHTML = originalHTML;
+                        btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                    }
                 },
                 onClose: () => {
-                    if (btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
+                    // Reklama yopildi (to'liq ko'rilmagan bo'lishi mumkin)
+                    if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
                         notif(false, 'Reklamani to\'liq ko\'ring');
                         btn.disabled = false;
                         btn.innerHTML = originalHTML;
