@@ -791,7 +791,7 @@
                 <button class="tab-btn" onclick="switchTab('earn', 'ref', this)">Do'stlar</button>
             </div>
 
-           <div id="earn-ads" class="earn-sec">
+            <div id="earn-ads" class="earn-sec">
                 <div class="ad-container" style="background:white; padding:25px; border-radius:20px; text-align:center;">
                     <div style="font-size:50px; margin-bottom:10px;">📺</div>
                     <p style="color:#666; margin-bottom:10px;">Reklama ko'rib olmos ishlang!</p>
@@ -800,7 +800,8 @@
                         <div class="ad-status-icon" id="adStatusIcon">📊</div>
                         <div style="font-weight:700; font-size:18px; margin-bottom:5px;" id="adStatusText">Tayyor</div>
                         <div class="ad-limit-info">
-                            <span><span id="adViewsCount">0</span><span id="adLimitInfo"> / <span id="dailyLimitValue">10</span> ta</span></span>
+                            <span id="adViewsCount">0</span>
+                            <span id="adLimitInfo">/ <span id="dailyLimitValue">10</span> ta</span>
                         </div>
                         <div class="ad-progress">
                             <div id="adProgressBar" class="ad-progress-bar" style="width:0%"></div>
@@ -1080,12 +1081,7 @@
                         <h5 style="color:#0088cc; margin-bottom:15px;">⚙️ Sozlamalarni Yangilash</h5>
                         
                         <input type="number" id="adminAdBonus" class="custom-input" placeholder="Bonus miqdori (💎)" min="1" max="100" value="1">
-                        
-                        <input type="number" id="adminAdLimit" class="custom-input" placeholder="Kunlik limit (ta, -1 = cheksiz)" min="-1" max="1000" value="10">
-                        <p style="font-size:11px; color:#666; margin-top:-10px; margin-bottom:10px;">💡 -1 kiriting cheksiz qilish uchun</p>
-                        
-                        <input type="number" id="adminAdCooldown" class="custom-input" placeholder="Cooldown (soniya, 0 = yo'q)" min="0" max="3600" value="0">
-                        <p style="font-size:11px; color:#666; margin-top:-10px; margin-bottom:10px;">💡 0 kiriting cooldown bo'lmasin</p>
+                        <input type="number" id="adminAdLimit" class="custom-input" placeholder="Kunlik limit (ta)" min="1" max="100" value="10">
                         
                         <button class="submit-btn" style="background:#4CAF50; margin-top:15px;" onclick="saveAdSettings()">
                             <i class="fas fa-save"></i> Sozlamalarni Saqlash
@@ -1140,8 +1136,6 @@
     let adSettings = { bonus_amount: 1, daily_limit: 10 };
     let adStats = { today_views: 0, daily_limit: 10 };
     let adLimitResetTime = null;
-    let cooldownTimer = null; // YANGI: cooldown taymeri
-    let cooldownEndTime = null; // YANGI: cooldown tugash vaqti
 
     const MINER_INFO = {
         'standard': { type: 'c', rate: 12 / 86400, icon: '💻' },
@@ -1198,84 +1192,34 @@
                 let total_today = parseInt(res.today_views) || 0;
                 let total_limit = parseInt(res.daily_limit) || 10;
                 let bonus_amount = parseInt(res.bonus_amount) || 1;
-                let is_unlimited = res.is_unlimited || false;
-                let can_watch = res.can_watch !== false;
-                let cooldown_left = parseInt(res.cooldown_left) || 0;
-                let cooldown_seconds = parseInt(res.cooldown_seconds) || 0;
                 
-                // Progress bar va limit info
-                let progressPercent = 0;
-                let limitInfoDiv = document.querySelector('.ad-limit-info');
-                let progressDiv = document.querySelector('.ad-progress');
+                // Progress barlarni yangilash (faqat umumiy progress)
+                let progressPercent = (total_today / total_limit) * 100;
+                progressPercent = Math.min(progressPercent, 100);
                 
-                if (is_unlimited) {
-                    // Cheksiz holatda progress bar va limit info yashirish
-                    if (progressDiv) progressDiv.style.display = 'none';
-                    if (limitInfoDiv) limitInfoDiv.style.display = 'none';
-                } else {
-                    // Limitli holatda ko'rsatish
-                    if (progressDiv) progressDiv.style.display = 'block';
-                    if (limitInfoDiv) limitInfoDiv.style.display = 'flex';
-                    
-                    progressPercent = (total_today / total_limit) * 100;
-                    progressPercent = Math.min(progressPercent, 100);
-                    document.getElementById('adProgressBar').style.width = progressPercent + '%';
-                }
-                
-                // Ko'rishlar sonini ko'rsatish
+                document.getElementById('adProgressBar').style.width = progressPercent + '%';
                 document.getElementById('adViewsCount').textContent = total_today;
-                
-                // Limit qiymatini ko'rsatish
-                if (is_unlimited) {
-                    document.getElementById('dailyLimitValue').textContent = '∞';
-                    document.getElementById('adLimitInfo').style.display = 'none'; // "/ ∞ ta" yashirish
-                } else {
-                    document.getElementById('dailyLimitValue').textContent = total_limit;
-                    document.getElementById('adLimitInfo').style.display = 'inline'; // "/ 10 ta" ko'rsatish
-                }
-                
+                document.getElementById('dailyLimitValue').textContent = total_limit;
                 document.getElementById('adBonusAmount').textContent = bonus_amount;
                 
+                // Tugma matnini soddalashtirish
                 let btn = document.getElementById('watchAdBtn');
                 let statusIcon = document.getElementById('adStatusIcon');
                 let statusText = document.getElementById('adStatusText');
                 
-                // Agar cooldown bor va kutish kerak bo'lsa
-                if (!can_watch && cooldown_left > 0) {
-                    // Cooldown taymerini ishga tushirish
-                    if (!cooldownTimer) {
-                        cooldownEndTime = Date.now() + (cooldown_left * 1000);
-                        startCooldownTimer(cooldown_left, bonus_amount);
-                    }
-                    
-                    btn.disabled = true;
-                    statusIcon.textContent = '⏳';
-                    statusText.textContent = `Keyingi reklama uchun kutish`;
-                    statusText.style.color = '#FF9800';
-                }
-                // Limit tugagan (faqat cheksiz bo'lmasa)
-                else if(!is_unlimited && total_today >= total_limit) {
-                    stopCooldownTimer();
+                if(total_today >= total_limit) {
                     btn.disabled = true;
                     btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi`;
                     btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
                     statusIcon.textContent = '⏰';
                     statusText.textContent = 'Limit tugadi';
                     statusText.style.color = '#f44336';
-                }
-                // Reklama ko'rish mumkin
-                else {
-                    stopCooldownTimer();
+                } else {
                     btn.disabled = false;
                     btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                     statusIcon.textContent = '📊';
-                    
-                    if (is_unlimited) {
-                        statusText.textContent = `Cheksiz reklama mavjud`;
-                    } else {
-                        statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
-                    }
+                    statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
                     statusText.style.color = '#4CAF50';
                 }
                 
@@ -1283,54 +1227,6 @@
             }
         } catch(e) {
             console.error('Ad status error:', e);
-        }
-    }
-    // Cooldown taymerini boshlash
-    // Cooldown taymerini boshlash
-    function startCooldownTimer(seconds, bonusAmount) {
-        stopCooldownTimer(); // Avvalgi timerni to'xtatish
-        
-        let btn = document.getElementById('watchAdBtn');
-        let remainingSeconds = seconds;
-        
-        // Tugmani yangilash funksiyasi
-        function updateButton() {
-            if (remainingSeconds <= 0) {
-                stopCooldownTimer();
-                // Tugmani ochish va statusni yangilash
-                btn.disabled = false;
-                btn.innerHTML = `Reklamani Ko'rish (+${bonusAmount} 💎)`;
-                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                updateAdStatus(); // Statusni yangilash
-                return;
-            }
-            
-            let minutes = Math.floor(remainingSeconds / 60);
-            let secs = remainingSeconds % 60;
-            let timeString = minutes > 0 
-                ? `${minutes}:${secs.toString().padStart(2, '0')}` 
-                : `${secs}s`;
-            
-            btn.innerHTML = `<i class="fas fa-clock"></i> Kutish: ${timeString}`;
-            btn.style.background = 'linear-gradient(135deg, #FFA726, #FF7043)';
-            btn.disabled = true;
-            
-            remainingSeconds--;
-        }
-        
-        // Darhol yangilash
-        updateButton();
-        
-        // Har soniyada yangilash
-        cooldownTimer = setInterval(updateButton, 1000);
-    }
-    
-    // Cooldown taymerini to'xtatish
-    function stopCooldownTimer() {
-        if (cooldownTimer) {
-            clearInterval(cooldownTimer);
-            cooldownTimer = null;
-            cooldownEndTime = null;
         }
     }
     function updateCountdownTimer() {
@@ -1449,12 +1345,7 @@
         btn.classList.add('active');
         
         if(page === 'swapPage') loadMiners();
-        if(page === 'earnPage') {
-            updateAdStatus();
-        } else {
-            // Boshqa sahifaga o'tganda cooldown taymerini to'xtatish
-            stopCooldownTimer();
-        }
+        if(page === 'earnPage') updateAdStatus();
         if(page === 'ordersPage') loadMyOrders();
     };
 
@@ -1852,24 +1743,11 @@
     const AdController = window.Adsgram?.init({ blockId: "21365" });
 
     document.getElementById('watchAdBtn').onclick = async () => {
-        // Cooldown tekshirish
-        if (cooldownTimer) {
-            notif(false, 'Iltimos, kutib turing');
-            return;
-        }
-        
         // Avval limitni tekshirish
         let limitCheck = await api('check_ad_limit');
         
         if(!limitCheck.success) {
             notif(false, limitCheck.message);
-            return;
-        }
-        
-        // Cooldown borligini tekshirish
-        if (!limitCheck.can_watch && limitCheck.cooldown_left > 0) {
-            notif(false, `Iltimos, ${limitCheck.cooldown_left} soniya kuting`);
-            startCooldownTimer(limitCheck.cooldown_left, limitCheck.bonus_amount);
             return;
         }
         
@@ -1895,124 +1773,51 @@
             return;
         }
         
-
+        // Tugmani vaqtincha o'chirish
+        let btn = document.getElementById('watchAdBtn');
+        btn.disabled = true;
+        
         // Platformaga qarab reklama ko'rsatish
         if (adSource === 'adsgram') {
             AdController.show().then(async () => {
-                // Reklama muvaffaqiyatli ko'rildi
-                try {
-                    let res = await api('add', { source: 'adsgram' });
-                    await handleAdResponse(res);
-                } catch (error) {
-                    // API xatosi
-                    notif(false, 'Internet aloqasi xatosi');
-                    btn.disabled = false;
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                }
+                let res = await api('add', { source: 'adsgram' });
+                handleAdResponse(res);
             }).catch((result) => {
-                // Reklama ko'rsatishda xatolik
-                if(result.error) {
-                    notif(false, 'Reklama xatosi: ' + result.description);
-                } else if (result.done === false) {
-                    notif(false, 'Reklamani to\'liq ko\'ring');
-                } else {
-                    notif(false, 'Reklama bekor qilindi');
-                }
+                if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
                 btn.disabled = false;
-                btn.innerHTML = originalHTML;
-                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
             });
         } else if (adSource === 'sonar') {
-            let adShown = false;
-            
             window.Sonar.show({ 
                 adUnit: "rekchiai", 
                 onReward: async () => {
-                    // Reklama muvaffaqiyatli ko'rildi
-                    adShown = true;
-                    try {
-                        let res = await api('add', { source: 'sonar' });
-                        await handleAdResponse(res);
-                    } catch (error) {
-                        // API xatosi
-                        notif(false, 'Internet aloqasi xatosi');
-                        btn.disabled = false;
-                        btn.innerHTML = originalHTML;
-                        btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                    }
+                    let res = await api('add', { source: 'sonar' });
+                    handleAdResponse(res);
                 },
                 onError: (error) => {
-                    // Reklama xatosi
-                    if (!adShown) {
-                        notif(false, 'Reklama yuklanmadi');
-                        btn.disabled = false;
-                        btn.innerHTML = originalHTML;
-                        btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                    }
-                },
-                onClose: () => {
-                    // Reklama yopildi (to'liq ko'rilmagan bo'lishi mumkin)
-                    if (!adShown && btn.disabled && btn.innerHTML.includes('Yuklanmoqda')) {
-                        notif(false, 'Reklamani to\'liq ko\'ring');
-                        btn.disabled = false;
-                        btn.innerHTML = originalHTML;
-                        btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                    }
+                    notif(false, 'Reklama xatosi');
+                    btn.disabled = false;
+                    btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
                 }
             });
         }
     };
-    // Helper funksiya
-    // Helper funksiya
-    // Helper funksiya
-    // Helper funksiya
+
     // Helper funksiya
     async function handleAdResponse(res) {
         let btn = document.getElementById('watchAdBtn');
         
         if(res.success) { 
-            // Balansni yangilash
-            await fetchBalance(); 
-            
-            // Muvaffaqiyatli xabar
-            notif(true, res.message || `+${res.bonus || 1} 💎 bonus qo'shildi`);
-            
-            // Cooldown borligini tekshirish
-            let cooldownCheck = await api('check_ad_limit');
-            
-            if (cooldownCheck.success) {
-                if (cooldownCheck.cooldown_left > 0 && !cooldownCheck.can_watch) {
-                    // Cooldown bor - taymer boshlash
-                    startCooldownTimer(cooldownCheck.cooldown_left, cooldownCheck.bonus_amount);
-                } else if (!cooldownCheck.is_unlimited && cooldownCheck.today_views >= cooldownCheck.daily_limit) {
-                    // Limit tugagan
-                    btn.disabled = true;
-                    btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi`;
-                    btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
-                    updateAdStatus();
-                } else {
-                    // Cooldown yo'q va limit tugamagan - tugmani ochish
-                    btn.disabled = false;
-                    btn.innerHTML = `Reklamani Ko'rish (+${cooldownCheck.bonus_amount} 💎)`;
-                    btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                    updateAdStatus();
-                }
-            } else {
-                // Xatolik bo'lsa - tugmani oddiy holatga qaytarish
-                btn.disabled = false;
-                btn.innerHTML = `Reklamani Ko'rish`;
-                btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
-                updateAdStatus();
-            }
+            fetchBalance(); 
+            notif(true, `+${res.bonus || 1} 💎 bonus qo'shildi`);
+            updateAdStatus();
         } else {
-            // Muvaffaqiyatsiz bo'lsa
-            notif(false, res.message || 'Xatolik yuz berdi');
-            btn.disabled = false;
-            btn.innerHTML = `Reklamani Ko'rish`;
-            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+            notif(false, res.message);
             updateAdStatus();
         }
+        
+        // Tugmani qayta faollashtirish
+        btn.disabled = false;
     }
     async function activatePromo() {
         let c = document.getElementById('promoInput').value;
@@ -2099,8 +1904,6 @@
             let settings = res.settings;
             adSettings = settings;
             
-            let isUnlimited = settings.daily_limit == -1;
-            
             container.innerHTML = `
                 <div class="ad-settings-card">
                     <div class="setting-item">
@@ -2109,11 +1912,7 @@
                     </div>
                     <div class="setting-item">
                         <span class="setting-label"><i class="fas fa-chart-bar"></i> Kunlik limit:</span>
-                        <span class="setting-value">${isUnlimited ? '∞ Cheksiz' : settings.daily_limit + ' ta'}</span>
-                    </div>
-                    <div class="setting-item">
-                        <span class="setting-label"><i class="fas fa-clock"></i> Cooldown:</span>
-                        <span class="setting-value">${settings.cooldown_seconds || 0} soniya</span>
+                        <span class="setting-value">${settings.daily_limit} ta</span>
                     </div>
                     <div class="setting-item">
                         <span class="setting-label"><i class="fas fa-calendar"></i> Sozlangan sana:</span>
@@ -2130,9 +1929,9 @@
             
             document.getElementById('adminAdBonus').value = settings.bonus_amount;
             document.getElementById('adminAdLimit').value = settings.daily_limit;
-            document.getElementById('adminAdCooldown').value = settings.cooldown_seconds || 0;
         } else container.innerHTML = '<p style="color:#999; text-align:center;">Sozlamalar yuklanmadi</p>';
     }
+
     async function loadAdStats() {
         let res = await api('admin_get_ad_stats');
         let container = document.getElementById('adStatsContainer');
@@ -2163,27 +1962,20 @@
     async function saveAdSettings() {
         let bonusAmount = parseInt(document.getElementById('adminAdBonus').value);
         let dailyLimit = parseInt(document.getElementById('adminAdLimit').value);
-        let cooldownSeconds = parseInt(document.getElementById('adminAdCooldown').value) || 0;
         
         if(!bonusAmount || bonusAmount < 1 || bonusAmount > 100) {
             notif(false, 'Bonus miqdori 1-100 oralig\'ida bo\'lishi kerak');
             return;
         }
         
-        if(dailyLimit < -1 || dailyLimit > 1000) {
-            notif(false, 'Kunlik limit -1 dan 1000 gacha bo\'lishi kerak');
-            return;
-        }
-        
-        if(cooldownSeconds < 0 || cooldownSeconds > 3600) {
-            notif(false, 'Cooldown 0-3600 soniya oralig\'ida bo\'lishi kerak');
+        if(!dailyLimit || dailyLimit < 1 || dailyLimit > 100) {
+            notif(false, 'Kunlik limit 1-100 oralig\'ida bo\'lishi kerak');
             return;
         }
         
         let res = await api('admin_update_ad_settings', {
             bonus_amount: bonusAmount,
-            daily_limit: dailyLimit,
-            cooldown_seconds: cooldownSeconds
+            daily_limit: dailyLimit
         });
         
         if(res.success) {
@@ -2280,12 +2072,7 @@
         setInterval(fetchBalance, 10000);
         setInterval(startMiningSimulation, 100);
         setInterval(startMinerTimer, 1000);
-        setInterval(() => {
-            // Faqat earnPage ochiq bo'lsa status yangilansin
-            if (document.getElementById('earnPage').style.display !== 'none') {
-                updateAdStatus();
-            }
-        }, 5000);
+        setInterval(updateAdStatus, 5000);
         setInterval(updateCountdownTimer, 1000);
     };
 </script>
