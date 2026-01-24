@@ -2062,8 +2062,8 @@
     setInterval(updateAdStatus, 10000);
     
     window.onload = async () => {
+        await checkSubs(); // ← Eng birinchi shu chaqirilishi kerak
         await fetchBalance();
-        checkSubs();
         loadMiners();
         loadRefs();
         createCoins();
