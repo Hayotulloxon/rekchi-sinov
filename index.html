@@ -1192,22 +1192,32 @@
                 let total_today = parseInt(res.today_views) || 0;
                 let total_limit = parseInt(res.daily_limit) || 10;
                 let bonus_amount = parseInt(res.bonus_amount) || 1;
+                let is_unlimited = res.is_unlimited || false;
                 
-                // Progress barlarni yangilash (faqat umumiy progress)
-                let progressPercent = (total_today / total_limit) * 100;
-                progressPercent = Math.min(progressPercent, 100);
+                // Progress va limit ko'rsatkichlarini yangilash
+                if (is_unlimited) {
+                    document.getElementById('adProgressBar').style.width = '0%';
+                    document.getElementById('adViewsCount').textContent = total_today;
+                    document.getElementById('dailyLimitValue').textContent = '∞';
+                    document.getElementById('adLimitInfo').innerHTML = '';
+                } else {
+                    let progressPercent = (total_today / total_limit) * 100;
+                    progressPercent = Math.min(progressPercent, 100);
+                    
+                    document.getElementById('adProgressBar').style.width = progressPercent + '%';
+                    document.getElementById('adViewsCount').textContent = total_today;
+                    document.getElementById('dailyLimitValue').textContent = total_limit;
+                    document.getElementById('adLimitInfo').innerHTML = `/ <span id="dailyLimitValue">${total_limit}</span> ta`;
+                }
                 
-                document.getElementById('adProgressBar').style.width = progressPercent + '%';
-                document.getElementById('adViewsCount').textContent = total_today;
-                document.getElementById('dailyLimitValue').textContent = total_limit;
                 document.getElementById('adBonusAmount').textContent = bonus_amount;
                 
-                // Tugma matnini soddalashtirish
+                // Tugma holatini yangilash
                 let btn = document.getElementById('watchAdBtn');
                 let statusIcon = document.getElementById('adStatusIcon');
                 let statusText = document.getElementById('adStatusText');
                 
-                if(total_today >= total_limit) {
+                if(!is_unlimited && total_today >= total_limit) {
                     btn.disabled = true;
                     btn.innerHTML = `<i class="fas fa-lock"></i> Limit Tugadi`;
                     btn.style.background = 'linear-gradient(135deg, #ccc, #999)';
@@ -1219,8 +1229,14 @@
                     btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                     statusIcon.textContent = '📊';
-                    statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
-                    statusText.style.color = '#4CAF50';
+                    
+                    if (is_unlimited) {
+                        statusText.textContent = 'Cheksiz reklama';
+                        statusText.style.color = '#4CAF50';
+                    } else {
+                        statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
+                        statusText.style.color = '#4CAF50';
+                    }
                 }
                 
                 updateCountdownTimer();
@@ -1928,7 +1944,7 @@
             `;
             
             document.getElementById('adminAdBonus').value = settings.bonus_amount;
-            document.getElementById('adminAdLimit').value = settings.daily_limit;
+            document.getElementById('adminAdLimit').placeholder = "Kunlik limit (0 = cheksiz)";
         } else container.innerHTML = '<p style="color:#999; text-align:center;">Sozlamalar yuklanmadi</p>';
     }
 
@@ -1968,8 +1984,9 @@
             return;
         }
         
-        if(!dailyLimit || dailyLimit < 1 || dailyLimit > 100) {
-            notif(false, 'Kunlik limit 1-100 oralig\'ida bo\'lishi kerak');
+        // 0 = cheksiz
+        if(dailyLimit < 0 || dailyLimit > 100) {
+            notif(false, 'Kunlik limit 0-100 oralig\'ida bo\'lishi kerak (0 = cheksiz)');
             return;
         }
         
@@ -1985,7 +2002,6 @@
             updateAdStatus();
         } else notif(false, res.message);
     }
-
     async function admAddPromo() {
         let d = { code: document.getElementById('admCode').value, amount: document.getElementById('admAmt').value, type: document.getElementById('admType').value, max_uses: document.getElementById('admMax').value };
         let res = await api('admin_add_promo', d);
