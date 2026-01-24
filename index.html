@@ -1913,15 +1913,7 @@
                 amtInput.value = '';
                 
                 // Adminga xabar yuborish
-                let msg = `💸 Yangi pul yechish so'rovi
-    
-    👤 Foydalanuvchi: @${username}
-    🆔 ID: ${userId}
-    💰 Summa: ${amt.toLocaleString()} so'm
-    💵 Joriy balans: ${user.s.toLocaleString()} so'm
-    ⏰ Vaqt: ${new Date().toLocaleString('uz-UZ')}
-    
-    Pulni to'lab, balansdan ayiring.`;
+                let msg = `💸 Yangi pul yechish so'rovi ${amt.toLocaleString()} so'm`;
                 
                 window.open(`${ADMIN_GIFT}?text=${encodeURIComponent(msg)}`, '_blank');
                 
