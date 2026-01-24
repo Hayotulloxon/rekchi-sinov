@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_c5fa4840"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
         
@@ -243,7 +243,10 @@
             color: white; font-weight: 800; font-size: 16px; cursor: pointer; 
             box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4); margin-top: 10px;
         }
-        .submit-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        .submit-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
         .submit-btn:active { transform: scale(0.95); }
         .custom-input, .link-input { 
             width: 100%; padding: 14px; border: 2px solid #ffd166; border-radius: 12px; 
@@ -1127,7 +1130,28 @@
     tg.expand();
     const userId = tg.initDataUnsafe?.user?.id || '123456789';
     const username = tg.initDataUnsafe?.user?.username || 'Guest';
-
+    
+    // TelegramAds Controller
+    let TelegramAdsController = null;
+    
+    // TelegramAds ni ishga tushirish
+    function initTelegramAds() {
+        if (window.TelegramAdsController) {
+            TelegramAdsController = new window.TelegramAdsController();
+            TelegramAdsController.initialize({
+                pubId: "996799",
+                appId: "5842",
+            });
+            console.log('TelegramAds initialized');
+        } else {
+            console.error('TelegramAds script yuklanmadi');
+        }
+    }
+    
+    // Sahifa yuklanganda
+    setTimeout(() => {
+        initTelegramAds();
+    }, 1000);
     let user = { d: 0, c: 0, s: 0, ref: '' };
     let curService = null;
     let selQty = 0;
@@ -1199,36 +1223,59 @@
                 cooldownRemaining = parseInt(res.cooldown_remaining) || 0;
                 let can_watch = res.can_watch !== false;
                 
-                // Progress va limit ko'rsatkichlarini yangilash
-                if (is_unlimited) {
-                    document.getElementById('adProgressBar').style.width = '0%';
-                    document.getElementById('adViewsCount').textContent = total_today;
-                    document.getElementById('dailyLimitValue').textContent = '∞';
-                    document.getElementById('adLimitInfo').innerHTML = '';
-                } else {
-                    let progressPercent = (total_today / total_limit) * 100;
-                    progressPercent = Math.min(progressPercent, 100);
-                    
-                    document.getElementById('adProgressBar').style.width = progressPercent + '%';
-                    document.getElementById('adViewsCount').textContent = total_today;
-                    document.getElementById('dailyLimitValue').textContent = total_limit;
-                    document.getElementById('adLimitInfo').innerHTML = `/ <span id="dailyLimitValue">${total_limit}</span> ta`;
-                }
+                let adsgram_views = parseInt(res.adsgram_views) || 0;
+                let sonar_views = parseInt(res.sonar_views) || 0;
+                let telegramads_views = parseInt(res.telegramads_views) || 0;
+                let next_platform = res.next_platform || '';
                 
-                document.getElementById('adBonusAmount').textContent = bonus_amount;
-                
-                // Tugma holatini yangilash
+                // Elementlarni olish (null check bilan)
+                let progressBar = document.getElementById('adProgressBar');
+                let viewsCount = document.getElementById('adViewsCount');
+                let limitValue = document.getElementById('dailyLimitValue');
+                let limitInfo = document.getElementById('adLimitInfo');
+                let bonusAmountEl = document.getElementById('adBonusAmount');
                 let btn = document.getElementById('watchAdBtn');
                 let statusIcon = document.getElementById('adStatusIcon');
                 let statusText = document.getElementById('adStatusText');
                 
+                // Agar elementlar topilmasa, funksiyani to'xtatish
+                if (!progressBar || !viewsCount || !bonusAmountEl || !btn || !statusIcon || !statusText) {
+                    console.warn('Ad elements not found, skipping update');
+                    return;
+                }
+                
+                // Progress va limit ko'rsatkichlarini yangilash
+                if (is_unlimited) {
+                    progressBar.style.width = '0%';
+                    viewsCount.textContent = total_today;
+                    if (limitValue) limitValue.textContent = '∞';
+                    if (limitInfo) limitInfo.innerHTML = '';
+                } else {
+                    let progressPercent = (total_today / total_limit) * 100;
+                    progressPercent = Math.min(progressPercent, 100);
+                    
+                    progressBar.style.width = progressPercent + '%';
+                    viewsCount.textContent = total_today;
+                    if (limitValue) limitValue.textContent = total_limit;
+                    if (limitInfo) limitInfo.innerHTML = `/ <span id="dailyLimitValue">${total_limit}</span> ta`;
+                }
+                
+                bonusAmountEl.textContent = bonus_amount;
+                
+                // Platform nomini ko'rsatish
+                let platformName = '';
+                if (next_platform === 'adsgram') platformName = 'Adsgram';
+                else if (next_platform === 'sonar') platformName = 'Sonar';
+                else if (next_platform === 'telegramads') platformName = 'TelegramAds';
+                
                 // Cooldown holatida
                 if (cooldownRemaining > 0) {
                     btn.disabled = true;
-                    updateCooldownButton();
-                    startCooldownTimer();
+                    btn.innerHTML = `<i class="fas fa-hourglass-half"></i> Kutish: ${cooldownRemaining}s`;
+                    btn.style.background = 'linear-gradient(135deg, #FF9800, #F57C00)';
+                    startCooldownTimer(); // Timer boshlash
                     statusIcon.textContent = '⏱️';
-                    statusText.textContent = 'Kutish vaqti...';
+                    statusText.textContent = `Kutish: ${cooldownRemaining}s`;
                     statusText.style.color = '#FF9800';
                 }
                 // Limit tugagan
@@ -1243,7 +1290,7 @@
                 // Reklama ko'rish mumkin
                 else {
                     btn.disabled = false;
-                    btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
+                    btn.innerHTML = `${platformName} Ko'rish (+${bonus_amount} 💎)`;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                     statusIcon.textContent = '📊';
                     
@@ -1251,7 +1298,7 @@
                         statusText.textContent = 'Cheksiz reklama';
                         statusText.style.color = '#4CAF50';
                     } else {
-                        statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
+                        statusText.textContent = `${total_limit - total_today} ta qoldi (Keyingi: ${platformName})`;
                         statusText.style.color = '#4CAF50';
                     }
                 }
@@ -1264,26 +1311,56 @@
     }
     function updateCooldownButton() {
         let btn = document.getElementById('watchAdBtn');
+        if (!btn) return;
+        
         if (cooldownRemaining > 0) {
+            btn.disabled = true;
             btn.innerHTML = `<i class="fas fa-hourglass-half"></i> Kutish: ${cooldownRemaining}s`;
             btn.style.background = 'linear-gradient(135deg, #FF9800, #F57C00)';
+        } else {
+            btn.disabled = false;
         }
     }
     
     function startCooldownTimer() {
-        if (cooldownTimer) clearInterval(cooldownTimer);
+        // Avvalgi timerni to'xtatish
+        if (cooldownTimer) {
+            clearInterval(cooldownTimer);
+            cooldownTimer = null;
+        }
+        
+        // Agar cooldown 0 bo'lsa, timer ishlatmaslik
+        if (cooldownRemaining <= 0) {
+            return;
+        }
         
         cooldownTimer = setInterval(() => {
             if (cooldownRemaining > 0) {
                 cooldownRemaining--;
-                updateCooldownButton();
+                
+                // Tugma va status matnini yangilash
+                let btn = document.getElementById('watchAdBtn');
+                let statusText = document.getElementById('adStatusText');
+                
+                if (btn) {
+                    btn.innerHTML = `<i class="fas fa-hourglass-half"></i> Kutish: ${cooldownRemaining}s`;
+                }
+                
+                if (statusText) {
+                    statusText.textContent = `Kutish: ${cooldownRemaining}s`;
+                }
             } else {
+                // Cooldown tugaganda
                 clearInterval(cooldownTimer);
-                updateAdStatus(); // Qayta yuklash
+                cooldownTimer = null;
+                updateAdStatus(); // Status yangilash
             }
         }, 1000);
     }
     function updateCountdownTimer() {
+        let countdownEl = document.getElementById('adCountdown');
+        if (!countdownEl) return; // Element topilmasa chiqish
+        
         let now = new Date();
         let tomorrow = new Date(now);
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1296,7 +1373,7 @@
         
         let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
-        document.getElementById('adCountdown').textContent = `Limit yangilanadi: ${timeString}`;
+        countdownEl.textContent = `Limit yangilanadi: ${timeString}`;
         
         if (timeLeft < 1000) location.reload();
     }
@@ -1797,10 +1874,9 @@
     const AdController = window.Adsgram?.init({ blockId: "21365" });
 
     document.getElementById('watchAdBtn').onclick = async () => {
-        // Cooldown tekshiruvi
+        // Cooldown holatida faqat return qilish (xabar ko'rsatmaslik)
         if (cooldownRemaining > 0) {
-            notif(false, `Iltimos ${cooldownRemaining}s kuting`);
-            return;
+            return; // Hech narsa qilmaslik
         }
         
         // Avval limitni tekshirish
@@ -1818,22 +1894,10 @@
             return;
         }
         
-        // Qaysi platforma bo'yicha reklama ko'rsatishni ichki hisoblash
-        let adSource = '';
+        // Qaysi platformani ko'rsatish kerakligini backend aniqlaydi
+        let nextPlatform = limitCheck.next_platform;
         
-        if (limitCheck.adsgram_remaining > 0) {
-            adSource = 'adsgram';
-            if(!AdController) {
-                notif(false, 'Reklama yuklanmadi');
-                return;
-            }
-        } else if (limitCheck.sonar_remaining > 0) {
-            adSource = 'sonar';
-            if(!window.Sonar) {
-                notif(false, 'Reklama yuklanmadi');
-                return;
-            }
-        } else {
+        if (!nextPlatform) {
             notif(false, 'Bugungi barcha reklama limitlari tugagan');
             return;
         }
@@ -1843,16 +1907,29 @@
         btn.disabled = true;
         
         // Platformaga qarab reklama ko'rsatish
-        if (adSource === 'adsgram') {
+        if (nextPlatform === 'adsgram') {
+            if(!AdController) {
+                notif(false, 'Adsgram yuklanmadi');
+                btn.disabled = false;
+                return;
+            }
+            
             AdController.show().then(async () => {
                 let res = await api('add', { source: 'adsgram' });
                 handleAdResponse(res);
             }).catch((result) => {
                 if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
                 btn.disabled = false;
-                btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
+                updateAdStatus();
             });
-        } else if (adSource === 'sonar') {
+        } 
+        else if (nextPlatform === 'sonar') {
+            if(!window.Sonar) {
+                notif(false, 'Sonar yuklanmadi');
+                btn.disabled = false;
+                return;
+            }
+            
             window.Sonar.show({ 
                 adUnit: "rekchiai", 
                 onReward: async () => {
@@ -1862,12 +1939,32 @@
                 onError: (error) => {
                     notif(false, 'Reklama xatosi');
                     btn.disabled = false;
-                    btn.innerHTML = `Reklamani Ko'rish (+${limitCheck.bonus_amount} 💎)`;
+                    updateAdStatus();
+                }
+            });
+        }
+        else if (nextPlatform === 'telegramads') {
+            if(!TelegramAdsController) {
+                notif(false, 'TelegramAds yuklanmadi');
+                btn.disabled = false;
+                return;
+            }
+            
+            TelegramAdsController.show({
+                onReward: async () => {
+                    let res = await api('add', { source: 'telegramads' });
+                    handleAdResponse(res);
+                },
+                onError: (error) => {
+                    console.error('TelegramAds error:', error);
+                    notif(false, 'Reklama xatosi');
+                    btn.disabled = false;
+                    updateAdStatus();
                 }
             });
         }
     };
-    // Helper funksiya
+    
     async function handleAdResponse(res) {
         let btn = document.getElementById('watchAdBtn');
         
@@ -1891,6 +1988,7 @@
         
         btn.disabled = false;
     }
+
     async function activatePromo() {
         let c = document.getElementById('promoInput').value;
         if(!c) return;
