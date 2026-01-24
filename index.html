@@ -2363,35 +2363,32 @@
     setInterval(updateAdStatus, 10000);
     
     window.onload = async () => {
-        // BIRINCHI - balansni yuklash (loading bilan)
-        fetchBalance();
+        // Hammasi PARALLEL yuklanyapti
+        await Promise.allSettled([
+            fetchBalance(),
+            checkSubs(),
+            loadMiners(),
+            loadRefs()
+        ]);
         
-        // Parallel ravishda boshqa narsalarni yuklash
-        checkSubs();
-        loadMiners();
-        loadRefs();
         createCoins();
         
-        // Reklama platformalarini initialize qilish
         setTimeout(() => {
             initTelegramAds();
-            initPushStyle();
-        }, 2000);
+        }, 1000);
         
-        // Intervallarni sozlash
-        setInterval(fetchBalance, 10000);
+        // Intervallar
+        setInterval(fetchBalance, 30000);
         setInterval(startMiningSimulation, 100);
         setInterval(startMinerTimer, 1000);
         
-        // Ad status faqat Earn sahifasida update bo'ladi
         setInterval(() => {
             let earnPage = document.getElementById('earnPage');
             if (earnPage && earnPage.style.display !== 'none') {
                 updateAdStatus();
             }
-        }, 5000);
+        }, 10000);
         
-        // Countdown har doim ishlaydi
         setInterval(updateCountdownTimer, 1000);
     };
 </script>
