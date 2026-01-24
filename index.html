@@ -1412,24 +1412,34 @@
     }
 
     async function fetchBalance() {
-        // Skeleton loading effekti
-        document.getElementById('uDiamond').innerHTML = '<div style="width:60px;height:18px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite;border-radius:4px;"></div>';
-        document.getElementById('uCoin').innerHTML = '<div style="width:80px;height:18px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite;border-radius:4px;"></div>';
+        // DARHOL loading ko'rsatish (0 emas!)
+        document.getElementById('uDiamond').innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:14px;"></i>';
+        document.getElementById('uCoin').innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:14px;"></i>';
         
-        let res = await api('get_balance');
-        if(res.success) {
-            user.d = parseInt(res.diamonds); 
-            user.c = parseFloat(res.coins); 
-            user.s = parseFloat(res.som_balance); 
-            user.ref = res.referral_code;
-            updateUI();
+        try {
+            let res = await api('get_balance');
             
-            if(res.is_admin === 1) {
-                document.getElementById('adminBtn').style.display = 'flex';
+            if(res.success) {
+                user.d = parseInt(res.diamonds); 
+                user.c = parseFloat(res.coins); 
+                user.s = parseFloat(res.som_balance); 
+                user.ref = res.referral_code;
+                updateUI();
+                
+                if(res.is_admin === 1) {
+                    document.getElementById('adminBtn').style.display = 'flex';
+                }
+            } else {
+                // Xato holatida standart qiymatlar
+                document.getElementById('uDiamond').innerText = '💎 0';
+                document.getElementById('uCoin').innerHTML = '🪙 0.<span class="small-decimal">0000</span>';
             }
-        } else {
-            document.getElementById('uDiamond').innerText = '💎 0';
-            document.getElementById('uCoin').innerHTML = '🪙 0.<span class="small-decimal">0000</span>';
+        } catch (error) {
+            // Internet xatosi
+            console.error('Balance fetch error:', error);
+            document.getElementById('uDiamond').innerText = '💎 ?';
+            document.getElementById('uCoin').innerText = '🪙 ?';
+            notif(false, 'Internet xatosi');
         }
     }
 
@@ -2353,15 +2363,19 @@
     setInterval(updateAdStatus, 10000);
     
     window.onload = async () => {
-        await checkSubs();
-        await fetchBalance();
+        // BIRINCHI - balansni yuklash (loading bilan)
+        fetchBalance();
+        
+        // Parallel ravishda boshqa narsalarni yuklash
+        checkSubs();
         loadMiners();
         loadRefs();
         createCoins();
         
-        // TelegramAds initialization
+        // Reklama platformalarini initialize qilish
         setTimeout(() => {
             initTelegramAds();
+            initPushStyle();
         }, 2000);
         
         // Intervallarni sozlash
