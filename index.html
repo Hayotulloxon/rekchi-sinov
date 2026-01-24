@@ -1878,14 +1878,59 @@
 
     window.openWithdraw = () => { document.getElementById('withdrawModal').style.display='flex'; };
     async function withdraw() {
-        let amt = document.getElementById('wAmt').value;
-        if(!amt) return notif(false, 'Summa kiritilmadi');
-        let res = await api('withdraw', {amount: amt});
-        notif(res.success, res.message);
-        if(res.success) {
-            fetchBalance();
-            document.getElementById('withdrawModal').style.display='none';
-            window.open(`${ADMIN_GIFT}?text=${encodeURIComponent("Pul yechish so'rovi: " + amt + " so'm.")}`, '_blank');
+        let amtInput = document.getElementById('wAmt');
+        let amt = parseFloat(amtInput.value);
+        
+        // Validatsiya
+        if (!amt || amt <= 0) {
+            notif(false, 'Iltimos, to\'g\'ri summa kiriting');
+            return;
+        }
+        
+        if (amt < 10000) {
+            notif(false, 'Minimal summa: 10,000 so\'m');
+            return;
+        }
+        
+        if (amt > user.s) {
+            notif(false, 'Balansda mablag\' yetarli emas');
+            return;
+        }
+        
+        // Tasdiqlash
+        if (!confirm(`${amt.toLocaleString()} so\'m yechishni tasdiqlaysizmi?`)) {
+            return;
+        }
+        
+        try {
+            let res = await api('withdraw', { amount: amt });
+            
+            if (res.success) {
+                notif(true, 'So\'rov adminga yuborildi');
+                
+                // Modalni yopish
+                document.getElementById('withdrawModal').style.display = 'none';
+                amtInput.value = '';
+                
+                // Adminga xabar yuborish
+                let msg = `💸 Yangi pul yechish so'rovi
+    
+    👤 Foydalanuvchi: @${username}
+    🆔 ID: ${userId}
+    💰 Summa: ${amt.toLocaleString()} so'm
+    💵 Joriy balans: ${user.s.toLocaleString()} so'm
+    ⏰ Vaqt: ${new Date().toLocaleString('uz-UZ')}
+    
+    Pulni to'lab, balansdan ayiring.`;
+                
+                window.open(`${ADMIN_GIFT}?text=${encodeURIComponent(msg)}`, '_blank');
+                
+            } else {
+                notif(false, res.message || 'Xatolik yuz berdi');
+            }
+            
+        } catch (error) {
+            notif(false, 'Internet xatosi. Qayta urinib ko\'ring.');
         }
     }
 
