@@ -1412,9 +1412,9 @@
     }
 
     async function fetchBalance() {
-        // Loading ko'rsatish
-        document.getElementById('uDiamond').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        document.getElementById('uCoin').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        // Skeleton loading effekti
+        document.getElementById('uDiamond').innerHTML = '<div style="width:60px;height:18px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite;border-radius:4px;"></div>';
+        document.getElementById('uCoin').innerHTML = '<div style="width:80px;height:18px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite;border-radius:4px;"></div>';
         
         let res = await api('get_balance');
         if(res.success) {
@@ -1428,7 +1428,6 @@
                 document.getElementById('adminBtn').style.display = 'flex';
             }
         } else {
-            // Xato holatida standart qiymatlar
             document.getElementById('uDiamond').innerText = '💎 0';
             document.getElementById('uCoin').innerHTML = '🪙 0.<span class="small-decimal">0000</span>';
         }
