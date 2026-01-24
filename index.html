@@ -1131,20 +1131,23 @@
     const userId = tg.initDataUnsafe?.user?.id || '123456789';
     const username = tg.initDataUnsafe?.user?.username || 'Guest';
     
-    // TelegramAds Controller
-    let TelegramAdsController = null;
     
     // TelegramAds ni ishga tushirish
+    // TelegramAds ni ishga tushirish
     function initTelegramAds() {
-        if (window.TelegramAdsController) {
-            TelegramAdsController = new window.TelegramAdsController();
-            TelegramAdsController.initialize({
-                pubId: "996799",
-                appId: "5842",
-            });
-            console.log('TelegramAds initialized');
+        if (window.TelegramAdsController && typeof window.TelegramAdsController === 'function') {
+            try {
+                window.TelegramAdsController = new window.TelegramAdsController();
+                window.TelegramAdsController.initialize({
+                    pubId: "996799",
+                    appId: "5842",
+                });
+                console.log('TelegramAds initialized');
+            } catch (error) {
+                console.error('TelegramAds initialization error:', error);
+            }
         } else {
-            console.error('TelegramAds script yuklanmadi');
+            console.warn('TelegramAdsController script yuklanmadi');
         }
     }
     
