@@ -1134,27 +1134,44 @@
     
     // TelegramAds ni ishga tushirish
     // TelegramAds ni ishga tushirish
+    // TelegramAds ni ishga tushirish
     function initTelegramAds() {
-        if (window.TelegramAdsController && typeof window.TelegramAdsController === 'function') {
-            try {
-                window.TelegramAdsController = new window.TelegramAdsController();
-                window.TelegramAdsController.initialize({
-                    pubId: "996799",
-                    appId: "5842",
-                });
-                console.log('TelegramAds initialized');
-            } catch (error) {
-                console.error('TelegramAds initialization error:', error);
-            }
-        } else {
+        // Script yuklanganini tekshirish
+        if (typeof window.TelegramAdsController === 'undefined') {
             console.warn('TelegramAdsController script yuklanmadi');
+            return;
+        }
+        
+        try {
+            // Agar allaqachon initialized bo'lsa, qayta initialize qilmaslik
+            if (window.TelegramAdsController.show) {
+                console.log('TelegramAds allaqachon initialized');
+                return;
+            }
+            
+            // Initialize
+            let controller = new window.TelegramAdsController();
+            controller.initialize({
+                pubId: "996799",
+                appId: "5842",
+            });
+            
+            // Global window'ga qo'shish
+            window.TelegramAdsController = controller;
+            
+            console.log('TelegramAds muvaffaqiyatli initialized');
+        } catch (error) {
+            console.error('TelegramAds initialization error:', error);
         }
     }
     
     // Sahifa yuklanganda
-    setTimeout(() => {
-        initTelegramAds();
-    }, 1000);
+    window.addEventListener('load', function() {
+        // TelegramAds scriptini kutish
+        setTimeout(() => {
+            initTelegramAds();
+        }, 2000);
+    });
     let user = { d: 0, c: 0, s: 0, ref: '' };
     let curService = null;
     let selQty = 0;
@@ -1265,18 +1282,12 @@
                 
                 bonusAmountEl.textContent = bonus_amount;
                 
-                // Platform nomini ko'rsatish
-                let platformName = '';
-                if (next_platform === 'adsgram') platformName = 'Adsgram';
-                else if (next_platform === 'sonar') platformName = 'Sonar';
-                else if (next_platform === 'telegramads') platformName = 'TelegramAds';
-                
                 // Cooldown holatida
                 if (cooldownRemaining > 0) {
                     btn.disabled = true;
                     btn.innerHTML = `<i class="fas fa-hourglass-half"></i> Kutish: ${cooldownRemaining}s`;
                     btn.style.background = 'linear-gradient(135deg, #FF9800, #F57C00)';
-                    startCooldownTimer(); // Timer boshlash
+                    startCooldownTimer();
                     statusIcon.textContent = '⏱️';
                     statusText.textContent = `Kutish: ${cooldownRemaining}s`;
                     statusText.style.color = '#FF9800';
@@ -1293,7 +1304,8 @@
                 // Reklama ko'rish mumkin
                 else {
                     btn.disabled = false;
-                    btn.innerHTML = `${platformName} Ko'rish (+${bonus_amount} 💎)`;
+                    // DOIM BIR XIL MATN
+                    btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                     statusIcon.textContent = '📊';
                     
@@ -1301,7 +1313,7 @@
                         statusText.textContent = 'Cheksiz reklama';
                         statusText.style.color = '#4CAF50';
                     } else {
-                        statusText.textContent = `${total_limit - total_today} ta qoldi (Keyingi: ${platformName})`;
+                        statusText.textContent = `${total_limit - total_today} ta reklama qoldi`;
                         statusText.style.color = '#4CAF50';
                     }
                 }
@@ -1876,10 +1888,13 @@
 
     const AdController = window.Adsgram?.init({ blockId: "21365" });
 
+    // Global o'zgaruvchi - qaysi platformadan boshlamoqchi ekanligimizni saqlash
+    let currentAdAttempt = 0;
+    
     document.getElementById('watchAdBtn').onclick = async () => {
-        // Cooldown holatida faqat return qilish (xabar ko'rsatmaslik)
+        // Cooldown holatida faqat return qilish
         if (cooldownRemaining > 0) {
-            return; // Hech narsa qilmaslik
+            return;
         }
         
         // Avval limitni tekshirish
@@ -1909,64 +1924,93 @@
         let btn = document.getElementById('watchAdBtn');
         btn.disabled = true;
         
-        // Platformaga qarab reklama ko'rsatish
+        // Platformalar ro'yxati
+        let platformQueue = [];
+        
         if (nextPlatform === 'adsgram') {
-            if(!AdController) {
-                notif(false, 'Adsgram yuklanmadi');
-                btn.disabled = false;
-                return;
-            }
-            
-            AdController.show().then(async () => {
-                let res = await api('add', { source: 'adsgram' });
-                handleAdResponse(res);
-            }).catch((result) => {
-                if(result.error) notif(false, 'Reklama xatosi: ' + result.description);
-                btn.disabled = false;
-                updateAdStatus();
-            });
-        } 
-        else if (nextPlatform === 'sonar') {
-            if(!window.Sonar) {
-                notif(false, 'Sonar yuklanmadi');
-                btn.disabled = false;
-                return;
-            }
-            
-            window.Sonar.show({ 
-                adUnit: "rekchiai", 
-                onReward: async () => {
-                    let res = await api('add', { source: 'sonar' });
-                    handleAdResponse(res);
-                },
-                onError: (error) => {
-                    notif(false, 'Reklama xatosi');
-                    btn.disabled = false;
-                    updateAdStatus();
-                }
-            });
+            platformQueue = ['adsgram', 'sonar', 'telegramads'];
+        } else if (nextPlatform === 'sonar') {
+            platformQueue = ['sonar', 'telegramads', 'adsgram'];
+        } else if (nextPlatform === 'telegramads') {
+            platformQueue = ['telegramads', 'sonar', 'adsgram'];
         }
-        else if (nextPlatform === 'telegramads') {
-            if(!TelegramAdsController) {
-                notif(false, 'TelegramAds yuklanmadi');
-                btn.disabled = false;
-                return;
-            }
-            
-            TelegramAdsController.show({
-                onReward: async () => {
-                    let res = await api('add', { source: 'telegramads' });
-                    handleAdResponse(res);
-                },
-                onError: (error) => {
-                    console.error('TelegramAds error:', error);
-                    notif(false, 'Reklama xatosi');
-                    btn.disabled = false;
-                    updateAdStatus();
-                }
-            });
-        }
+        
+        // Navbat bo'yicha reklamalarni ko'rsatishga harakat qilish
+        tryShowAd(platformQueue, 0, btn);
     };
+    
+    // Rekursiv funksiya - agar bitta ishlamasa keyingisiga o'tadi
+    async function tryShowAd(platformQueue, index, btn) {
+        if (index >= platformQueue.length) {
+            notif(false, 'Hech qanday reklama mavjud emas');
+            btn.disabled = false;
+            return;
+        }
+        
+        let platform = platformQueue[index];
+        
+        if (platform === 'adsgram') {
+            if (AdController) {
+                AdController.show().then(async () => {
+                    let res = await api('add', { source: 'adsgram' });
+                    handleAdResponse(res);
+                }).catch((result) => {
+                    console.log('Adsgram xatosi, keyingisiga o\'tamiz...');
+                    // Keyingi platformaga o'tish
+                    tryShowAd(platformQueue, index + 1, btn);
+                });
+            } else {
+                console.log('Adsgram mavjud emas, keyingisiga o\'tamiz...');
+                tryShowAd(platformQueue, index + 1, btn);
+            }
+        } 
+        else if (platform === 'sonar') {
+            if (window.Sonar) {
+                window.Sonar.show({ 
+                    adUnit: "rekchiai", 
+                    onReward: async () => {
+                        let res = await api('add', { source: 'sonar' });
+                        handleAdResponse(res);
+                    },
+                    onError: (error) => {
+                        console.log('Sonar xatosi, keyingisiga o\'tamiz...');
+                        // Keyingi platformaga o'tish
+                        tryShowAd(platformQueue, index + 1, btn);
+                    }
+                });
+            } else {
+                console.log('Sonar mavjud emas, keyingisiga o\'tamiz...');
+                tryShowAd(platformQueue, index + 1, btn);
+            }
+        }
+        else if (platform === 'telegramads') {
+            if (window.TelegramAdsController && window.TelegramAdsController.show) {
+                try {
+                    window.TelegramAdsController.show({
+                        onReward: async () => {
+                            let res = await api('add', { source: 'telegramads' });
+                            handleAdResponse(res);
+                        },
+                        onError: (error) => {
+                            console.log('TelegramAds xatosi, keyingisiga o\'tamiz...');
+                            // Keyingi platformaga o'tish
+                            tryShowAd(platformQueue, index + 1, btn);
+                        },
+                        onClose: () => {
+                            // Reklama yopilganda
+                            btn.disabled = false;
+                        }
+                    });
+                } catch (error) {
+                    console.log('TelegramAds ishlamadi, keyingisiga o\'tamiz...');
+                    tryShowAd(platformQueue, index + 1, btn);
+                }
+            } else {
+                console.log('TelegramAds mavjud emas, keyingisiga o\'tamiz...');
+                tryShowAd(platformQueue, index + 1, btn);
+            }
+        }
+    }
     
     async function handleAdResponse(res) {
         let btn = document.getElementById('watchAdBtn');
