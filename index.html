@@ -1231,6 +1231,12 @@
     }
 
     async function updateAdStatus() {
+        // Earn sahifasi ochiq emasligini tekshirish
+        let earnPage = document.getElementById('earnPage');
+        if (!earnPage || earnPage.style.display === 'none') {
+            return; // Earn sahifasi yopiq bo'lsa, hech narsa qilmaslik
+        }
+        
         try {
             let res = await api('check_ad_limit');
             
@@ -1258,9 +1264,8 @@
                 let statusIcon = document.getElementById('adStatusIcon');
                 let statusText = document.getElementById('adStatusText');
                 
-                // Agar elementlar topilmasa, funksiyani to'xtatish
+                // Agar elementlar topilmasa, return
                 if (!progressBar || !viewsCount || !bonusAmountEl || !btn || !statusIcon || !statusText) {
-                    console.warn('Ad elements not found, skipping update');
                     return;
                 }
                 
@@ -1304,7 +1309,6 @@
                 // Reklama ko'rish mumkin
                 else {
                     btn.disabled = false;
-                    // DOIM BIR XIL MATN
                     btn.innerHTML = `Reklamani Ko'rish (+${bonus_amount} 💎)`;
                     btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
                     statusIcon.textContent = '📊';
@@ -1374,7 +1378,13 @@
     }
     function updateCountdownTimer() {
         let countdownEl = document.getElementById('adCountdown');
-        if (!countdownEl) return; // Element topilmasa chiqish
+        if (!countdownEl) return;
+        
+        // Earn sahifasi ochiq emasligini tekshirish
+        let earnPage = document.getElementById('earnPage');
+        if (!earnPage || earnPage.style.display === 'none') {
+            return;
+        }
         
         let now = new Date();
         let tomorrow = new Date(now);
@@ -1490,9 +1500,16 @@
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
         btn.classList.add('active');
         
-        if(page === 'swapPage') loadMiners();
-        if(page === 'earnPage') updateAdStatus();
-        if(page === 'ordersPage') loadMyOrders();
+        // Har bir sahifaga o'z funksiyasini chaqirish
+        if(page === 'swapPage') {
+            loadMiners();
+        }
+        else if(page === 'earnPage') {
+            updateAdStatus(); // Faqat Earn sahifasida chaqirish
+        }
+        else if(page === 'ordersPage') {
+            loadMyOrders();
+        }
     };
 
     window.switchTab = (grp, target, btn) => {
@@ -1500,6 +1517,11 @@
         document.getElementById(`${grp}-${target}`).style.display='block';
         btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        
+        // Agar earn-ads tabiga o'tilsa, ad status'ni yangilash
+        if (grp === 'earn' && target === 'ads') {
+            updateAdStatus();
+        }
     };
 
     window.switchOrdersTab = (type, btn) => {
@@ -2291,17 +2313,31 @@
     setInterval(updateAdStatus, 10000);
     
     window.onload = async () => {
-        await checkSubs(); // ← Eng birinchi shu chaqirilishi kerak
+        await checkSubs();
         await fetchBalance();
         loadMiners();
         loadRefs();
         createCoins();
-        updateAdStatus();
         
+        // TelegramAds initialization
+        setTimeout(() => {
+            initTelegramAds();
+        }, 2000);
+        
+        // Intervallarni sozlash
         setInterval(fetchBalance, 10000);
         setInterval(startMiningSimulation, 100);
         setInterval(startMinerTimer, 1000);
-        setInterval(updateAdStatus, 5000);
+        
+        // Ad status faqat Earn sahifasida update bo'ladi
+        setInterval(() => {
+            let earnPage = document.getElementById('earnPage');
+            if (earnPage && earnPage.style.display !== 'none') {
+                updateAdStatus();
+            }
+        }, 5000);
+        
+        // Countdown har doim ishlaydi
         setInterval(updateCountdownTimer, 1000);
     };
 </script>
