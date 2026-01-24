@@ -1135,33 +1135,26 @@
     // TelegramAds ni ishga tushirish
     // TelegramAds ni ishga tushirish
     // TelegramAds ni ishga tushirish
+    // TelegramAds ni ishga tushirish
+    // TelegramAds ni ishga tushirish
     function initTelegramAds() {
-        // Script yuklanganini tekshirish
-        if (typeof window.TelegramAdsController === 'undefined') {
-            console.warn('TelegramAdsController script yuklanmadi');
-            return;
-        }
-        
         try {
-            // Agar allaqachon initialized bo'lsa, qayta initialize qilmaslik
-            if (window.TelegramAdsController.show) {
-                console.log('TelegramAds allaqachon initialized');
+            if (!window.TelegramAdsController) {
+                console.warn('❌ TelegramAdsController script yuklanmadi');
                 return;
             }
             
-            // Initialize
-            let controller = new window.TelegramAdsController();
-            controller.initialize({
-                pubId: "996799",
-                appId: "5842",
-            });
+            console.log('✅ TelegramAdsController topildi');
+            console.log('Turi:', typeof window.TelegramAdsController);
             
-            // Global window'ga qo'shish
-            window.TelegramAdsController = controller;
-            
-            console.log('TelegramAds muvaffaqiyatli initialized');
+            // show() metodi borligini tekshirish
+            if (typeof window.TelegramAdsController.show === 'function') {
+                console.log('✅ TelegramAds tayyor - show() metodi mavjud');
+            } else {
+                console.warn('⚠️ show() metodi topilmadi');
+            }
         } catch (error) {
-            console.error('TelegramAds initialization error:', error);
+            console.error('❌ TelegramAds init xatosi:', error);
         }
     }
     
