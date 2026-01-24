@@ -1137,6 +1137,7 @@
     // TelegramAds ni ishga tushirish
     // TelegramAds ni ishga tushirish
     // TelegramAds ni ishga tushirish
+    // TelegramAds ni ishga tushirish
     function initTelegramAds() {
         try {
             if (!window.TelegramAdsController) {
@@ -1145,13 +1146,27 @@
             }
             
             console.log('✅ TelegramAdsController topildi');
-            console.log('Turi:', typeof window.TelegramAdsController);
             
-            // show() metodi borligini tekshirish
-            if (typeof window.TelegramAdsController.show === 'function') {
-                console.log('✅ TelegramAds tayyor - show() metodi mavjud');
-            } else {
-                console.warn('⚠️ show() metodi topilmadi');
+            // Konstruktor sifatida chaqirish
+            if (typeof window.TelegramAdsController === 'function') {
+                // Instance yaratish
+                window.TelegramAdsController = new window.TelegramAdsController();
+                
+                // Initialize qilish
+                window.TelegramAdsController.initialize({
+                    pubId: "996799",
+                    appId: "5842",
+                    debug: false // Test uchun true qilishingiz mumkin
+                });
+                
+                console.log('✅ TelegramAds initialized');
+                
+                // triggerInterstitialBanner metodi borligini tekshirish
+                if (typeof window.TelegramAdsController.triggerInterstitialBanner === 'function') {
+                    console.log('✅ triggerInterstitialBanner() metodi mavjud');
+                } else {
+                    console.warn('⚠️ triggerInterstitialBanner() metodi topilmadi');
+                }
             }
         } catch (error) {
             console.error('❌ TelegramAds init xatosi:', error);
@@ -1971,7 +1986,6 @@
                     handleAdResponse(res);
                 }).catch((result) => {
                     console.log('Adsgram xatosi, keyingisiga o\'tamiz...');
-                    // Keyingi platformaga o'tish
                     tryShowAd(platformQueue, index + 1, btn);
                 });
             } else {
@@ -1989,7 +2003,6 @@
                     },
                     onError: (error) => {
                         console.log('Sonar xatosi, keyingisiga o\'tamiz...');
-                        // Keyingi platformaga o'tish
                         tryShowAd(platformQueue, index + 1, btn);
                     }
                 });
@@ -1999,25 +2012,23 @@
             }
         }
         else if (platform === 'telegramads') {
-            if (window.TelegramAdsController && window.TelegramAdsController.show) {
+            if (window.TelegramAdsController && typeof window.TelegramAdsController.triggerInterstitialBanner === 'function') {
                 try {
-                    window.TelegramAdsController.show({
-                        onReward: async () => {
+                    // To'g'ri metod nomi: triggerInterstitialBanner
+                    window.TelegramAdsController.triggerInterstitialBanner()
+                        .then(async (result) => {
+                            console.log('TelegramAds result:', result);
+                            // Muvaffaqiyatli ko'rsatildi
                             let res = await api('add', { source: 'telegramads' });
                             handleAdResponse(res);
-                        },
-                        onError: (error) => {
-                            console.log('TelegramAds xatosi, keyingisiga o\'tamiz...');
+                        })
+                        .catch((error) => {
+                            console.log('TelegramAds xatosi, keyingisiga o\'tamiz...', error);
                             // Keyingi platformaga o'tish
                             tryShowAd(platformQueue, index + 1, btn);
-                        },
-                        onClose: () => {
-                            // Reklama yopilganda
-                            btn.disabled = false;
-                        }
-                    });
+                        });
                 } catch (error) {
-                    console.log('TelegramAds ishlamadi, keyingisiga o\'tamiz...');
+                    console.log('TelegramAds ishlamadi, keyingisiga o\'tamiz...', error);
                     tryShowAd(platformQueue, index + 1, btn);
                 }
             } else {
